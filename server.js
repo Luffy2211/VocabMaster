@@ -532,6 +532,22 @@ app.post('/api/test-results', (req, res) => {
   );
 });
 
+// 删除单个测试结果
+app.delete('/api/test-results/:id', (req, res) => {
+  const { id } = req.params;
+  db.run('DELETE FROM test_results WHERE id = ?', [id], function(err) {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    if (this.changes === 0) {
+      res.status(404).json({ error: 'Test result not found' });
+      return;
+    }
+    res.json({ message: 'Test result deleted successfully' });
+  });
+});
+
 // 清空测试结果
 app.delete('/api/test-results', (req, res) => {
   db.run('DELETE FROM test_results', function(err) {

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VocabMaster - 单词学习与测试</title>
+    <title>VocabMaster - Word Learning & Testing</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
@@ -55,7 +55,7 @@
     </style>
 </head>
 <body class="bg-gray-50 font-sans text-dark">
-    <!-- 顶部导航栏 -->
+    <!-- Top Navigation -->
     <header class="bg-white shadow-md fixed top-0 left-0 right-0 z-50 transition-all duration-300">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center space-x-2">
@@ -86,7 +86,7 @@
             </button>
         </div>
         
-        <!-- 移动端菜单 -->
+        <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
             <div class="container mx-auto px-4 py-2 flex flex-col space-y-3">
                 <button id="mobile-import" class="mobile-nav-btn active py-2 font-medium text-left text-primary">
@@ -108,21 +108,21 @@
         </div>
     </header>
 
-    <!-- 主内容区 -->
+    <!-- Main Content -->
     <main class="container mx-auto px-4 pt-24 pb-16 min-h-screen">
-        <!-- 导入单词模块 -->
+        <!-- Import Words Module -->
         <section id="import-section" class="section active">
             <div class="max-w-3xl mx-auto">
                 <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-6">
                     <h2 class="text-2xl font-bold mb-6 text-gray-800 flex items-center">
-                        <i class="fa fa-upload text-primary mr-3"></i> 导入单词
+                        <i class="fa fa-upload text-primary mr-3"></i> Import Words
                     </h2>
                     
                     <div class="space-y-6">
-                        <!-- 文本区域导入 -->
+                        <!-- Text Area Import -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
-                                输入单词（每行一个，格式：英文单词,中文释义,例句）
+                                Enter words (one per line, format: English word,Chinese meaning,Example sentence)
                             </label>
                             <textarea 
                                 id="words-textarea" 
@@ -131,13 +131,13 @@
                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-custom"
                             ></textarea>
                             <button id="import-text-btn" class="mt-3 btn-primary">
-                                <i class="fa fa-check mr-1"></i> 导入文本
+                                <i class="fa fa-check mr-1"></i> Import Text
                             </button>
                         </div>
                     </div>
                 </div>
                 
-                <!-- 导入结果 -->
+                <!-- Import Results -->
                 <div id="import-results" class="bg-white rounded-xl shadow-lg p-6 md:p-8 hidden">
                     <h3 class="text-xl font-semibold mb-4 text-gray-800 flex items-center">
                         <i class="fa fa-check-circle text-primary mr-2"></i> 导入结果
@@ -150,16 +150,16 @@
                                     <i class="fa fa-check-circle text-green-500 mt-0.5"></i>
                                 </div>
                                 <div class="ml-3">
-                                    <h4 class="text-sm font-medium text-green-800">导入成功</h4>
+                                    <h4 class="text-sm font-medium text-green-800">Import Successful</h4>
                                     <div class="mt-2 text-sm text-green-700">
-                                        <p><span id="imported-count">0</span> 个单词导入成功</p>
+                                        <p><span id="imported-count">0</span> words imported successfully</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- 重复单词提示 -->
+                    <!-- Duplicate Words Warning -->
                     <div id="import-duplicates" class="mb-4 hidden">
                         <div class="p-4 bg-yellow-50 border border-yellow-200 rounded-lg mb-4">
                             <div class="flex">
@@ -167,9 +167,9 @@
                                     <i class="fa fa-exclamation-triangle text-yellow-500 mt-0.5"></i>
                                 </div>
                                 <div class="ml-3">
-                                    <h4 class="text-sm font-medium text-yellow-800">发现重复单词</h4>
+                                    <h4 class="text-sm font-medium text-yellow-800">Duplicate Words Found</h4>
                                     <div class="mt-2 text-sm text-yellow-700">
-                                        <p>以下单词已存在，请选择是否更新：</p>
+                                        <p>The following words already exist. Choose whether to update:</p>
                                     </div>
                                 </div>
                             </div>
@@ -194,9 +194,9 @@
                                     <i class="fa fa-exclamation-circle text-red-500 mt-0.5"></i>
                                 </div>
                                 <div class="ml-3">
-                                    <h4 class="text-sm font-medium text-red-800">导入错误</h4>
+                                    <h4 class="text-sm font-medium text-red-800">Import Errors</h4>
                                     <div class="mt-2 text-sm text-red-700">
-                                        <p><span id="errors-count">0</span> 个单词导入失败</p>
+                                        <p><span id="errors-count">0</span> words failed to import</p>
                                     </div>
                                 </div>
                             </div>
@@ -207,22 +207,22 @@
                     
                     <div class="flex justify-end space-x-3">
                         <button id="close-import-results" class="btn-gray">
-                            关闭
+                            Close
                         </button>
                         <button id="go-to-manage-btn" class="btn-primary">
-                            <i class="fa fa-list mr-1"></i> 管理单词
+                            <i class="fa fa-list mr-1"></i> Manage Words
                         </button>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- 单词管理模块 -->
+        <!-- Word Management Module -->
         <section id="manage-section" class="section hidden">
             <div class="max-w-5xl mx-auto bg-white rounded-xl shadow-lg p-6 md:p-8">
                 <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
                     <h2 class="text-2xl font-bold text-gray-800 flex items-center">
-                        <i class="fa fa-list text-primary mr-3"></i> 管理单词库
+                        <i class="fa fa-list text-primary mr-3"></i> Manage Vocabulary
                     </h2>
                     
                     <div class="mt-4 md:mt-0 flex flex-col sm:flex-row gap-3">
@@ -230,30 +230,30 @@
                             <input 
                                 id="search-words" 
                                 type="text" 
-                                placeholder="搜索单词..." 
+                                placeholder="Search words..." 
                                 class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-custom w-full sm:w-64"
                             >
                             <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                         </div>
                         <button id="add-word-btn" class="btn-secondary">
-                            <i class="fa fa-plus mr-1"></i> 添加单词
+                            <i class="fa fa-plus mr-1"></i> Add Word
                         </button>
                         <button id="export-words-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-custom disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                            <i class="fa fa-download mr-1"></i> 导出
+                            <i class="fa fa-download mr-1"></i> Export
                         </button>
                         <button id="clear-words-btn" class="btn-danger disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                            <i class="fa fa-trash mr-1"></i> 清空全部
+                            <i class="fa fa-trash mr-1"></i> Clear All
                         </button>
                     </div>
                 </div>
                 
                 <div id="no-words-message" class="hidden py-16 text-center">
                     <i class="fa fa-book text-5xl text-gray-300 mb-4"></i>
-                    <p class="text-gray-500 text-lg">暂无单词</p>
-                    <p class="text-gray-400 mt-2">请导入或添加单词开始学习</p>
+                    <p class="text-gray-500 text-lg">No words available</p>
+                        <p class="text-gray-400 mt-2">Import or add words to start learning</p>
                     <button id="go-to-import-btn" class="mt-4 btn-primary">
-                        <i class="fa fa-upload mr-1"></i> 导入单词
-                    </button>
+                            <i class="fa fa-upload mr-1"></i> Import Words
+                        </button>
                 </div>
                 
                 <div id="words-container" class="overflow-auto max-h-[60vh] rounded-lg border border-gray-200">
@@ -263,11 +263,11 @@
                                 <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
                                     <input type="checkbox" id="select-all-words" class="text-primary focus:ring-primary rounded">
                                 </th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">英文</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">中文</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">例句</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">添加日期</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">English</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Chinese</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Example</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Added Date</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="words-list" class="bg-white divide-y divide-gray-200">
@@ -278,10 +278,10 @@
                 
                 <div class="mt-4 flex justify-between items-center">
                     <p class="text-sm text-gray-600">
-                        共 <span id="total-words">0</span> 个单词
+                        Total <span id="total-words">0</span> words
                     </p>
                     <button id="delete-selected-btn" class="btn-danger disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                        <i class="fa fa-trash mr-1"></i> 删除选中
+                        <i class="fa fa-trash mr-1"></i> Delete Selected
                     </button>
                 </div>
             </div>
@@ -298,17 +298,17 @@
                     
                     <div class="space-y-5">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">测试类型</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Test Type</label>
                             <div class="grid grid-cols-1 gap-3">
                                 <label class="inline-flex items-center">
                                     <input type="radio" name="test-type" value="english-to-chinese-multiple" class="text-primary focus:ring-primary" checked>
-                                    <span class="ml-2 text-gray-700">英文 → 中文（选择题）</span>
+                                    <span class="ml-2 text-gray-700">English → Chinese (Multiple Choice)</span>
                                 </label>
                             </div>
                         </div>
                         
                         <div>
-                            <label for="test-count" class="block text-sm font-medium text-gray-700 mb-1">测试单词数量</label>
+                            <label for="test-count" class="block text-sm font-medium text-gray-700 mb-1">Number of Test Words</label>
                             <div class="flex items-center">
                                 <input 
                                     type="number" 
@@ -323,16 +323,16 @@
                         </div>
                         
                         <button id="start-test-btn" class="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                            <i class="fa fa-play mr-2"></i> 开始测试
+                            <i class="fa fa-play mr-2"></i> Start Test
                         </button>
                     </div>
                 </div>
                 
-                <!-- 测试进行中 -->
+                <!-- Test in Progress -->
                 <div id="test-in-progress" class="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-6 hidden">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-2xl font-bold text-gray-800 flex items-center">
-                            <i class="fa fa-check-square-o text-primary mr-3"></i> 进行测试
+                            <i class="fa fa-check-square-o text-primary mr-3"></i> Taking Test
                         </h2>
                         <div class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm font-medium">
                             <span id="current-question">1</span>/<span id="total-questions">40</span>
@@ -341,24 +341,24 @@
                     
                     <!-- 选择题测试 -->
                     <div id="multiple-choice-container" class="mb-8">
-                        <p class="text-gray-500 text-sm mb-2">问题</p>
+                        <p class="text-gray-500 text-sm mb-2">Question</p>
                         <div class="bg-neutral p-6 rounded-lg mb-4">
                             <p id="mc-question" class="text-xl font-medium text-gray-800"></p>
                             <button id="show-example-btn" class="mt-3 text-sm text-primary hover:text-primary/80 transition-custom">
-                                <i class="fa fa-book mr-1"></i> 显示例句
+                                <i class="fa fa-book mr-1"></i> Show Example
                             </button>
                             <div id="example-container" class="mt-3 p-3 bg-gray-100 rounded-lg hidden">
-                                <p id="word-example" class="text-gray-700 italic"></p>
+                                <p id="word-example" class="text-gray-700"></p>
                             </div>
                         </div>
                         
-                        <p class="text-gray-500 text-sm mb-2">选择正确的答案</p>
+                        <p class="text-gray-500 text-sm mb-2">Select the correct answer</p>
                         <div id="options-container" class="space-y-3">
                             <!-- 选项将在这里动态添加 -->
                         </div>
                     </div>
                     
-                    <!-- 答案反馈 -->
+                    <!-- Answer Feedback -->
                     <div id="answer-feedback" class="mt-6 p-4 rounded-lg hidden">
                         <div class="flex items-start">
                             <i id="feedback-icon" class="text-xl mt-0.5 mr-3"></i>
@@ -368,41 +368,41 @@
                             </div>
                         </div>
                         <button id="next-question-btn" class="mt-4 bg-primary/10 hover:bg-primary/20 text-primary font-medium py-2 px-4 rounded-lg transition-custom">
-                            下一题
+                            Next Question
                         </button>
                     </div>
                 </div>
                 
-                <!-- 测试结果 -->
+                <!-- Test Results -->
                 <div id="test-results" class="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-6 hidden">
                     <h2 class="text-2xl font-bold mb-6 text-gray-800 flex items-center">
-                        <i class="fa fa-check-circle text-primary mr-3"></i> 测试结果
+                        <i class="fa fa-check-circle text-primary mr-3"></i> Test Results
                     </h2>
                     
                     <div class="flex flex-col md:flex-row items-center justify-between mb-8">
                         <div class="text-center md:text-left mb-6 md:mb-0">
-                            <p class="text-gray-500">您的得分</p>
+                            <p class="text-gray-500">Your Score</p>
                             <div class="text-5xl font-bold text-primary mt-1" id="test-score">0%</div>
                         </div>
                         
                         <div class="grid grid-cols-3 gap-6 w-full md:w-auto">
                             <div class="text-center">
-                                <p class="text-gray-500 text-sm">总题数</p>
+                                <p class="text-gray-500 text-sm">Total Questions</p>
                                 <p class="text-xl font-bold text-gray-800 mt-1" id="result-total">0</p>
                             </div>
                             <div class="text-center">
-                                <p class="text-gray-500 text-sm">正确</p>
+                                <p class="text-gray-500 text-sm">Correct</p>
                                 <p class="text-xl font-bold text-secondary mt-1" id="result-correct">0</p>
                             </div>
                             <div class="text-center">
-                                <p class="text-gray-500 text-sm">错误</p>
+                                <p class="text-gray-500 text-sm">Incorrect</p>
                                 <p class="text-xl font-bold text-danger mt-1" id="result-incorrect">0</p>
                             </div>
                         </div>
                     </div>
                     
                     <div class="border-t border-gray-200 pt-6">
-                        <h3 class="text-lg font-semibold mb-4 text-gray-800">详细结果</h3>
+                        <h3 class="text-lg font-semibold mb-4 text-gray-800">Detailed Results</h3>
                         
                         <div id="detailed-results" class="space-y-4 max-h-[40vh] overflow-auto">
                             <!-- 详细结果将在这里动态添加 -->
@@ -411,25 +411,25 @@
                     
                     <div class="mt-8 flex flex-col sm:flex-row justify-between gap-3">
                         <button id="restart-test-btn" class="btn-primary">
-                            <i class="fa fa-refresh mr-1"></i> 再次测试
+                            <i class="fa fa-refresh mr-1"></i> Test Again
                         </button>
                         <button id="review-mistakes-btn" class="btn-danger disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                            <i class="fa fa-exclamation-triangle mr-1"></i> 查看错误
+                            <i class="fa fa-exclamation-triangle mr-1"></i> Review Mistakes
                         </button>
                         <button id="save-results-btn" class="btn-secondary">
-                            <i class="fa fa-save mr-1"></i> 保存成绩
+                            <i class="fa fa-save mr-1"></i> Save Results
                         </button>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- 错词表模块 -->
+        <!-- Mistakes Module -->
         <section id="mistakes-section" class="section hidden">
             <div class="max-w-5xl mx-auto bg-white rounded-xl shadow-lg p-6 md:p-8">
                 <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
                     <h2 class="text-2xl font-bold text-gray-800 flex items-center">
-                        <i class="fa fa-exclamation-triangle text-danger mr-3"></i> 错词管理
+                        <i class="fa fa-exclamation-triangle text-danger mr-3"></i> Manage Mistakes
                     </h2>
                     
                     <div class="mt-4 md:mt-0 flex flex-col sm:flex-row gap-3">
@@ -437,33 +437,33 @@
                             <input 
                                 id="search-mistakes" 
                                 type="text" 
-                                placeholder="搜索错词..." 
+                                placeholder="Search mistakes..." 
                                 class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-custom w-full sm:w-64"
                             >
                             <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                         </div>
                         <button id="clear-mistakes-btn" class="btn-danger disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                            <i class="fa fa-trash mr-1"></i> 清空错词
+                            <i class="fa fa-trash mr-1"></i> Clear Mistakes
                         </button>
                     </div>
                 </div>
                 
                 <div id="no-mistakes-message" class="hidden py-16 text-center">
                     <i class="fa fa-check-circle text-5xl text-gray-300 mb-4"></i>
-                    <p class="text-gray-500 text-lg">暂无错词</p>
-                    <p class="text-gray-400 mt-2">继续保持，避免错误！</p>
+                    <p class="text-gray-500 text-lg">No mistakes available</p>
+                        <p class="text-gray-400 mt-2">Keep up the good work, avoid mistakes!</p>
                 </div>
                 
                 <div id="mistakes-container" class="overflow-auto max-h-[60vh] rounded-lg border border-gray-200">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50 sticky top-0 z-10">
                             <tr>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">英文</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">中文</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">例句</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">错误次数</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">正确连续次数</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">English</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Chinese</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Example</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mistake Count</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Correct Streak</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="mistakes-list" class="bg-white divide-y divide-gray-200">
@@ -474,40 +474,40 @@
                 
                 <div class="mt-4 flex justify-between items-center">
                     <p class="text-sm text-gray-600">
-                        共 <span id="mistakes-count">0</span> 个错词
+                        Total <span id="mistakes-count">0</span> mistakes
                     </p>
                     <button id="test-mistakes-btn" class="btn-primary disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                        <i class="fa fa-check-square-o mr-1"></i> 测试错词
+                        <i class="fa fa-check-square-o mr-1"></i> Test Mistakes
                     </button>
                 </div>
             </div>
         </section>
 
-        <!-- 测试结果历史模块 -->
+        <!-- Test History Module -->
         <section id="results-section" class="section hidden">
             <div class="max-w-5xl mx-auto">
                 <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-6">
                     <h2 class="text-2xl font-bold mb-6 text-gray-800 flex items-center">
-                        <i class="fa fa-bar-chart text-primary mr-3"></i> 测试历史记录
+                        <i class="fa fa-bar-chart text-primary mr-3"></i> Test History
                     </h2>
                     
                     <div id="no-results-message" class="hidden py-16 text-center">
                         <i class="fa fa-line-chart text-5xl text-gray-300 mb-4"></i>
-                        <p class="text-gray-500 text-lg">暂无测试记录</p>
-                        <p class="text-gray-400 mt-2">去进行测试查看您的进步</p>
+                        <p class="text-gray-500 text-lg">No test records available</p>
+                        <p class="text-gray-400 mt-2">Take a test to see your progress</p>
                         <button id="go-to-test-btn" class="mt-4 btn-primary">
-                            <i class="fa fa-check-square-o mr-1"></i> 进行测试
+                            <i class="fa fa-check-square-o mr-1"></i> Take Test
                         </button>
                     </div>
                     
-                    <!-- 测试活动日历 -->
+                    <!-- Study Activity Calendar -->
                     <div id="activity-calendar" class="mb-8 hidden">
-                        <h3 class="text-lg font-semibold mb-4 text-gray-800">学习活动日历</h3>
+                        <h3 class="text-lg font-semibold mb-4 text-gray-800">Study Activity Calendar</h3>
                         <div class="bg-gray-50 p-4 rounded-lg">
                             <div class="flex items-center mb-4">
-                                <span class="text-sm text-gray-500 mr-4">无活动</span>
+                                <span class="text-sm text-gray-500 mr-4">No Activity</span>
                                 <div class="w-4 h-4 bg-gray-200 rounded mr-2"></div>
-                                <span class="text-sm text-gray-500 mr-4">有活动</span>
+                                <span class="text-sm text-gray-500 mr-4">With Activity</span>
                                 <div class="w-4 h-4 bg-primary rounded mr-2"></div>
                             </div>
                             <div id="calendar-grid" class="grid grid-cols-10 gap-1 sm:grid-cols-14 md:grid-cols-20 lg:grid-cols-25 xl:grid-cols-25">
@@ -516,24 +516,24 @@
                         </div>
                     </div>
                     
-                    <!-- 成绩图表 -->
+                    <!-- Score Trend Chart -->
                     <div id="results-chart-container" class="mb-8 h-64 hidden">
-                        <h3 class="text-lg font-semibold mb-4 text-gray-800">成绩趋势</h3>
+                        <h3 class="text-lg font-semibold mb-4 text-gray-800">Score Trend</h3>
                         <canvas id="results-chart"></canvas>
                     </div>
                     
                     <!-- 测试结果列表 -->
-                    <div class="overflow-auto rounded-lg border border-gray-200">
+                    <div class="overflow-auto rounded-lg border border-gray-200 mt-4">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50 sticky top-0 z-10">
                                 <tr>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">日期</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">测试类型</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">得分</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">单词数</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">正确</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">错误</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Test Type</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Words</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Correct</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Incorrect</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="results-list" class="bg-white divide-y divide-gray-200">
@@ -544,7 +544,7 @@
                     
                     <div class="mt-4 flex justify-end">
                         <button id="clear-results-btn" class="btn-danger disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                            <i class="fa fa-trash mr-1"></i> 清空历史
+                            <i class="fa fa-trash mr-1"></i> Clear History
                         </button>
                     </div>
                 </div>
@@ -552,12 +552,12 @@
         </section>
     </main>
 
-    <!-- 添加单词对话框 -->
+    <!-- Add Word Dialog -->
     <div id="add-word-dialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 transform transition-all">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold text-gray-800">添加新单词</h3>
+                    <h3 class="text-lg font-semibold text-gray-800">Add New Word</h3>
                     <button id="close-add-word" class="text-gray-400 hover:text-gray-500">
                         <i class="fa fa-times"></i>
                     </button>
@@ -565,32 +565,32 @@
                 
                 <div class="space-y-4">
                     <div>
-                        <label for="new-word-english" class="block text-sm font-medium text-gray-700 mb-1">英文单词</label>
+                        <label for="new-word-english" class="block text-sm font-medium text-gray-700 mb-1">English Word</label>
                         <input 
                             type="text" 
                             id="new-word-english" 
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-custom"
-                            placeholder="输入英文单词"
+                            placeholder="Enter English word"
                         >
                     </div>
                     
                     <div>
-                        <label for="new-word-chinese" class="block text-sm font-medium text-gray-700 mb-1">中文释义</label>
+                        <label for="new-word-chinese" class="block text-sm font-medium text-gray-700 mb-1">Chinese Definition</label>
                         <input 
                             type="text" 
                             id="new-word-chinese" 
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-custom"
-                            placeholder="输入中文释义"
+                            placeholder="Enter Chinese definition"
                         >
                     </div>
                     
                     <div>
-                        <label for="new-word-example" class="block text-sm font-medium text-gray-700 mb-1">例句（可选）</label>
+                        <label for="new-word-example" class="block text-sm font-medium text-gray-700 mb-1">Example (Optional)</label>
                         <textarea 
                             id="new-word-example" 
                             rows="3" 
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-custom"
-                            placeholder="输入例句"
+                            placeholder="Enter example sentence"
                         ></textarea>
                     </div>
                 </div>
@@ -598,21 +598,21 @@
             
             <div class="bg-gray-50 px-6 py-3 rounded-b-xl flex justify-end space-x-3">
                 <button id="cancel-add-word" class="btn-gray">
-                    取消
+                    Cancel
                 </button>
                 <button id="save-new-word" class="btn-primary">
-                    保存单词
+                    Save Word
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- 编辑单词对话框 -->
+    <!-- Edit Word Dialog -->
     <div id="edit-word-dialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 transform transition-all">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold text-gray-800">编辑单词</h3>
+                    <h3 class="text-lg font-semibold text-gray-800">Edit Word</h3>
                     <button id="close-edit-word" class="text-gray-400 hover:text-gray-500">
                         <i class="fa fa-times"></i>
                     </button>
@@ -621,32 +621,32 @@
                 <div class="space-y-4">
                     <input type="hidden" id="edit-word-id">
                     <div>
-                        <label for="edit-word-english" class="block text-sm font-medium text-gray-700 mb-1">英文单词</label>
+                        <label for="edit-word-english" class="block text-sm font-medium text-gray-700 mb-1">English Word</label>
                         <input 
                             type="text" 
                             id="edit-word-english" 
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-custom"
-                            placeholder="输入英文单词"
+                            placeholder="Enter English word"
                         >
                     </div>
                     
                     <div>
-                        <label for="edit-word-chinese" class="block text-sm font-medium text-gray-700 mb-1">中文释义</label>
+                        <label for="edit-word-chinese" class="block text-sm font-medium text-gray-700 mb-1">Chinese Definition</label>
                         <input 
                             type="text" 
                             id="edit-word-chinese" 
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-custom"
-                            placeholder="输入中文释义"
+                            placeholder="Enter Chinese definition"
                         >
                     </div>
                     
                     <div>
-                        <label for="edit-word-example" class="block text-sm font-medium text-gray-700 mb-1">例句（可选）</label>
+                        <label for="edit-word-example" class="block text-sm font-medium text-gray-700 mb-1">Example (Optional)</label>
                         <textarea 
                             id="edit-word-example" 
                             rows="3" 
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-custom"
-                            placeholder="输入例句"
+                            placeholder="Enter example sentence"
                         ></textarea>
                     </div>
                 </div>
@@ -654,29 +654,29 @@
             
             <div class="bg-gray-50 px-6 py-3 rounded-b-xl flex justify-end space-x-3">
                 <button id="cancel-edit-word" class="btn-gray">
-                    取消
+                    Cancel
                 </button>
                 <button id="save-edit-word" class="btn-primary">
-                    保存修改
+                    Save Changes
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- 确认对话框 -->
+    <!-- Confirm Dialog -->
     <div id="confirm-dialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 transform transition-all">
             <div class="p-6">
-                <h3 id="confirm-title" class="text-lg font-semibold text-gray-800 mb-2">确认操作</h3>
-                <p id="confirm-message" class="text-gray-600">您确定要执行此操作吗？</p>
+                <h3 id="confirm-title" class="text-lg font-semibold text-gray-800 mb-2">Confirm Action</h3>
+                        <p id="confirm-message" class="text-gray-600">Are you sure you want to perform this action?</p>
             </div>
             
             <div class="bg-gray-50 px-6 py-3 rounded-b-xl flex justify-end space-x-3">
                 <button id="confirm-cancel" class="btn-gray">
-                    取消
+                    Cancel
                 </button>
                 <button id="confirm-ok" class="btn-danger">
-                    确认
+                    Confirm
                 </button>
             </div>
         </div>
@@ -692,7 +692,7 @@
                 </div>
                 
                 <div class="text-gray-400 text-sm">
-                    &copy; 2023 VocabMaster. 保留所有权利。
+                    &copy; 2023 VocabMaster. All rights reserved.
                 </div>
             </div>
         </div>
@@ -1116,7 +1116,7 @@
                                     <div class="text-gray-700">${word.chinese}</div>
                                 </td>
                                 <td class="px-4 py-3">
-                                    <div class="text-gray-600 text-sm ${word.example ? '' : 'text-gray-400 italic'}">${word.example || '无'}</div>
+                                    <div class="text-gray-600 text-sm ${word.example ? '' : 'text-gray-400'}">${word.example || '无'}</div>
                                 </td>
                                 <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
                                     ${formatDate(word.added_date)}
@@ -1193,7 +1193,7 @@
                                     <div class="text-gray-700">${word.chinese}</div>
                                 </td>
                                 <td class="px-4 py-3">
-                                    <div class="text-gray-600 text-sm ${word.example ? '' : 'text-gray-400 italic'}">${word.example || '无'}</div>
+                                    <div class="text-gray-600 text-sm ${word.example ? '' : 'text-gray-400'}">${word.example || '无'}</div>
                                 </td>
                                 <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
                                     ${formatDate(word.added_date)}
@@ -1615,7 +1615,7 @@
             wordExample.textContent = currentWord.example || '无例句';
             
             // 获取随机选项
-            fetch(`${API_BASE_URL}/test/distractors/${currentWord.id}/3`)
+            fetch(`${API_BASE_URL}/test/distractors/${currentWord.id}/4`)
                 .then(response => response.json())
                 .then(distractors => {
                     // 清空选项容器
@@ -1768,7 +1768,7 @@
                     <div class="text-gray-600 text-sm">
                         <p><strong>正确答案:</strong> ${result.word.chinese}</p>
                         ${!result.correct ? `<p><strong>您的答案:</strong> ${result.selectedOption.chinese}</p>` : ''}
-                        ${result.word.example ? `<p class="text-gray-500 italic mt-1">${result.word.example}</p>` : ''}
+                        ${result.word.example ? `<p class="text-gray-500 mt-1">${result.word.example}</p>` : ''}
                     </div>
                 `;
                 detailedResults.appendChild(resultItem);
@@ -1910,7 +1910,7 @@
                                     <div class="text-gray-700">${mistake.chinese}</div>
                                 </td>
                                 <td class="px-4 py-3">
-                                    <div class="text-gray-600 text-sm ${mistake.example ? '' : 'text-gray-400 italic'}">${mistake.example || '无'}</div>
+                                    <div class="text-gray-600 text-sm ${mistake.example ? '' : 'text-gray-400'}">${mistake.example || '无'}</div>
                                 </td>
                                 <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
                                     ${mistake.mistake_count}
@@ -1969,7 +1969,7 @@
                                     <div class="text-gray-700">${mistake.chinese}</div>
                                 </td>
                                 <td class="px-4 py-3">
-                                    <div class="text-gray-600 text-sm ${mistake.example ? '' : 'text-gray-400 italic'}">${mistake.example || '无'}</div>
+                                    <div class="text-gray-600 text-sm ${mistake.example ? '' : 'text-gray-400'}">${mistake.example || '无'}</div>
                                 </td>
                                 <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
                                     ${mistake.mistake_count}
