@@ -1,0 +1,535 @@
+sheep,绵羊, The white sheep eats green grass in the garden.
+pink,粉色, My little sister has a pink hair clip on her head.
+white,白色, The snow outside is white and soft to touch.
+black,黑色, My dad’s shoes are black and he cleans them every week.
+orange,橙色；橙子, This orange is both orange in color and sweet to eat.
+purple,紫色, The purple flower in the vase looks very pretty.
+rabbit,兔子, The small rabbit hops around and eats fresh carrots.
+brown,棕色, The brown teddy bear is my favorite toy to hug.
+red,红色, I draw a red sun at the top of my picture.
+yellow,黄色, The yellow banana on the plate is ripe and sweet.
+blue,蓝色, The sky is blue on a sunny day with no clouds.
+green,绿色, The green leaves on the tree shake in the wind.
+grey,灰色, The grey mouse runs quickly across the floor.
+bird,鸟, The little bird sings loudly every morning.
+pig,猪, The fat pig likes to eat corn and vegetables.
+fox,狐狸, The clever fox has brown fur and a big tail.
+look,看；看起来, Look at the colorful butterflies in the park.
+see,看见；明白, I can see a big tree outside my window.
+girl,女孩, The kind girl shares her candy with her friends.
+time,时间；次数, It’s time to go to bed after reading a story.
+for,为了；给；持续（一段时间）, I make a card for my mom’s birthday.
+to,到；向；（不定式符号，无实义）, We walk to school together every day.
+have,有；吃；喝；进行（活动）, I have milk and bread for breakfast.
+lunch,午餐, My mom makes delicious noodles for my lunch.
+breakfast,早餐, I eat breakfast at half past seven every morning.
+fast,快的；快地；迅速的；迅速地, The little dog runs fast in the garden.
+slow,慢的；慢地, The snail moves slow on the green leaf.
+supper,晚餐, My family sits together to eat supper every evening.
+meal,一餐；一顿饭, We have three meals a day: breakfast, lunch and supper.
+sandwich,三明治, I put some salad in my sandwich for lunch.
+salad,沙拉, My mom makes salad with fresh tomatoes and cucumbers.
+noodle,面条（常用复数noodles）, I like to eat hot noodles on cold days.
+pie,馅饼, The apple pie my grandma makes tastes very sweet.
+pizza,比萨饼, We eat pizza with our family on weekends.
+she,她, She is my best friend and we play together.
+a,一（个、件……）（用于辅音音素开头的单词前）, I have a new pencil in my schoolbag.
+an,一（个、件……）（用于元音音素开头的单词前）, She eats an egg every morning for protein.
+egg,鸡蛋, My mom cooks an egg for me to eat at breakfast.
+piece,片；块；段, Can you give me a piece of bread, please?
+of,……的, This is a picture of my family and our pet dog.
+bread,面包, My grandpa likes to eat bread with a cup of tea.
+and,和；并且, I like to eat apples and bananas after lunch.
+some,一些；若干, I buy some candies for my little brother.
+milk,牛奶, I drink a glass of milk before going to bed.
+drink,喝；饮；饮料, I like to drink orange juice on hot days.
+juice,果汁, My dad makes fresh apple juice with our blender.
+tea,茶；茶叶, My grandma drinks a cup of tea every afternoon.
+food,食物；食品, We need to eat healthy food to stay strong.
+cake,蛋糕, We sing a song and eat cake on my birthday.
+candy,糖果, My teacher gives me a candy for answering correctly.
+ice cream,冰淇淋, I eat chocolate ice cream in summer.
+which,哪一个；哪一些, Which color do you like, red or blue?
+fruit,水果, My mom tells me to eat fruit every day for vitamins.
+you,你；你们, You are my good classmate and we help each other.
+apple,苹果, The red apple I have is crisp and juicy.
+lemon,柠檬, The lemon is sour, so I don’t eat it alone.
+cherry,樱桃, The small cherry is red and sweet to eat.
+watermelon,西瓜, We eat cold watermelon to cool down in summer.
+strawberry,草莓, The strawberry has small seeds on its surface.
+banana,香蕉, I take a banana to eat at break time at school.
+fresh,新鲜的, The vegetables we buy from the market are fresh.
+mango,芒果, The ripe mango is yellow and very sweet.
+fish,鱼；鱼肉；钓鱼, My dad cooks fish for us to eat at supper.
+soup,汤, I drink warm soup when I feel a little cold.
+taste,尝起来；味道, The soup my mom makes tastes very delicious.
+so,如此；那么；所以, The teddy bear is so soft that I hug it every night.
+good,好的；令人愉快的, It’s good to help my mom with housework.
+the,（定冠词，表特指）, The cat sitting on the sofa is very cute.
+guest,客人；宾客, We make delicious food for our guests at home.
+ask,问；询问；请求, I ask my teacher when the class will end.
+more,更多的；更多, I want more milk because it’s very tasty.
+waiter,（餐厅）服务员（男）, The waiter gives us the menu to choose food.
+wait,等待；等候, I wait for my mom at the school gate after class.
+menu,菜单, My dad looks at the menu to pick his favorite food.
+feel,感觉；觉得；触摸, I feel happy when I play with my friends.
+usually,通常；平常, I usually get up at seven o’clock in the morning.
+get,得到；变得；到达, I get to school at a quarter past eight.
+up,向上；起来, My mom tells me to get up early on school days.
+at,在（某时间或时刻）；在（某处）, We have our math class at nine o’clock.
+half,一半；半数, I eat half of the apple and save the other half.
+past,过（时间）；经过, It’s half past three, so it’s time for our break.
+morning,早晨；上午, I do my homework in the morning on weekends.
+bath,洗澡；沐浴, I take a warm bath before going to bed.
+my,我的, This is my new schoolbag with a rabbit picture.
+your,你的；你们的, Is this your pencil case on the desk?
+grandpa,爷爷；外公（口语）, My grandpa tells me interesting stories every night.
+grandma,奶奶；外婆（口语）, My grandma bakes cookies for me every Sunday.
+walk,走；步行；散步, I walk in the park with my grandma after supper.
+in,在……里；进入；穿着, The book is in my schoolbag.
+out,出来；向外；不在家, My little brother likes to play out in the garden.
+garden,花园；菜园, There are many colorful flowers in our garden.
+after,在……之后；在……后面, I play football after I finish my homework.
+use,使用；运用；用途, I use a pencil to draw pictures.
+work,工作；劳动；干活, My dad goes to work by bus every day.
+grandfather,爷爷；外公（书面语）, My grandfather likes to read newspapers.
+grandmother,奶奶；外婆（书面语）, My grandmother cooks delicious rice for us.
+father,父亲；爸爸, My father plays basketball with me on weekends.
+mother,母亲；妈妈, My mother helps me with my homework every day.
+before,在……之前；以前, I wash my hands before I eat my meal.
+now,现在；目前, I am reading a storybook now.
+future,将来；未来, I want to be a teacher in the future.
+week,星期；周, There are seven days in one week.
+weekend,周末, I go to the zoo with my family on weekends.
+people,人；人们, Many people are playing in the park today.
+like,喜欢；像……一样, I like to play with my toy car after school.
+stay,停留；待；保持, I stay at home to watch TV on rainy days.
+home,家；在家；回家, I go home with my best friend every afternoon.
+but,但是；然而, I like apples but I don’t like pears.
+other,其他的；另外的；别人, I have other toys besides my teddy bear.
+go,去；走；离开, We go to the supermarket to buy food on Sunday.
+or,或者；还是；否则, Do you want to drink milk or juice?
+picnic,野餐；去野餐, We have a picnic in the park with our friends.
+tonight,今晚, My family will watch a movie together tonight.
+night,夜晚；晚上, I look at the stars in the sky at night.
+today,今天, Today is Friday and we have a PE class.
+yesterday,昨天, I went to the park with my mom yesterday.
+tomorrow,明天, I will visit my grandma with my parents tomorrow.
+I,我, I like to eat ice cream in summer.
+call,打电话；称呼；叫, I call my grandma every Saturday morning.
+evening,晚上；傍晚, I do my homework in the evening.
+there,那里；在那里, There is a big tree in front of our school.
+no,不；没有；不是, No, I don’t want to eat candy now.
+answer,回答；答复；答案；回应, I know the answer to this math question.
+telephone,电话；打电话, My dad uses the telephone to call his friend.
+message,信息；消息；留言, Can you pass a message to my mom?
+send,发送；寄；派, I send a birthday card to my friend.
+on,在……上面；关于；（具体某一天）, We have a party on my birthday.
+Saturday,星期六, I go to my piano class on Saturday.
+will,将；会；愿意, I will help my mom clean the room tomorrow.
+help,帮助；帮忙, My friend helps me carry my schoolbag.
+housework,家务劳动, I do housework like washing dishes for my mom.
+homework,家庭作业, I finish my homework before watching TV.
+Sunday,星期日, My family goes to visit my grandparents on Sunday.
+family,家庭；家人, My family has four people: my parents, my brother and me.
+parent,父亲（或母亲）；家长, My parent takes me to school every morning.
+mom,妈妈（口语，美式）, My mom makes delicious breakfast for me.
+sister,姐；妹, My sister shares her storybooks with me.
+brother,兄；弟, My brother plays football with me after school.
+move,移动；搬家；改变, Can you help me move this chair to the table?
+children,孩子；儿童（child的复数）, The children are playing games in the playground.
+radio,收音机；无线电广播, My grandpa listens to the radio every morning.
+while,当……的时候；然而；一段时间, I read a book while my mom cooks dinner.
+they,他们；她们；它们, They are my classmates and we play together.
+clean,打扫；清洁；干净的, I clean my desk every day after class.
+listen,听；倾听, We listen to our teacher carefully in class.
+window,窗户, I look at the birds outside through the window.
+child,孩子；儿童（单数）, The little child is playing with a toy car.
+boy,男孩, The tall boy is good at playing basketball.
+baby,婴儿；宝宝, The cute baby is sleeping in the bed.
+man,男人；人, The man over there is my uncle.
+woman,女人；妇女, The kind woman helps the old lady cross the road.
+young,年轻的；年幼的, The young girl sings very well.
+old,老的；旧的；……岁的, My grandpa is old but he is very strong.
+make,做；制作；使成为, I make a paper plane with my dad.
+dinner,晚餐；正餐, We eat dinner together as a family every evening.
+when,当……的时候；什么时候, When do you usually go to bed?
+phone,电话；打电话（telephone的口语化表达）, I phone my friend to talk about our homework.
+ring,（铃、电话等）响；戒指, The telephone rings and my dad answers it.
+housewife,家庭主妇, My grandma was a hardworking housewife before.
+wife,妻子；太太, My dad’s wife is my mom.
+oil,油；石油, We use oil to cook vegetables.
+fridge,冰箱（全称refrigerator）, We put the milk in the fridge to keep it cold.
+bridge,桥；桥梁, We walk across the bridge to go to the park.
+road,路；道路, The cars run on the wide road.
+table,桌子；餐桌, We put our plates and bowls on the table.
+wash,洗；洗涤, I wash my hands before eating every meal.
+dish,盘；碟；菜肴（常用复数dishes表示“餐具”）, My mom washes the dishes after dinner.
+bed,床；床铺, I go to bed at nine o’clock every night.
+bad,坏的；不好的；糟糕的, It’s bad to eat too much candy.
+sofa,沙发, My dad sits on the sofa to watch TV.
+chair,椅子, I sit on a small chair to do my homework.
+armchair,扶手椅, My grandpa likes to sit in the armchair and read.
+book,书；书籍；预订, I read a storybook before going to bed.
+cup,杯子（常指带柄的杯子，用于喝茶、咖啡等）, My mom drinks tea from a blue cup.
+glass,玻璃杯；玻璃；眼镜（常用复数glasses）, I drink juice from a clear glass.
+grass,草；草地, The children play on the green grass in the park.
+class,班级；课；阶级, I am in Class One, Grade Three.
+learn,学习；学会, I learn new words every day at school.
+ear,耳朵；听力, I use my ear to listen to music.
+cook,烹饪；煮；厨师, My mom can cook delicious food.
+about,关于；大约；到处, Tell me a story about animals.
+net,网；网络, We use a net to catch butterflies.
+Internet,互联网；因特网, My dad uses the Internet to work.
+vegetable,蔬菜, I eat vegetables like carrots and tomatoes.
+tomato,西红柿；番茄（复数tomatoes）, My mom puts tomatoes in the salad.
+potato,土豆；马铃薯（复数potatoes）, We eat potatoes as French fries.
+meat,肉；肉类, My dad likes to eat meat with rice.
+Chinese,中国的；中国人；中文；汉语, I learn Chinese at school every day.
+tennis,网球（运动）, My dad and I play tennis on weekends.
+it,它, It is a cute cat with white fur.
+our,我们的, Our classroom is big and bright.
+favorite,最喜欢的（人或事物）, My favorite color is blue.
+sport,运动；体育活动, I like to play sport with my friends.
+ball,球；球状物, I play with a red ball in the park.
+basket,篮子；筐, My mom puts apples in a big basket.
+basketball,篮球（运动或球类）, We play basketball in the playground.
+foot,脚；足；英尺, I walk to school with my two feet.
+football,足球（运动或球类，美式足球为American football）, My brother plays football with his friends.
+he,他, He is my best friend and we sit together.
+tall,高的, The big tree in our school is very tall.
+player,运动员；选手；演奏者, He is a good football player.
+world,世界；地球, There are many countries in the world.
+word,单词；词；话语, I learn a new English word today.
+team,队；组, We are in the same team for the game.
+win,赢；获胜；赢得, Our team works hard to win the game.
+nearby,附近的；在附近, There is a small park nearby our home.
+valley,山谷；溪谷, We see many flowers in the beautiful valley.
+part,部分；零件；角色, I play an important part in the school play.
+mountain,山；山脉, The big mountain is covered with green trees.
+bike,自行车（bicycle的口语化表达）, I ride my bike to school every day.
+race,比赛；赛跑；竞赛, We have a running race in our PE class.
+club,俱乐部；社团；棍棒, I join the reading club at school.
+fun,乐趣；快乐；有趣的, It’s fun to play games with friends.
+different,不同的；有差异的, Cats and dogs are different animals.
+same,相同的；一样的, We wear the same school uniform.
+subject,科目；主题；主语, My favorite subject at school is math.
+science,科学；自然科学, We do interesting experiments in science class.
+do,做；干；助动词（无实义）, I do my homework every afternoon.
+experiment,实验；试验, We do a small experiment in our science class.
+during,在……期间, I read books during my break time.
+English,英语；英国的；英国人的, I learn English from my teacher.
+England,英格兰；英国, My pen pal lives in England.
+maths,数学（mathematics的缩写）, I do maths exercises every day.
+art,美术；艺术；艺术品, We draw pictures in our art class.
+music,音乐；乐曲, I listen to music with my mom.
+history,历史；历史学, We learn about old kings in history class.
+PE/P.E.,体育（Physical Education的缩写）, We play basketball in our PE class.
+because,因为, I like summer because I can eat ice cream.
+dream,梦想；梦；做梦, My dream is to be a doctor.
+true,真实的；正确的；真的, His story about the cat is true.
+come,来；来到；出现, My friend comes to my home to play.
+should,应该；应当；可能, We should help people in need.
+study,学习；研究；书房, I study hard for my exams.
+hard,努力地；艰难的；硬的, I work hard to learn new things.
+number,数字；号码；数量, My favorite number is eight.
+double,双倍的；两倍；加倍, Ten double is twenty.
+from,从……；来自……；离……, I am from a small town.
+each,每个；各自, Each student has a new book.
+by,通过；由；被；在……旁边, I go to school by bike.
+without,没有；不（做某事）, I can’t read without my glasses.
+with,和……一起；具有；用, I play football with my brother.
+any,任何；一些（常用于否定句或疑问句）, Do you have any candies?
+this,这；这个；这（个）, This is my new pencil case.
+that,那；那个；那（个）, That big tree is in front of our school.
+dictionary,字典；词典, I use a dictionary to find new words.
+cheap,便宜的；廉价的, This pencil is cheap and good.
+cost,花费；价钱为；成本, This book costs five yuan.
+me,我（I的宾格）, My mom gives me a big apple.
+dollar,美元（美国、加拿大等国货币单位）, This toy car costs two dollars.
+dear,亲爱的；昂贵的, My dear friend gives me a gift.
+bear,熊；承受；忍受, The big bear lives in the forest.
+rich,富有的；丰富的；肥沃的, The rich soil helps plants grow.
+one,一；一个；（泛指）一个人或事物, I have one red pen.
+two,二；两个, There are two cats in my home.
+three,三；三个, I have three storybooks.
+four,四；四个, My brother is four years old.
+five,五；五个, There are five students in my group.
+six,六；六个, I get up at six o’clock in the morning.
+seven,七；七个, There are seven days in a week.
+eight,八；八个, I have eight pencils in my pencil case.
+nine,九；九个, My little sister is nine months old.
+ten,十；十个, I can count from one to ten.
+eleven,十一；十一个, There are eleven players in a football team.
+twelve,十二；十二个, I have twelve crayons.
+thirteen,十三；十三个, My cousin is thirteen years old.
+fourteen,十四；十四个, There are fourteen desks in our classroom.
+fifteen,十五；十五个, I have fifteen stickers in my book.
+sixteen,十六；十六个, My brother is sixteen years old.
+seventeen,十七；十七个, There are seventeen girls in our class.
+eighteen,十八；十八个, He is eighteen years old now.
+nineteen,十九；十九个, I can count from one to nineteen.
+twenty,二十；二十个, There are twenty apples in the basket.
+thirty,三十；三十个, My dad is thirty years old.
+forty,四十；四十个, There are forty students in our grade.
+fifty,五十；五十个, My grandma is fifty years old.
+hundred,百；一百, I have a hundred storybooks.
+thousand,千；一千, There are a thousand stars in the sky.
+pen,钢笔, I write with a blue pen.
+pencil,铅笔, I draw pictures with a pencil.
+box,盒子；箱子；盒子（复数boxes）, I put my toys in a big box.
+desk,书桌；办公桌, My desk is clean and tidy.
+school,学校；上学, I go to school every Monday to Friday.
+schoolbag,书包, I put my books in my schoolbag.
+ruler,尺子；统治者, I use a ruler to draw straight lines.
+notebook,笔记本, I write down new words in my notebook.
+paper,纸；纸张；试卷；论文（不可数，表“一张纸”用a piece of paper）, I draw a picture on a piece of paper.
+lesson,课；功课；教训, We have a math lesson in the morning.
+in the morning,在早上；在上午, I do exercise in the morning.
+in the afternoon,在下午, We have a PE class in the afternoon.
+blackboard,黑板, Our teacher writes on the blackboard with chalk.
+fan,风扇；扇子；迷；粉丝（复数fans）, The fan in our classroom keeps us cool.
+fans,风扇（复数）；粉丝（复数）（重复fan的复数形式）, The fans in the room are working.
+sit,坐；就座, I sit on a chair to read my book.
+seat,座位；使就座, This is my seat in the classroom.
+seat belt,安全带, We wear a seat belt in the car.
+stand,站；站立；忍受；立场, I stand up when the teacher comes in.
+problem,问题；难题（侧重需要解决的实际问题）, I can solve this math problem.
+question,问题；疑问（侧重需要回答的疑问）, I have a question to ask the teacher.
+chicken,鸡；鸡肉, My mom cooks chicken for dinner.
+lion,狮子, The lion is the king of the forest.
+dog,狗, My pet dog is small and cute.
+body,身体；躯体；主体, We need to keep our body healthy.
+fly,飞；飞行；苍蝇, The bird can fly high in the sky.
+what,什么；多么, What is your favorite food?
+why,为什么；……的原因, Why do you like summer?
+where,在哪里；到哪里, Where is your schoolbag?
+mouse,老鼠；鼠标（复数mice）, The small mouse hides behind the box.
+tiger,老虎, The tiger has orange fur and black stripes.
+cat,猫, My cat likes to sleep on the sofa.
+monkey,猴子, The monkey likes to eat bananas.
+tortoise,乌龟（侧重陆龟）, The tortoise walks very slow.
+car,汽车；轿车, My dad drives a blue car.
+cloud,云；云朵, The white cloud looks like a sheep.
+ship,船；轮船, We go to the island by ship.
+block,街区；块；障碍物, Our home is in the next block.
+day,天；日子；白天, We have a good day at school.
+sky,天空, The blue sky has many white clouds.
+star,星星；明星, I look at the bright stars at night.
+moon,月亮；月球, The moon is bright at night.
+sun,太阳；阳光, The sun gives us light and heat.
+son,儿子, My uncle has a son who is my age.
+rain,雨；下雨, It rains and we can’t go out to play.
+snow,雪；下雪, It snows in winter and we make snowmen.
+wind,风；吹风, The wind blows the leaves off the trees.
+river,河；江, We see many fish in the clear river.
+sea,海；海洋, The blue sea is very big.
+lake,湖；湖泊, We go boating on the big lake.
+house,房子；住宅, My house has a small garden.
+teacher,教师；老师, My English teacher is very kind.
+horse,马, The horse runs fast on the grass.
+whale,鲸鱼, The big whale lives in the sea.
+elephant,大象, The elephant has a long trunk.
+killer,杀手；凶手（常与whale搭配为killer whale，虎鲸）, The killer whale is a smart sea animal.
+picture,图片；照片；图画；电影, I draw a picture of my family.
+shark,鲨鱼, The shark lives in the deep sea.
+angel,天使, The little girl draws an angel with wings.
+god,神；上帝（首字母大写God常指“上帝”）, People believe God can help them.
+clock,钟；时钟, The clock on the wall tells us the time.
+air,空气；大气, We need clean air to breathe.
+ink,墨水；墨汁, I fill my pen with black ink.
+plane,飞机（airplane的口语化表达）, We go to Beijing by plane.
+train,火车；训练, My dad takes a train to work.
+space,空间；太空, Astronauts go to space by spaceship.
+bus,公共汽车, I take the bus to school every day.
+jump,跳；跳跃；跃过, I jump rope with my friends at break time.
+piano,钢琴, My sister plays the piano very well.
+snail,蜗牛, The snail moves slow on the leaf.
+spider,蜘蛛, The spider makes a web to catch insects.
+snake,蛇, The snake is a long animal without legs.
+wall,墙；墙壁, We put pictures on the white wall.
+door,门；门口, I open the door to let my friend in.
+tree,树；树木, The big tree has many green leaves.
+flower,花；花朵, The red flower smells very nice.
+name,名字；名称；给……命名, My name is Lily.
+color,颜色；给……涂色（美式拼写，英式为colour）, I color the picture with red crayon.
+water,水；浇水, We water the flowers every day.
+yes,是；对, Yes, I want to eat ice cream.
+play,玩；玩耍；演奏；播放；戏剧, I play with my toy bear after school.
+story,故事；小说；经历, My mom tells me a story every night.
+read,读；阅读；看懂, I read a storybook before going to bed.
+year,年；年度；岁数, I am eight years old this year.
+are,是（be动词的第二人称单复数及第一、三人称复数现在时）, You are my good friend.
+face,脸；面部；面对, I wash my face every morning.
+head,头；头部；领导, I have a headache and need to rest.
+mouth,嘴；口, I use my mouth to eat and talk.
+nose,鼻子, I use my nose to smell flowers.
+eye,眼睛（复数eyes）, I have two big eyes.
+line,线；线条；排；队, We stand in a line to go into the classroom.
+room,房间；空间, My bedroom is small but clean.
+bedroom,卧室, I sleep in my bedroom every night.
+live,住；居住；生活；生存, I live in a small house with my family.
+small,小的；少的, I have a small toy car.
+big,大的；重大的, The elephant is a big animal.
+short,短的；矮的；短缺的, My hair is short and black.
+pretty,漂亮的；可爱的；相当, The little girl looks pretty in her dress.
+ant,蚂蚁, The small ant carries food to its home.
+hair,头发；毛发（不可数，表“一根头发”用a hair）, My mom has long black hair.
+hello,你好（打招呼用语）, I say hello to my teacher every morning.
+run,跑；奔跑；经营；运转, I run fast in the PE class.
+sock,短袜（常用复数socks）, I wear white socks every day.
+student,学生, I am a good student at school.
+classmate,同班同学, My classmate helps me with my homework.
+leg,腿；腿部, I walk with my two legs.
+neck,脖子；颈部, I wear a scarf around my neck in winter.
+hat,帽子（常指有檐的帽子，如棒球帽）, I wear a red hat to go out.
+coat,外套；大衣, I wear a warm coat in winter.
+late,晚的；迟的；迟到的, I am late for school today.
+schoolmate,同学（泛指同校同学，不限于同班）, My schoolmate and I play basketball together.
+grade,年级；等级；分数, I am in Grade Three this year.
+primary,初级的；基本的（常与school搭配为primary school，小学）, I study in a primary school.
+monitor,班长；显示器；监视器, Our class monitor helps the teacher.
+class teacher,班主任, My class teacher is very kind to us.
+Miss,小姐（用于未婚女性姓氏前）, Miss Li is our English teacher.
+Mr,先生（用于男性姓氏前，全称Mister）, Mr Wang teaches us math.
+us,我们（we的宾格）, Our teacher tells us a funny story.
+grape,葡萄, The purple grape is sweet and juicy.
+early,早的；早地, I get up early to go to school.
+last,最后的；最近的；持续；最后, This is the last page of the book.
+place,地方；场所；放置, The park is a good place to play.
+dad,爸爸；爹爹（口语）, My dad plays football with me.
+heavy,重的；沉重的；大量的, This box is heavy and I can’t carry it.
+its,它的（形容词性物主代词）, The cat licks its paws.
+their,他们的；她们的；它们的, Their schoolbags are on the desk.
+teacher's desk,讲桌, The teacher’s desk is in front of the classroom.
+know,知道；了解；认识, I know how to draw a cat.
+lot,许多；大量（常与a搭配为a lot或a lot of，“许多”）, I have a lot of toys at home.
+city,城市；都市, I live in a big city with my family.
+classroom,教室, Our classroom is clean and bright.
+bathroom,浴室；卫生间, We wash our hands in the bathroom.
+her,她的（形容词性物主代词）；她（she的宾格）, Her pencil case is pink.
+new,新的；新鲜的, I have a new schoolbag this term.
+news,新闻；消息（不可数名词）, My dad reads news every morning.
+newspaper,报纸, My grandpa reads the newspaper every day.
+storybook,故事书, I have many storybooks on my shelf.
+playground,操场；运动场, We play football on the playground.
+here,这里；在这里, Here is your pencil case.
+love,爱；喜爱；热爱, I love my family very much.
+please,请（用于礼貌请求或回应）, Please pass me the pencil.
+kite,风筝, I fly a kite in the park on windy days.
+zoo,动物园, We see many animals in the zoo.
+easy,容易的；简单的, This math problem is easy for me.
+can,能；会；可以；罐头, I can sing and dance.
+ok,好的；可以（非正式拼写，规范为OK或Okay）, Ok, let’s go to play.
+goodbye,再见；再会, I say goodbye to my teacher after class.
+little,小的；少的；一点, I have a little cat at home.
+who,谁；什么人, Who is your best friend?
+police,警察；警方（常与the搭配为the police，“警方”，表复数）, The police help people in danger.
+thin,瘦的；薄的；细的, The thin girl runs very fast.
+hand,手；帮助；交；递, I use my hand to write and draw.
+arm,手臂；胳膊；武器, I have two arms to hug my mom.
+friend,朋友, My friend and I play together every day.
+shoe,鞋；鞋子（常用复数shoes）, I wear black shoes to school.
+not,不；没有（用于构成否定句）, I do not like to eat onions.
+take,拿；取；带；乘坐；花费, I take my book to school every day.
+nice,美好的；友好的；令人愉快的, The weather is nice today.
+meet,遇见；相逢；会面, I meet my friend at the school gate.
+how,怎样；如何；多么, How are you today?
+pear,梨, The yellow pear is sweet to eat.
+write,写；书写；写作, I write a letter to my pen pal.
+never,从不；绝不, I never eat candy before dinner.
+shop,商店；购物（动词或名词）, My mom and I shop for food on Sunday.
+shopping,购物（shop的动名词形式，常与go搭配为go shopping，“去购物”）, We go shopping to buy new clothes.
+park,公园；停车（动词或名词）, We have a picnic in the park.
+party,聚会；派对；政党, We have a birthday party for my friend.
+game,游戏；比赛；运动, We play a fun game in class.
+find,找到；发现；查明, I find my pencil under the desk.
+clear,清楚的；清晰的；清除；打扫, The water in the lake is clear.
+beautiful,美丽的；漂亮的, The flowers in the garden are beautiful.
+busy,忙的；忙碌的, My mom is busy cooking dinner.
+say,说；讲；表达, I say “thank you” to my teacher.
+talk,谈话；交谈；谈论, I talk with my friend about our holiday.
+search,搜索；查找；搜寻, I search for my book in my schoolbag.
+research,研究；调查（动词或名词）, We do research about plants in science class.
+report,报告；报道；汇报（动词或名词）, I write a report about animals.
+rest,休息；剩余部分（动词或名词）, I take a rest after doing homework.
+then,然后；那时；那么, I do my homework and then watch TV.
+finish,完成；结束, I finish my homework before supper.
+take a rest,休息一下, I take a rest after playing football.
+have a rest,休息一下, We have a rest after our math class.
+fix,修理；安装；固定, My dad can fix my broken toy.
+key,钥匙；关键；答案；（电脑）键盘按键, I use the key to open the door.
+lock,锁；锁住；上锁, We lock the door when we go out.
+keyboard,键盘, I type on the keyboard to write.
+leave,离开；留下；遗忘, I leave my book at school today.
+light,灯；光线；轻的；浅色的；点燃, I turn on the light when it’s dark.
+off,离开；关闭；脱离, I turn off the TV before going to bed.
+turn off,关掉（电器、水、气等）, I turn off the light when I leave the room.
+turn on,打开（电器、水、气等）, My mom turns on the fridge to get milk.
+down,向下；沿着；减少, I sit down on the chair.
+remember,记得；记住, I remember to do my homework.
+forget,忘记；遗忘, I forget to bring my pencil case today.
+ago,以前；……前（常与时间段连用，如three days ago，“三天前”）, I went to the zoo three days ago.
+teach,教；教授；教导, My teacher teaches me English.
+Mrs,夫人；太太（用于已婚女性姓氏前，全称Mistress）, Mrs Zhang is my art teacher.
+Ms,女士（用于女性姓氏前，不区分婚姻状况）, Ms Li helps me with my homework.
+see you later,待会儿见；回头见, I say “see you later” to my friend.
+computer,电脑；计算机, I use the computer to play games.
+money,钱；货币, My mom gives me money to buy a book.
+noon,中午；正午, We eat lunch at noon.
+supermarket,超市, We buy food in the supermarket.
+shopping mall,购物中心；商场, My family goes to the shopping mall on weekends.
+ever,曾经；在任何时候（常用于完成时态）, Have you ever been to the zoo?
+forever,永远；永久, I will love my family forever.
+season,季节, There are four seasons in a year.
+spring,春天；春季；泉水；跳跃, We see many flowers in spring.
+summer,夏天；夏季, I eat ice cream in summer.
+autumn,秋天；秋季（英式表达，美式常用fall）, Leaves turn yellow in autumn.
+winter,冬天；冬季, It snows in winter.
+tooth,牙齿（复数teeth）, I brush my tooth every morning.
+teeth,牙齿（tooth的复数形式）, I brush my teeth twice a day.
+brush,刷；刷子（动词或名词，常与teeth搭配为brush teeth，“刷牙”）, I brush my teeth before going to bed.
+toothbrush,牙刷, I use a new toothbrush to brush my teeth.
+show,展示；表明；演出；节目, I show my drawing to my mom.
+talk show,脱口秀；访谈节目, My dad watches a talk show on TV.
+shower,淋浴；阵雨；沐浴, I take a shower every evening.
+under,在……下面；低于, The cat is under the table.
+prepare,准备；预备, My mom prepares dinner for us.
+prepare for,为……做准备, I prepare for my exam.
+ready,准备好的；乐意的, I am ready to go to school.
+be ready to,准备好做……；愿意做……, I am ready to help my friend.
+plate,盘子；碟子, I put my food on a clean plate.
+bowl,碗；钵, I eat noodles from a big bowl.
+break,打破；打碎；休息；中断, I take a break after studying for an hour.
+shape,形状；外形；使成形, The moon has a round shape.
+circle,圆；圆形；圈出；环绕, I draw a circle with my ruler.
+count,数；计数；计算, I count from one to twenty.
+count from ... to ...,从……数到……, I count from five to ten.
+sure,当然；确定的；肯定的, Sure, I can help you.
+wallet,钱包；皮夹（常指男士钱包，女士常用purse）, My dad puts his money in a wallet.
+teacher's office,教师办公室, My teacher is in the teacher’s office.
+whose,谁的（疑问代词，用于询问所属关系）, Whose pencil case is this?
+watch,手表；观看；注视, My dad wears a watch on his hand.
+pass,通过；传递；及格, I pass the ball to my friend.
+fail,失败；不及格；未能, I fail to finish my homework on time.
+mark,标记；记号；分数；打分, The teacher gives me a good mark.
+test,测试；测验；考查（常指小型测试）, We have a math test today.
+exam,考试；测验（较正式，常指大型考试，如期末考试）, I study hard for my final exam.
+success,成功；成就, Hard work brings success.
+every,每个；每一, I eat fruit every day.
+everybody,每个人；所有人（等同于everyone）, Everybody likes to play games.
+everyone,每个人；所有人（等同于everybody）, Everyone in our class is happy.
+wish,希望；愿望；祝愿, I wish to have a new toy.
+ugly,丑的；难看的；令人不快的, The ugly duckling becomes a swan.
+finger,手指, I have five fingers on my hand.
+toe,脚趾, I have ten toes on my feet.
+toy,玩具, My favorite toy is a teddy bear.
+gun,枪；炮, The soldier has a gun.
+thief,小偷；窃贼（复数thieves）, The thief steals money from the house.
+steal,偷；窃取（过去式stole，过去分词stolen）, The cat steals a fish from the table.
+robber,强盗；劫匪, The robber takes money from the bank.
+school's paper,校报, I read the school’s paper every week.
+come out,出版；发表；出现；出来, The new book comes out today.
+once,一次；曾经；一旦, I go to the zoo once a month.
+reporter,记者, The reporter writes news for the newspaper.
+magazine,杂志；期刊, My mom reads a magazine every afternoon.

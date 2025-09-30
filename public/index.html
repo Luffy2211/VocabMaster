@@ -1,0 +1,2481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VocabMaster - 单词学习与测试</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36D399',
+                        danger: '#F87272',
+                        neutral: '#F3F4F6',
+                        dark: '#1F2937'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .card-shadow {
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            }
+            .transition-custom {
+                transition: all 0.3s ease;
+            }
+            .option-hover {
+                @apply hover:bg-primary/5 transition-all duration-200 cursor-pointer;
+            }
+            .btn-primary {
+                @apply bg-primary hover:bg-primary/90 text-white font-medium py-2 px-4 rounded-lg transition-custom;
+            }
+            .btn-danger {
+                @apply bg-danger hover:bg-danger/90 text-white font-medium py-2 px-4 rounded-lg transition-custom;
+            }
+            .btn-secondary {
+                @apply bg-secondary hover:bg-secondary/90 text-white font-medium py-2 px-4 rounded-lg transition-custom;
+            }
+            .btn-gray {
+                @apply bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg transition-custom;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-dark">
+    <!-- 顶部导航栏 -->
+    <header class="bg-white shadow-md fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fa fa-book text-primary text-2xl"></i>
+                <h1 class="text-xl font-bold text-primary">VocabMaster</h1>
+            </div>
+            
+            <nav class="hidden md:flex space-x-6">
+                <button id="nav-import" class="nav-btn active py-2 font-medium text-primary border-b-2 border-primary">
+                    <i class="fa fa-upload mr-1"></i> Import
+                </button>
+                <button id="nav-manage" class="nav-btn py-2 font-medium text-gray-600 hover:text-primary transition-custom">
+                    <i class="fa fa-list mr-1"></i> Manage
+                </button>
+                <button id="nav-test" class="nav-btn py-2 font-medium text-gray-600 hover:text-primary transition-custom">
+                    <i class="fa fa-check-square-o mr-1"></i> Test
+                </button>
+                <button id="nav-mistakes" class="nav-btn py-2 font-medium text-gray-600 hover:text-primary transition-custom">
+                    <i class="fa fa-exclamation-triangle mr-1"></i> Mistakes
+                </button>
+                <button id="nav-results" class="nav-btn py-2 font-medium text-gray-600 hover:text-primary transition-custom">
+                    <i class="fa fa-bar-chart mr-1"></i> Results
+                </button>
+            </nav>
+            
+            <button id="mobile-menu-btn" class="md:hidden text-gray-600 focus:outline-none">
+                <i class="fa fa-bars text-xl"></i>
+            </button>
+        </div>
+        
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+            <div class="container mx-auto px-4 py-2 flex flex-col space-y-3">
+                <button id="mobile-import" class="mobile-nav-btn active py-2 font-medium text-left text-primary">
+                    <i class="fa fa-upload mr-2"></i> Import Words
+                </button>
+                <button id="mobile-manage" class="mobile-nav-btn py-2 font-medium text-left text-gray-600">
+                    <i class="fa fa-list mr-2"></i> Manage Words
+                </button>
+                <button id="mobile-test" class="mobile-nav-btn py-2 font-medium text-left text-gray-600">
+                    <i class="fa fa-check-square-o mr-2"></i> Take Test
+                </button>
+                <button id="mobile-mistakes" class="mobile-nav-btn py-2 font-medium text-left text-gray-600">
+                    <i class="fa fa-exclamation-triangle mr-2"></i> Mistake Words
+                </button>
+                <button id="mobile-results" class="mobile-nav-btn py-2 font-medium text-left text-gray-600">
+                    <i class="fa fa-bar-chart mr-2"></i> Test Results
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="container mx-auto px-4 pt-24 pb-16 min-h-screen">
+        <!-- 导入单词模块 -->
+        <section id="import-section" class="section active">
+            <div class="max-w-3xl mx-auto">
+                <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-6">
+                    <h2 class="text-2xl font-bold mb-6 text-gray-800 flex items-center">
+                        <i class="fa fa-upload text-primary mr-3"></i> 导入单词
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <!-- 文本区域导入 -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                输入单词（每行一个，格式：英文单词,中文释义,例句）
+                            </label>
+                            <textarea 
+                                id="words-textarea" 
+                                rows="8" 
+                                placeholder="example,例子,This is an example sentence.\nsample,样本,Can I see a sample first?\n..."
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-custom"
+                            ></textarea>
+                            <button id="import-text-btn" class="mt-3 btn-primary">
+                                <i class="fa fa-check mr-1"></i> 导入文本
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 导入结果 -->
+                <div id="import-results" class="bg-white rounded-xl shadow-lg p-6 md:p-8 hidden">
+                    <h3 class="text-xl font-semibold mb-4 text-gray-800 flex items-center">
+                        <i class="fa fa-check-circle text-primary mr-2"></i> 导入结果
+                    </h3>
+                    
+                    <div id="import-success" class="mb-4 hidden">
+                        <div class="p-4 bg-green-50 border border-green-200 rounded-lg mb-4">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fa fa-check-circle text-green-500 mt-0.5"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <h4 class="text-sm font-medium text-green-800">导入成功</h4>
+                                    <div class="mt-2 text-sm text-green-700">
+                                        <p><span id="imported-count">0</span> 个单词导入成功</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 重复单词提示 -->
+                    <div id="import-duplicates" class="mb-4 hidden">
+                        <div class="p-4 bg-yellow-50 border border-yellow-200 rounded-lg mb-4">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fa fa-exclamation-triangle text-yellow-500 mt-0.5"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <h4 class="text-sm font-medium text-yellow-800">发现重复单词</h4>
+                                    <div class="mt-2 text-sm text-yellow-700">
+                                        <p>以下单词已存在，请选择是否更新：</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="duplicates-list" class="space-y-3 mb-4"></div>
+                        
+                        <div class="flex justify-end space-x-3">
+                            <button id="skip-duplicates-btn" class="btn-gray">
+                                跳过
+                            </button>
+                            <button id="update-duplicates-btn" class="btn-primary">
+                                更新
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="import-errors" class="hidden">
+                        <div class="p-4 bg-red-50 border border-red-200 rounded-lg mb-4">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fa fa-exclamation-circle text-red-500 mt-0.5"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <h4 class="text-sm font-medium text-red-800">导入错误</h4>
+                                    <div class="mt-2 text-sm text-red-700">
+                                        <p><span id="errors-count">0</span> 个单词导入失败</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="errors-list" class="text-sm text-gray-600 space-y-2 max-h-60 overflow-auto"></div>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-3">
+                        <button id="close-import-results" class="btn-gray">
+                            关闭
+                        </button>
+                        <button id="go-to-manage-btn" class="btn-primary">
+                            <i class="fa fa-list mr-1"></i> 管理单词
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 单词管理模块 -->
+        <section id="manage-section" class="section hidden">
+            <div class="max-w-5xl mx-auto bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                        <i class="fa fa-list text-primary mr-3"></i> 管理单词库
+                    </h2>
+                    
+                    <div class="mt-4 md:mt-0 flex flex-col sm:flex-row gap-3">
+                        <div class="relative">
+                            <input 
+                                id="search-words" 
+                                type="text" 
+                                placeholder="搜索单词..." 
+                                class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-custom w-full sm:w-64"
+                            >
+                            <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                        <button id="add-word-btn" class="btn-secondary">
+                            <i class="fa fa-plus mr-1"></i> 添加单词
+                        </button>
+                        <button id="export-words-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-custom disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            <i class="fa fa-download mr-1"></i> 导出
+                        </button>
+                        <button id="clear-words-btn" class="btn-danger disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            <i class="fa fa-trash mr-1"></i> 清空全部
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="no-words-message" class="hidden py-16 text-center">
+                    <i class="fa fa-book text-5xl text-gray-300 mb-4"></i>
+                    <p class="text-gray-500 text-lg">暂无单词</p>
+                    <p class="text-gray-400 mt-2">请导入或添加单词开始学习</p>
+                    <button id="go-to-import-btn" class="mt-4 btn-primary">
+                        <i class="fa fa-upload mr-1"></i> 导入单词
+                    </button>
+                </div>
+                
+                <div id="words-container" class="overflow-auto max-h-[60vh] rounded-lg border border-gray-200">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50 sticky top-0 z-10">
+                            <tr>
+                                <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
+                                    <input type="checkbox" id="select-all-words" class="text-primary focus:ring-primary rounded">
+                                </th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">英文</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">中文</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">例句</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">添加日期</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="words-list" class="bg-white divide-y divide-gray-200">
+                            <!-- 单词列表将在这里动态添加 -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-4 flex justify-between items-center">
+                    <p class="text-sm text-gray-600">
+                        共 <span id="total-words">0</span> 个单词
+                    </p>
+                    <button id="delete-selected-btn" class="btn-danger disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        <i class="fa fa-trash mr-1"></i> 删除选中
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 测试模块 -->
+        <section id="test-section" class="section hidden">
+            <div class="max-w-2xl mx-auto">
+                <!-- 测试设置 -->
+                <div id="test-settings" class="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-6">
+                    <h2 class="text-2xl font-bold mb-6 text-gray-800 flex items-center">
+                        <i class="fa fa-cog text-primary mr-3"></i> 测试设置
+                    </h2>
+                    
+                    <div class="space-y-5">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">测试类型</label>
+                            <div class="grid grid-cols-1 gap-3">
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="test-type" value="english-to-chinese-multiple" class="text-primary focus:ring-primary" checked>
+                                    <span class="ml-2 text-gray-700">英文 → 中文（选择题）</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="test-count" class="block text-sm font-medium text-gray-700 mb-1">测试单词数量</label>
+                            <div class="flex items-center">
+                                <input 
+                                    type="number" 
+                                    id="test-count" 
+                                    min="1" 
+                                    max="100" 
+                                    value="40" 
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-custom"
+                                >
+                                <span class="ml-3 text-gray-500 text-sm" id="max-words-text">最大: 0</span>
+                            </div>
+                        </div>
+                        
+                        <button id="start-test-btn" class="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            <i class="fa fa-play mr-2"></i> 开始测试
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 测试进行中 -->
+                <div id="test-in-progress" class="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-6 hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                            <i class="fa fa-check-square-o text-primary mr-3"></i> 进行测试
+                        </h2>
+                        <div class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm font-medium">
+                            <span id="current-question">1</span>/<span id="total-questions">40</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 选择题测试 -->
+                    <div id="multiple-choice-container" class="mb-8">
+                        <p class="text-gray-500 text-sm mb-2">问题</p>
+                        <div class="bg-neutral p-6 rounded-lg mb-4">
+                            <p id="mc-question" class="text-xl font-medium text-gray-800"></p>
+                            <button id="show-example-btn" class="mt-3 text-sm text-primary hover:text-primary/80 transition-custom">
+                                <i class="fa fa-book mr-1"></i> 显示例句
+                            </button>
+                            <div id="example-container" class="mt-3 p-3 bg-gray-100 rounded-lg hidden">
+                                <p id="word-example" class="text-gray-700 italic"></p>
+                            </div>
+                        </div>
+                        
+                        <p class="text-gray-500 text-sm mb-2">选择正确的答案</p>
+                        <div id="options-container" class="space-y-3">
+                            <!-- 选项将在这里动态添加 -->
+                        </div>
+                    </div>
+                    
+                    <!-- 答案反馈 -->
+                    <div id="answer-feedback" class="mt-6 p-4 rounded-lg hidden">
+                        <div class="flex items-start">
+                            <i id="feedback-icon" class="text-xl mt-0.5 mr-3"></i>
+                            <div>
+                                <h4 id="feedback-title" class="font-medium"></h4>
+                                <p id="feedback-message" class="mt-1 text-gray-600"></p>
+                            </div>
+                        </div>
+                        <button id="next-question-btn" class="mt-4 bg-primary/10 hover:bg-primary/20 text-primary font-medium py-2 px-4 rounded-lg transition-custom">
+                            下一题
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 测试结果 -->
+                <div id="test-results" class="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-6 hidden">
+                    <h2 class="text-2xl font-bold mb-6 text-gray-800 flex items-center">
+                        <i class="fa fa-check-circle text-primary mr-3"></i> 测试结果
+                    </h2>
+                    
+                    <div class="flex flex-col md:flex-row items-center justify-between mb-8">
+                        <div class="text-center md:text-left mb-6 md:mb-0">
+                            <p class="text-gray-500">您的得分</p>
+                            <div class="text-5xl font-bold text-primary mt-1" id="test-score">0%</div>
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-6 w-full md:w-auto">
+                            <div class="text-center">
+                                <p class="text-gray-500 text-sm">总题数</p>
+                                <p class="text-xl font-bold text-gray-800 mt-1" id="result-total">0</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-gray-500 text-sm">正确</p>
+                                <p class="text-xl font-bold text-secondary mt-1" id="result-correct">0</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-gray-500 text-sm">错误</p>
+                                <p class="text-xl font-bold text-danger mt-1" id="result-incorrect">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="border-t border-gray-200 pt-6">
+                        <h3 class="text-lg font-semibold mb-4 text-gray-800">详细结果</h3>
+                        
+                        <div id="detailed-results" class="space-y-4 max-h-[40vh] overflow-auto">
+                            <!-- 详细结果将在这里动态添加 -->
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 flex flex-col sm:flex-row justify-between gap-3">
+                        <button id="restart-test-btn" class="btn-primary">
+                            <i class="fa fa-refresh mr-1"></i> 再次测试
+                        </button>
+                        <button id="review-mistakes-btn" class="btn-danger disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            <i class="fa fa-exclamation-triangle mr-1"></i> 查看错误
+                        </button>
+                        <button id="save-results-btn" class="btn-secondary">
+                            <i class="fa fa-save mr-1"></i> 保存成绩
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 错词表模块 -->
+        <section id="mistakes-section" class="section hidden">
+            <div class="max-w-5xl mx-auto bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                        <i class="fa fa-exclamation-triangle text-danger mr-3"></i> 错词管理
+                    </h2>
+                    
+                    <div class="mt-4 md:mt-0 flex flex-col sm:flex-row gap-3">
+                        <div class="relative">
+                            <input 
+                                id="search-mistakes" 
+                                type="text" 
+                                placeholder="搜索错词..." 
+                                class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-custom w-full sm:w-64"
+                            >
+                            <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                        <button id="clear-mistakes-btn" class="btn-danger disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            <i class="fa fa-trash mr-1"></i> 清空错词
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="no-mistakes-message" class="hidden py-16 text-center">
+                    <i class="fa fa-check-circle text-5xl text-gray-300 mb-4"></i>
+                    <p class="text-gray-500 text-lg">暂无错词</p>
+                    <p class="text-gray-400 mt-2">继续保持，避免错误！</p>
+                </div>
+                
+                <div id="mistakes-container" class="overflow-auto max-h-[60vh] rounded-lg border border-gray-200">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50 sticky top-0 z-10">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">英文</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">中文</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">例句</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">错误次数</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">正确连续次数</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mistakes-list" class="bg-white divide-y divide-gray-200">
+                            <!-- 错词列表将在这里动态添加 -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-4 flex justify-between items-center">
+                    <p class="text-sm text-gray-600">
+                        共 <span id="mistakes-count">0</span> 个错词
+                    </p>
+                    <button id="test-mistakes-btn" class="btn-primary disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        <i class="fa fa-check-square-o mr-1"></i> 测试错词
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 测试结果历史模块 -->
+        <section id="results-section" class="section hidden">
+            <div class="max-w-5xl mx-auto">
+                <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-6">
+                    <h2 class="text-2xl font-bold mb-6 text-gray-800 flex items-center">
+                        <i class="fa fa-bar-chart text-primary mr-3"></i> 测试历史记录
+                    </h2>
+                    
+                    <div id="no-results-message" class="hidden py-16 text-center">
+                        <i class="fa fa-line-chart text-5xl text-gray-300 mb-4"></i>
+                        <p class="text-gray-500 text-lg">暂无测试记录</p>
+                        <p class="text-gray-400 mt-2">去进行测试查看您的进步</p>
+                        <button id="go-to-test-btn" class="mt-4 btn-primary">
+                            <i class="fa fa-check-square-o mr-1"></i> 进行测试
+                        </button>
+                    </div>
+                    
+                    <!-- 测试活动日历 -->
+                    <div id="activity-calendar" class="mb-8 hidden">
+                        <h3 class="text-lg font-semibold mb-4 text-gray-800">学习活动日历</h3>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <div class="flex items-center mb-4">
+                                <span class="text-sm text-gray-500 mr-4">无活动</span>
+                                <div class="w-4 h-4 bg-gray-200 rounded mr-2"></div>
+                                <span class="text-sm text-gray-500 mr-4">有活动</span>
+                                <div class="w-4 h-4 bg-primary rounded mr-2"></div>
+                            </div>
+                            <div id="calendar-grid" class="grid grid-cols-10 gap-1 sm:grid-cols-14 md:grid-cols-20 lg:grid-cols-25 xl:grid-cols-25">
+                                <!-- 日历格子将在这里动态添加 -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 成绩图表 -->
+                    <div id="results-chart-container" class="mb-8 h-64 hidden">
+                        <h3 class="text-lg font-semibold mb-4 text-gray-800">成绩趋势</h3>
+                        <canvas id="results-chart"></canvas>
+                    </div>
+                    
+                    <!-- 测试结果列表 -->
+                    <div class="overflow-auto rounded-lg border border-gray-200">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50 sticky top-0 z-10">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">日期</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">测试类型</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">得分</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">单词数</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">正确</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">错误</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="results-list" class="bg-white divide-y divide-gray-200">
+                                <!-- 测试结果列表将在这里动态添加 -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="mt-4 flex justify-end">
+                        <button id="clear-results-btn" class="btn-danger disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            <i class="fa fa-trash mr-1"></i> 清空历史
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 添加单词对话框 -->
+    <div id="add-word-dialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 transform transition-all">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800">添加新单词</h3>
+                    <button id="close-add-word" class="text-gray-400 hover:text-gray-500">
+                        <i class="fa fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label for="new-word-english" class="block text-sm font-medium text-gray-700 mb-1">英文单词</label>
+                        <input 
+                            type="text" 
+                            id="new-word-english" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-custom"
+                            placeholder="输入英文单词"
+                        >
+                    </div>
+                    
+                    <div>
+                        <label for="new-word-chinese" class="block text-sm font-medium text-gray-700 mb-1">中文释义</label>
+                        <input 
+                            type="text" 
+                            id="new-word-chinese" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-custom"
+                            placeholder="输入中文释义"
+                        >
+                    </div>
+                    
+                    <div>
+                        <label for="new-word-example" class="block text-sm font-medium text-gray-700 mb-1">例句（可选）</label>
+                        <textarea 
+                            id="new-word-example" 
+                            rows="3" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-custom"
+                            placeholder="输入例句"
+                        ></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-gray-50 px-6 py-3 rounded-b-xl flex justify-end space-x-3">
+                <button id="cancel-add-word" class="btn-gray">
+                    取消
+                </button>
+                <button id="save-new-word" class="btn-primary">
+                    保存单词
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑单词对话框 -->
+    <div id="edit-word-dialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 transform transition-all">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800">编辑单词</h3>
+                    <button id="close-edit-word" class="text-gray-400 hover:text-gray-500">
+                        <i class="fa fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="space-y-4">
+                    <input type="hidden" id="edit-word-id">
+                    <div>
+                        <label for="edit-word-english" class="block text-sm font-medium text-gray-700 mb-1">英文单词</label>
+                        <input 
+                            type="text" 
+                            id="edit-word-english" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-custom"
+                            placeholder="输入英文单词"
+                        >
+                    </div>
+                    
+                    <div>
+                        <label for="edit-word-chinese" class="block text-sm font-medium text-gray-700 mb-1">中文释义</label>
+                        <input 
+                            type="text" 
+                            id="edit-word-chinese" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-custom"
+                            placeholder="输入中文释义"
+                        >
+                    </div>
+                    
+                    <div>
+                        <label for="edit-word-example" class="block text-sm font-medium text-gray-700 mb-1">例句（可选）</label>
+                        <textarea 
+                            id="edit-word-example" 
+                            rows="3" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-custom"
+                            placeholder="输入例句"
+                        ></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-gray-50 px-6 py-3 rounded-b-xl flex justify-end space-x-3">
+                <button id="cancel-edit-word" class="btn-gray">
+                    取消
+                </button>
+                <button id="save-edit-word" class="btn-primary">
+                    保存修改
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 确认对话框 -->
+    <div id="confirm-dialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 transform transition-all">
+            <div class="p-6">
+                <h3 id="confirm-title" class="text-lg font-semibold text-gray-800 mb-2">确认操作</h3>
+                <p id="confirm-message" class="text-gray-600">您确定要执行此操作吗？</p>
+            </div>
+            
+            <div class="bg-gray-50 px-6 py-3 rounded-b-xl flex justify-end space-x-3">
+                <button id="confirm-cancel" class="btn-gray">
+                    取消
+                </button>
+                <button id="confirm-ok" class="btn-danger">
+                    确认
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="bg-dark text-white py-6">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center space-x-2 mb-4 md:mb-0">
+                    <i class="fa fa-book text-primary text-xl"></i>
+                    <span class="text-lg font-bold">VocabMaster</span>
+                </div>
+                
+                <div class="text-gray-400 text-sm">
+                    &copy; 2023 VocabMaster. 保留所有权利。
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // API 基础URL
+        const API_BASE_URL = '/api';
+        
+        // 当前选中的单词ID列表
+        let selectedWordIds = [];
+        
+        // 当前测试状态
+        let currentTest = {
+            words: [],
+            currentIndex: 0,
+            correctCount: 0,
+            incorrectCount: 0,
+            results: []
+        };
+        
+        // 初始化函数
+        function init() {
+            // 初始化菜单导航
+            initNavigation();
+            
+            // 初始化各个模块
+            initImportModule();
+            initManageModule();
+            initTestModule();
+            initMistakesModule();
+            initResultsModule();
+            
+            // 初始化确认对话框
+            initConfirmDialog();
+            
+            // 导入初始单词数据
+            importInitialWords();
+        }
+        
+        // 初始化菜单导航
+        function initNavigation() {
+            // 桌面导航
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const sectionId = this.id.replace('nav-', '') + '-section';
+                    showSection(sectionId);
+                    
+                    // 更新活动状态
+                    document.querySelectorAll('.nav-btn').forEach(b => {
+                        b.classList.remove('active', 'text-primary', 'border-b-2', 'border-primary');
+                        b.classList.add('text-gray-600');
+                    });
+                    this.classList.add('active', 'text-primary', 'border-b-2', 'border-primary');
+                    this.classList.remove('text-gray-600');
+                    
+                    // 移动端菜单隐藏
+                    document.getElementById('mobile-menu').classList.add('hidden');
+                });
+            });
+            
+            // 移动端菜单按钮
+            document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+                const mobileMenu = document.getElementById('mobile-menu');
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            // 移动端导航
+            document.querySelectorAll('.mobile-nav-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const sectionId = this.id.replace('mobile-', '') + '-section';
+                    showSection(sectionId);
+                    
+                    // 更新活动状态
+                    document.querySelectorAll('.mobile-nav-btn').forEach(b => {
+                        b.classList.remove('active', 'text-primary');
+                        b.classList.add('text-gray-600');
+                    });
+                    this.classList.add('active', 'text-primary');
+                    this.classList.remove('text-gray-600');
+                    
+                    // 关闭移动端菜单
+                    document.getElementById('mobile-menu').classList.add('hidden');
+                });
+            });
+        }
+        
+        // 显示指定模块
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            document.getElementById(sectionId).classList.remove('hidden');
+            
+            // 如果是管理模块，重新加载单词列表
+            if (sectionId === 'manage-section') {
+                loadWords();
+            }
+            // 如果是错词模块，重新加载错词列表
+            if (sectionId === 'mistakes-section') {
+                loadMistakes();
+            }
+            // 如果是测试模块，初始化测试设置
+            if (sectionId === 'test-section') {
+                initTestSettings();
+            }
+            // 如果是结果模块，加载测试结果
+            if (sectionId === 'results-section') {
+                loadTestResults();
+            }
+        }
+        
+        // 初始化导入模块
+        function initImportModule() {
+            const importTextBtn = document.getElementById('import-text-btn');
+            const wordsTextarea = document.getElementById('words-textarea');
+            const importResults = document.getElementById('import-results');
+            const importSuccess = document.getElementById('import-success');
+            const importDuplicates = document.getElementById('import-duplicates');
+            const importErrors = document.getElementById('import-errors');
+            const importedCount = document.getElementById('imported-count');
+            const duplicatesList = document.getElementById('duplicates-list');
+            const errorsList = document.getElementById('errors-list');
+            const errorsCount = document.getElementById('errors-count');
+            const closeImportResults = document.getElementById('close-import-results');
+            const goToManageBtn = document.getElementById('go-to-manage-btn');
+            const skipDuplicatesBtn = document.getElementById('skip-duplicates-btn');
+            const updateDuplicatesBtn = document.getElementById('update-duplicates-btn');
+            
+            let currentImportData = null;
+            
+            // 导入文本按钮点击事件
+            importTextBtn.addEventListener('click', function() {
+                const text = wordsTextarea.value.trim();
+                if (!text) {
+                    alert('请输入单词内容');
+                    return;
+                }
+                
+                // 解析文本内容
+                const lines = text.split('\n');
+                const words = [];
+                const errorLines = [];
+                
+                lines.forEach((line, index) => {
+                    const trimmedLine = line.trim();
+                    if (!trimmedLine) return;
+                    
+                    const parts = trimmedLine.split(',');
+                    if (parts.length < 2) {
+                        errorLines.push({ line: index + 1, text: trimmedLine, reason: '格式不正确，缺少逗号分隔' });
+                        return;
+                    }
+                    
+                    words.push({
+                        english: parts[0].trim(),
+                        chinese: parts[1].trim(),
+                        example: parts.length > 2 ? parts[2].trim() : ''
+                    });
+                });
+                
+                // 显示错误信息
+                if (errorLines.length > 0) {
+                    errorsCount.textContent = errorLines.length;
+                    errorsList.innerHTML = '';
+                    errorLines.forEach(error => {
+                        const errorItem = document.createElement('div');
+                        errorItem.innerHTML = `<strong>行 ${error.line}:</strong> ${error.text} - ${error.reason}`;
+                        errorsList.appendChild(errorItem);
+                    });
+                    importErrors.classList.remove('hidden');
+                    importResults.classList.remove('hidden');
+                    return;
+                }
+                
+                // 批量导入单词
+                if (words.length > 0) {
+                    importWordsBatch(words);
+                }
+            });
+            
+            // 批量导入单词
+            function importWordsBatch(words) {
+                fetch(`${API_BASE_URL}/words/batch`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(words)
+                })
+                .then(response => response.json())
+                .then(results => {
+                    currentImportData = results;
+                    
+                    // 显示导入结果
+                    importResults.classList.remove('hidden');
+                    
+                    // 显示成功信息
+                    if (results.success.length > 0) {
+                        importedCount.textContent = results.success.length;
+                        importSuccess.classList.remove('hidden');
+                    } else {
+                        importSuccess.classList.add('hidden');
+                    }
+                    
+                    // 显示重复信息
+                    if (results.duplicate.length > 0) {
+                        duplicatesList.innerHTML = '';
+                        results.duplicate.forEach((item, index) => {
+                            const duplicateItem = document.createElement('div');
+                            duplicateItem.className = 'p-3 border border-gray-200 rounded-lg';
+                            duplicateItem.innerHTML = `
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <p class="font-medium">${item.word.english}</p>
+                                        <p class="text-gray-600 text-sm">新: ${item.word.chinese}</p>
+                                        <p class="text-gray-600 text-sm">现有: ${item.existingWord.chinese}</p>
+                                    </div>
+                                    <input type="checkbox" class="duplicate-checkbox" data-index="${index}" checked>
+                                </div>
+                            `;
+                            duplicatesList.appendChild(duplicateItem);
+                        });
+                        importDuplicates.classList.remove('hidden');
+                    } else {
+                        importDuplicates.classList.add('hidden');
+                    }
+                    
+                    // 显示错误信息
+                    if (results.error.length > 0) {
+                        errorsCount.textContent = results.error.length;
+                        errorsList.innerHTML = '';
+                        results.error.forEach(error => {
+                            const errorItem = document.createElement('div');
+                            errorItem.innerHTML = `<strong>单词 ${error.word.english}:</strong> ${error.reason}`;
+                            errorsList.appendChild(errorItem);
+                        });
+                        importErrors.classList.remove('hidden');
+                    } else {
+                        importErrors.classList.add('hidden');
+                    }
+                    
+                    // 如果没有重复和错误，自动清空文本区域
+                    if (results.duplicate.length === 0 && results.error.length === 0) {
+                        wordsTextarea.value = '';
+                    }
+                })
+                .catch(error => {
+                    console.error('导入单词失败:', error);
+                    alert('导入单词失败，请重试');
+                });
+            }
+            
+            // 跳过重复单词
+            skipDuplicatesBtn.addEventListener('click', function() {
+                importDuplicates.classList.add('hidden');
+                wordsTextarea.value = '';
+            });
+            
+            // 更新重复单词
+            updateDuplicatesBtn.addEventListener('click', function() {
+                const checkboxes = document.querySelectorAll('.duplicate-checkbox');
+                const wordsToUpdate = [];
+                
+                checkboxes.forEach(checkbox => {
+                    if (checkbox.checked) {
+                        const index = parseInt(checkbox.dataset.index);
+                        const duplicateItem = currentImportData.duplicate[index];
+                        wordsToUpdate.push({
+                            id: duplicateItem.existingWord.id,
+                            english: duplicateItem.word.english,
+                            chinese: duplicateItem.word.chinese,
+                            example: duplicateItem.word.example
+                        });
+                    }
+                });
+                
+                // 批量更新单词
+                Promise.all(
+                    wordsToUpdate.map(word => 
+                        fetch(`${API_BASE_URL}/words/${word.id}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(word)
+                        })
+                    )
+                )
+                .then(() => {
+                    importDuplicates.classList.add('hidden');
+                    wordsTextarea.value = '';
+                    alert('单词更新成功');
+                })
+                .catch(error => {
+                    console.error('更新单词失败:', error);
+                    alert('更新单词失败，请重试');
+                });
+            });
+            
+            // 关闭导入结果
+            closeImportResults.addEventListener('click', function() {
+                importResults.classList.add('hidden');
+            });
+            
+            // 前往管理页面
+            goToManageBtn.addEventListener('click', function() {
+                document.getElementById('nav-manage').click();
+            });
+        }
+        
+        // 初始化管理模块
+        function initManageModule() {
+            const searchWords = document.getElementById('search-words');
+            const addWordBtn = document.getElementById('add-word-btn');
+            const clearWordsBtn = document.getElementById('clear-words-btn');
+            const deleteSelectedBtn = document.getElementById('delete-selected-btn');
+            const selectAllWords = document.getElementById('select-all-words');
+            const goToImportBtn = document.getElementById('go-to-import-btn');
+            
+            // 搜索单词
+            searchWords.addEventListener('input', function() {
+                const query = this.value.trim();
+                if (query.length > 0) {
+                    searchWordsByName(query);
+                } else {
+                    loadWords();
+                }
+            });
+            
+            // 添加单词按钮
+            addWordBtn.addEventListener('click', function() {
+                showAddWordDialog();
+            });
+            
+            // 清空所有单词
+            clearWordsBtn.addEventListener('click', function() {
+                showConfirmDialog(
+                    '清空单词库',
+                    '确定要清空所有单词吗？此操作不可撤销。',
+                    function() {
+                        clearAllWords();
+                    }
+                );
+            });
+            
+            // 删除选中单词
+            deleteSelectedBtn.addEventListener('click', function() {
+                if (selectedWordIds.length > 0) {
+                    showConfirmDialog(
+                        '删除选中单词',
+                        `确定要删除选中的 ${selectedWordIds.length} 个单词吗？此操作不可撤销。`,
+                        function() {
+                            deleteSelectedWords();
+                        }
+                    );
+                }
+            });
+            
+            // 全选/取消全选
+            selectAllWords.addEventListener('change', function() {
+                const isChecked = this.checked;
+                document.querySelectorAll('.word-checkbox').forEach(checkbox => {
+                    checkbox.checked = isChecked;
+                });
+                updateSelectedWordIds();
+            });
+            
+            // 前往导入页面
+            goToImportBtn.addEventListener('click', function() {
+                document.getElementById('nav-import').click();
+            });
+            
+            // 初始化添加单词对话框
+            initAddWordDialog();
+            
+            // 初始化编辑单词对话框
+            initEditWordDialog();
+        }
+        
+        // 加载单词列表
+        function loadWords() {
+            fetch(`${API_BASE_URL}/words`)
+                .then(response => response.json())
+                .then(words => {
+                    const wordsList = document.getElementById('words-list');
+                    const noWordsMessage = document.getElementById('no-words-message');
+                    const totalWords = document.getElementById('total-words');
+                    const clearWordsBtn = document.getElementById('clear-words-btn');
+                    const selectAllWords = document.getElementById('select-all-words');
+                    
+                    totalWords.textContent = words.length;
+                    
+                    // 更新按钮状态
+                    clearWordsBtn.disabled = words.length === 0;
+                    
+                    // 全选按钮取消选中
+                    selectAllWords.checked = false;
+                    
+                    // 清空选中的单词ID
+                    selectedWordIds = [];
+                    
+                    if (words.length === 0) {
+                        wordsList.innerHTML = '';
+                        noWordsMessage.classList.remove('hidden');
+                    } else {
+                        noWordsMessage.classList.add('hidden');
+                        wordsList.innerHTML = '';
+                        
+                        words.forEach(word => {
+                            const row = document.createElement('tr');
+                            row.className = 'hover:bg-gray-50 transition-custom';
+                            row.innerHTML = `
+                                <td class="px-4 py-3 whitespace-nowrap">
+                                    <input type="checkbox" class="word-checkbox" data-id="${word.id}" class="text-primary focus:ring-primary rounded">
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap">
+                                    <div class="font-medium text-gray-900">${word.english}</div>
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap">
+                                    <div class="text-gray-700">${word.chinese}</div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="text-gray-600 text-sm ${word.example ? '' : 'text-gray-400 italic'}">${word.example || '无'}</div>
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                    ${formatDate(word.added_date)}
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                                    <button class="text-primary hover:text-primary/80 mr-3 edit-word-btn" data-id="${word.id}">
+                                        <i class="fa fa-pencil mr-1"></i> 编辑
+                                    </button>
+                                    <button class="text-danger hover:text-danger/80 delete-word-btn" data-id="${word.id}">
+                                        <i class="fa fa-trash mr-1"></i> 删除
+                                    </button>
+                                </td>
+                            `;
+                            wordsList.appendChild(row);
+                        });
+                        
+                        // 添加复选框事件
+                        document.querySelectorAll('.word-checkbox').forEach(checkbox => {
+                            checkbox.addEventListener('change', function() {
+                                updateSelectedWordIds();
+                            });
+                        });
+                        
+                        // 添加编辑按钮事件
+                        document.querySelectorAll('.edit-word-btn').forEach(btn => {
+                            btn.addEventListener('click', function() {
+                                const wordId = parseInt(this.dataset.id);
+                                showEditWordDialog(wordId);
+                            });
+                        });
+                        
+                        // 添加删除按钮事件
+                        document.querySelectorAll('.delete-word-btn').forEach(btn => {
+                            btn.addEventListener('click', function() {
+                                const wordId = parseInt(this.dataset.id);
+                                deleteWord(wordId);
+                            });
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('加载单词失败:', error);
+                });
+        }
+        
+        // 搜索单词
+        function searchWordsByName(query) {
+            fetch(`${API_BASE_URL}/words/search/${query}`)
+                .then(response => response.json())
+                .then(words => {
+                    const wordsList = document.getElementById('words-list');
+                    const noWordsMessage = document.getElementById('no-words-message');
+                    
+                    if (words.length === 0) {
+                        wordsList.innerHTML = '';
+                        noWordsMessage.classList.remove('hidden');
+                        noWordsMessage.querySelector('p:first-of-type').textContent = '未找到匹配的单词';
+                        noWordsMessage.querySelector('p:last-of-type').textContent = '请尝试其他搜索词';
+                    } else {
+                        noWordsMessage.classList.add('hidden');
+                        wordsList.innerHTML = '';
+                        
+                        words.forEach(word => {
+                            const row = document.createElement('tr');
+                            row.className = 'hover:bg-gray-50 transition-custom';
+                            row.innerHTML = `
+                                <td class="px-4 py-3 whitespace-nowrap">
+                                    <input type="checkbox" class="word-checkbox" data-id="${word.id}" class="text-primary focus:ring-primary rounded">
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap">
+                                    <div class="font-medium text-gray-900">${word.english}</div>
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap">
+                                    <div class="text-gray-700">${word.chinese}</div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="text-gray-600 text-sm ${word.example ? '' : 'text-gray-400 italic'}">${word.example || '无'}</div>
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                    ${formatDate(word.added_date)}
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                                    <button class="text-primary hover:text-primary/80 mr-3 edit-word-btn" data-id="${word.id}">
+                                        <i class="fa fa-pencil mr-1"></i> 编辑
+                                    </button>
+                                    <button class="text-danger hover:text-danger/80 delete-word-btn" data-id="${word.id}">
+                                        <i class="fa fa-trash mr-1"></i> 删除
+                                    </button>
+                                </td>
+                            `;
+                            wordsList.appendChild(row);
+                        });
+                        
+                        // 添加复选框事件
+                        document.querySelectorAll('.word-checkbox').forEach(checkbox => {
+                            checkbox.addEventListener('change', function() {
+                                updateSelectedWordIds();
+                            });
+                        });
+                        
+                        // 添加编辑按钮事件
+                        document.querySelectorAll('.edit-word-btn').forEach(btn => {
+                            btn.addEventListener('click', function() {
+                                const wordId = parseInt(this.dataset.id);
+                                showEditWordDialog(wordId);
+                            });
+                        });
+                        
+                        // 添加删除按钮事件
+                        document.querySelectorAll('.delete-word-btn').forEach(btn => {
+                            btn.addEventListener('click', function() {
+                                const wordId = parseInt(this.dataset.id);
+                                deleteWord(wordId);
+                            });
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('搜索单词失败:', error);
+                });
+        }
+        
+        // 更新选中的单词ID
+        function updateSelectedWordIds() {
+            const checkboxes = document.querySelectorAll('.word-checkbox:checked');
+            selectedWordIds = Array.from(checkboxes).map(checkbox => parseInt(checkbox.dataset.id));
+            
+            const deleteSelectedBtn = document.getElementById('delete-selected-btn');
+            deleteSelectedBtn.disabled = selectedWordIds.length === 0;
+        }
+        
+        // 删除单个单词
+        function deleteWord(wordId) {
+            fetch(`${API_BASE_URL}/words/${wordId}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                    loadWords();
+                } else {
+                    alert('删除单词失败');
+                }
+            })
+            .catch(error => {
+                console.error('删除单词失败:', error);
+                alert('删除单词失败，请重试');
+            });
+        }
+        
+        // 删除选中的单词
+        function deleteSelectedWords() {
+            const ids = selectedWordIds.join(',');
+            fetch(`${API_BASE_URL}/words/batch/${ids}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                    loadWords();
+                } else {
+                    alert('删除选中单词失败');
+                }
+            })
+            .catch(error => {
+                console.error('删除选中单词失败:', error);
+                alert('删除选中单词失败，请重试');
+            });
+        }
+        
+        // 清空所有单词
+        function clearAllWords() {
+            fetch(`${API_BASE_URL}/words`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                    loadWords();
+                } else {
+                    alert('清空单词库失败');
+                }
+            })
+            .catch(error => {
+                console.error('清空单词库失败:', error);
+                alert('清空单词库失败，请重试');
+            });
+        }
+        
+        // 初始化添加单词对话框
+        function initAddWordDialog() {
+            const addWordDialog = document.getElementById('add-word-dialog');
+            const closeAddWord = document.getElementById('close-add-word');
+            const cancelAddWord = document.getElementById('cancel-add-word');
+            const saveNewWord = document.getElementById('save-new-word');
+            const newWordEnglish = document.getElementById('new-word-english');
+            const newWordChinese = document.getElementById('new-word-chinese');
+            const newWordExample = document.getElementById('new-word-example');
+            
+            // 关闭对话框
+            closeAddWord.addEventListener('click', function() {
+                hideAddWordDialog();
+            });
+            
+            cancelAddWord.addEventListener('click', function() {
+                hideAddWordDialog();
+            });
+            
+            // 保存新单词
+            saveNewWord.addEventListener('click', function() {
+                const english = newWordEnglish.value.trim();
+                const chinese = newWordChinese.value.trim();
+                const example = newWordExample.value.trim();
+                
+                if (!english || !chinese) {
+                    alert('英文单词和中文释义不能为空');
+                    return;
+                }
+                
+                // 添加新单词
+                fetch(`${API_BASE_URL}/words`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ english, chinese, example })
+                })
+                .then(response => {
+                    if (response.status === 409) {
+                        return response.json().then(data => {
+                            throw new Error(`单词 "${english}" 已存在`);
+                        });
+                    }
+                    if (!response.ok) {
+                        throw new Error('添加单词失败');
+                    }
+                    return response.json();
+                })
+                .then(() => {
+                    hideAddWordDialog();
+                    loadWords();
+                })
+                .catch(error => {
+                    console.error('添加单词失败:', error);
+                    alert(error.message || '添加单词失败，请重试');
+                });
+            });
+        }
+        
+        // 显示添加单词对话框
+        function showAddWordDialog() {
+            const addWordDialog = document.getElementById('add-word-dialog');
+            const newWordEnglish = document.getElementById('new-word-english');
+            const newWordChinese = document.getElementById('new-word-chinese');
+            const newWordExample = document.getElementById('new-word-example');
+            
+            // 清空输入框
+            newWordEnglish.value = '';
+            newWordChinese.value = '';
+            newWordExample.value = '';
+            
+            // 显示对话框
+            addWordDialog.classList.remove('hidden');
+            
+            // 自动聚焦第一个输入框
+            setTimeout(() => {
+                newWordEnglish.focus();
+            }, 100);
+        }
+        
+        // 隐藏添加单词对话框
+        function hideAddWordDialog() {
+            const addWordDialog = document.getElementById('add-word-dialog');
+            addWordDialog.classList.add('hidden');
+        }
+        
+        // 初始化编辑单词对话框
+        function initEditWordDialog() {
+            const editWordDialog = document.getElementById('edit-word-dialog');
+            const closeEditWord = document.getElementById('close-edit-word');
+            const cancelEditWord = document.getElementById('cancel-edit-word');
+            const saveEditWord = document.getElementById('save-edit-word');
+            const editWordId = document.getElementById('edit-word-id');
+            const editWordEnglish = document.getElementById('edit-word-english');
+            const editWordChinese = document.getElementById('edit-word-chinese');
+            const editWordExample = document.getElementById('edit-word-example');
+            
+            // 关闭对话框
+            closeEditWord.addEventListener('click', function() {
+                hideEditWordDialog();
+            });
+            
+            cancelEditWord.addEventListener('click', function() {
+                hideEditWordDialog();
+            });
+            
+            // 保存编辑后的单词
+            saveEditWord.addEventListener('click', function() {
+                const id = editWordId.value;
+                const english = editWordEnglish.value.trim();
+                const chinese = editWordChinese.value.trim();
+                const example = editWordExample.value.trim();
+                
+                if (!english || !chinese) {
+                    alert('英文单词和中文释义不能为空');
+                    return;
+                }
+                
+                // 更新单词
+                fetch(`${API_BASE_URL}/words/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ english, chinese, example })
+                })
+                .then(response => {
+                    if (response.status === 409) {
+                        return response.json().then(data => {
+                            throw new Error(`单词 "${english}" 已存在`);
+                        });
+                    }
+                    if (!response.ok) {
+                        throw new Error('更新单词失败');
+                    }
+                    return response.json();
+                })
+                .then(() => {
+                    hideEditWordDialog();
+                    loadWords();
+                })
+                .catch(error => {
+                    console.error('更新单词失败:', error);
+                    alert(error.message || '更新单词失败，请重试');
+                });
+            });
+        }
+        
+        // 显示编辑单词对话框
+        function showEditWordDialog(wordId) {
+            const editWordDialog = document.getElementById('edit-word-dialog');
+            const editWordId = document.getElementById('edit-word-id');
+            const editWordEnglish = document.getElementById('edit-word-english');
+            const editWordChinese = document.getElementById('edit-word-chinese');
+            const editWordExample = document.getElementById('edit-word-example');
+            
+            // 获取单词详情
+            fetch(`${API_BASE_URL}/words/${wordId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('获取单词详情失败');
+                    }
+                    return response.json();
+                })
+                .then(word => {
+                    // 填充表单
+                    editWordId.value = word.id;
+                    editWordEnglish.value = word.english;
+                    editWordChinese.value = word.chinese;
+                    editWordExample.value = word.example || '';
+                    
+                    // 显示对话框
+                    editWordDialog.classList.remove('hidden');
+                    
+                    // 自动聚焦英文单词输入框
+                    setTimeout(() => {
+                        editWordEnglish.focus();
+                    }, 100);
+                })
+                .catch(error => {
+                    console.error('获取单词详情失败:', error);
+                    alert('获取单词详情失败，请重试');
+                });
+        }
+        
+        // 隐藏编辑单词对话框
+        function hideEditWordDialog() {
+            const editWordDialog = document.getElementById('edit-word-dialog');
+            editWordDialog.classList.add('hidden');
+        }
+        
+        // 初始化测试模块
+        function initTestModule() {
+            const startTestBtn = document.getElementById('start-test-btn');
+            const testCount = document.getElementById('test-count');
+            const maxWordsText = document.getElementById('max-words-text');
+            const showExampleBtn = document.getElementById('show-example-btn');
+            const nextQuestionBtn = document.getElementById('next-question-btn');
+            const restartTestBtn = document.getElementById('restart-test-btn');
+            const reviewMistakesBtn = document.getElementById('review-mistakes-btn');
+            const saveResultsBtn = document.getElementById('save-results-btn');
+            
+            // 开始测试
+            startTestBtn.addEventListener('click', function() {
+                startTest();
+            });
+            
+            // 显示例句
+            showExampleBtn.addEventListener('click', function() {
+                const exampleContainer = document.getElementById('example-container');
+                exampleContainer.classList.toggle('hidden');
+            });
+            
+            // 下一题
+            nextQuestionBtn.addEventListener('click', function() {
+                showNextQuestion();
+            });
+            
+            // 重新测试
+            restartTestBtn.addEventListener('click', function() {
+                document.getElementById('test-settings').classList.remove('hidden');
+                document.getElementById('test-results').classList.add('hidden');
+                initTestSettings();
+            });
+            
+            // 查看错误
+            reviewMistakesBtn.addEventListener('click', function() {
+                document.getElementById('nav-mistakes').click();
+            });
+            
+            // 保存成绩
+            saveResultsBtn.addEventListener('click', function() {
+                saveTestResult();
+            });
+        }
+        
+        // 初始化测试设置
+        function initTestSettings() {
+            const startTestBtn = document.getElementById('start-test-btn');
+            const maxWordsText = document.getElementById('max-words-text');
+            
+            // 获取单词总数
+            fetch(`${API_BASE_URL}/words/count`)
+                .then(response => response.json())
+                .then(data => {
+                    const wordCount = data.count;
+                    maxWordsText.textContent = `最大: ${wordCount}`;
+                    
+                    // 更新测试数量输入框的最大值
+                    document.getElementById('test-count').max = wordCount;
+                    
+                    // 更新开始测试按钮状态
+                    startTestBtn.disabled = wordCount === 0;
+                })
+                .catch(error => {
+                    console.error('获取单词数量失败:', error);
+                });
+        }
+        
+        // 开始测试
+        function startTest() {
+            const testCount = parseInt(document.getElementById('test-count').value);
+            
+            // 获取随机单词
+            fetch(`${API_BASE_URL}/test/random/${testCount}`)
+                .then(response => response.json())
+                .then(words => {
+                    // 初始化测试状态
+                    currentTest = {
+                        words: words,
+                        currentIndex: 0,
+                        correctCount: 0,
+                        incorrectCount: 0,
+                        results: []
+                    };
+                    
+                    // 显示测试进行中界面
+                    document.getElementById('test-settings').classList.add('hidden');
+                    document.getElementById('test-in-progress').classList.remove('hidden');
+                    
+                    // 更新当前问题和总问题数
+                    document.getElementById('current-question').textContent = 1;
+                    document.getElementById('total-questions').textContent = words.length;
+                    
+                    // 显示第一个问题
+                    showQuestion();
+                })
+                .catch(error => {
+                    console.error('获取测试单词失败:', error);
+                    alert('获取测试单词失败，请重试');
+                });
+        }
+        
+        // 显示问题
+        function showQuestion() {
+            const currentWord = currentTest.words[currentTest.currentIndex];
+            const mcQuestion = document.getElementById('mc-question');
+            const wordExample = document.getElementById('word-example');
+            const optionsContainer = document.getElementById('options-container');
+            const answerFeedback = document.getElementById('answer-feedback');
+            const exampleContainer = document.getElementById('example-container');
+            
+            // 隐藏答案反馈和例句
+            answerFeedback.classList.add('hidden');
+            exampleContainer.classList.add('hidden');
+            
+            // 显示问题
+            mcQuestion.textContent = currentWord.english;
+            wordExample.textContent = currentWord.example || '无例句';
+            
+            // 获取随机选项
+            fetch(`${API_BASE_URL}/test/distractors/${currentWord.id}/3`)
+                .then(response => response.json())
+                .then(distractors => {
+                    // 清空选项容器
+                    optionsContainer.innerHTML = '';
+                    
+                    // 创建包含正确答案的完整选项列表
+                    const allOptions = [...distractors, currentWord.chinese];
+                    
+                    // 随机排序选项
+                    for (let i = allOptions.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [allOptions[i], allOptions[j]] = [allOptions[j], allOptions[i]];
+                    }
+                    
+                    // 显示选项
+                    allOptions.forEach((option, index) => {
+                        const optionElement = document.createElement('div');
+                        optionElement.className = 'p-4 border border-gray-200 rounded-lg option-hover';
+                        optionElement.innerHTML = `
+                            <div class="flex items-center">
+                                <div class="w-6 h-6 flex-shrink-0 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 mr-3">
+                                    ${String.fromCharCode(65 + index)}
+                                </div>
+                                <span>${option}</span>
+                            </div>
+                        `;
+                        
+                        // 添加点击事件
+                        optionElement.addEventListener('click', function() {
+                            checkAnswer({ chinese: option });
+                        });
+                        
+                        optionsContainer.appendChild(optionElement);
+                    });
+                })
+                .catch(error => {
+                    console.error('获取选项失败:', error);
+                });
+        }
+        
+        // 检查答案
+        function checkAnswer(selectedOption) {
+            const currentWord = currentTest.words[currentTest.currentIndex];
+            const answerFeedback = document.getElementById('answer-feedback');
+            const feedbackIcon = document.getElementById('feedback-icon');
+            const feedbackTitle = document.getElementById('feedback-title');
+            const feedbackMessage = document.getElementById('feedback-message');
+            const optionsContainer = document.getElementById('options-container');
+            
+            // 禁用所有选项
+            Array.from(optionsContainer.children).forEach(option => {
+                option.style.cursor = 'default';
+                option.style.pointerEvents = 'none';
+            });
+            
+            // 记录答案结果
+            if (selectedOption.chinese === currentWord.chinese) {
+                // 答案正确
+                currentTest.correctCount++;
+                feedbackIcon.className = 'fa fa-check-circle text-green-500 text-xl mt-0.5 mr-3';
+                feedbackTitle.className = 'font-medium text-green-500';
+                feedbackTitle.textContent = '回答正确！';
+                feedbackMessage.textContent = `${currentWord.english} 的意思是 ${currentWord.chinese}`;
+                answerFeedback.className = 'mt-6 p-4 rounded-lg bg-green-50 border border-green-200';
+                
+                // 更新错词状态
+                updateMistakeStatus(currentWord.id, true);
+                
+                // 添加到结果
+                currentTest.results.push({
+                    word: currentWord,
+                    correct: true,
+                    selectedOption: selectedOption
+                });
+            } else {
+                // 答案错误
+                currentTest.incorrectCount++;
+                feedbackIcon.className = 'fa fa-times-circle text-red-500 text-xl mt-0.5 mr-3';
+                feedbackTitle.className = 'font-medium text-red-500';
+                feedbackTitle.textContent = '回答错误！';
+                feedbackMessage.textContent = `${currentWord.english} 的意思是 ${currentWord.chinese}，您选择了 ${selectedOption.chinese}`;
+                answerFeedback.className = 'mt-6 p-4 rounded-lg bg-red-50 border border-red-200';
+                
+                // 添加到错词库
+                addToMistakes(currentWord.id);
+                
+                // 添加到结果
+                currentTest.results.push({
+                    word: currentWord,
+                    correct: false,
+                    selectedOption: selectedOption
+                });
+            }
+            
+            // 显示答案反馈
+            answerFeedback.classList.remove('hidden');
+        }
+        
+        // 显示下一题
+        function showNextQuestion() {
+            currentTest.currentIndex++;
+            
+            if (currentTest.currentIndex < currentTest.words.length) {
+                // 更新当前问题数
+                document.getElementById('current-question').textContent = currentTest.currentIndex + 1;
+                
+                // 显示下一个问题
+                showQuestion();
+            } else {
+                // 测试结束，显示结果
+                showTestResults();
+            }
+        }
+        
+        // 显示测试结果
+        function showTestResults() {
+            const testScore = document.getElementById('test-score');
+            const resultTotal = document.getElementById('result-total');
+            const resultCorrect = document.getElementById('result-correct');
+            const resultIncorrect = document.getElementById('result-incorrect');
+            const detailedResults = document.getElementById('detailed-results');
+            const reviewMistakesBtn = document.getElementById('review-mistakes-btn');
+            
+            // 计算得分
+            const totalQuestions = currentTest.results.length;
+            const correctCount = currentTest.correctCount;
+            const scorePercentage = Math.round((correctCount / totalQuestions) * 100);
+            
+            // 更新结果显示
+            testScore.textContent = `${scorePercentage}%`;
+            resultTotal.textContent = totalQuestions;
+            resultCorrect.textContent = correctCount;
+            resultIncorrect.textContent = currentTest.incorrectCount;
+            
+            // 更新查看错误按钮状态
+            reviewMistakesBtn.disabled = currentTest.incorrectCount === 0;
+            
+            // 显示详细结果
+            detailedResults.innerHTML = '';
+            currentTest.results.forEach((result, index) => {
+                const resultItem = document.createElement('div');
+                resultItem.className = 'p-4 border border-gray-200 rounded-lg';
+                resultItem.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="font-medium">${index + 1}. ${result.word.english}</div>
+                        <div class="flex-shrink-0 px-2 py-0.5 rounded text-xs font-medium ${result.correct ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                            ${result.correct ? '正确' : '错误'}
+                        </div>
+                    </div>
+                    <div class="text-gray-600 text-sm">
+                        <p><strong>正确答案:</strong> ${result.word.chinese}</p>
+                        ${!result.correct ? `<p><strong>您的答案:</strong> ${result.selectedOption.chinese}</p>` : ''}
+                        ${result.word.example ? `<p class="text-gray-500 italic mt-1">${result.word.example}</p>` : ''}
+                    </div>
+                `;
+                detailedResults.appendChild(resultItem);
+            });
+            
+            // 切换到结果页面
+            document.getElementById('test-in-progress').classList.add('hidden');
+            document.getElementById('test-results').classList.remove('hidden');
+        }
+        
+        // 保存测试结果
+        function saveTestResult() {
+            const totalQuestions = currentTest.results.length;
+            const correctCount = currentTest.correctCount;
+            const scorePercentage = Math.round((correctCount / totalQuestions) * 100);
+            
+            const testResult = {
+                type: 'english-to-chinese-multiple',
+                score: scorePercentage,
+                total_words: totalQuestions,
+                correct_count: correctCount,
+                incorrect_count: currentTest.incorrectCount
+            };
+            
+            fetch(`${API_BASE_URL}/test-results`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(testResult)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('保存测试结果失败');
+                }
+                return response.json();
+            })
+            .then(() => {
+                alert('测试结果已保存');
+            })
+            .catch(error => {
+                console.error('保存测试结果失败:', error);
+                alert('保存测试结果失败，请重试');
+            });
+        }
+        
+        // 添加到错词库
+        function addToMistakes(wordId) {
+            fetch(`${API_BASE_URL}/mistakes`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ word_id: wordId })
+            })
+            .catch(error => {
+                console.error('添加错词失败:', error);
+            });
+        }
+        
+        // 更新错词状态
+        function updateMistakeStatus(wordId, isCorrect) {
+            if (isCorrect) {
+                // 正确答案，调用正确答案API
+                fetch(`${API_BASE_URL}/mistakes/correct/${wordId}`, {
+                    method: 'POST'
+                })
+                .catch(error => {
+                    console.error('更新错词状态失败:', error);
+                });
+            }
+        }
+        
+        // 初始化错词模块
+        function initMistakesModule() {
+            const searchMistakes = document.getElementById('search-mistakes');
+            const clearMistakesBtn = document.getElementById('clear-mistakes-btn');
+            const testMistakesBtn = document.getElementById('test-mistakes-btn');
+            
+            // 搜索错词
+            searchMistakes.addEventListener('input', function() {
+                const query = this.value.trim();
+                if (query.length > 0) {
+                    searchMistakesByName(query);
+                } else {
+                    loadMistakes();
+                }
+            });
+            
+            // 清空错词
+            clearMistakesBtn.addEventListener('click', function() {
+                showConfirmDialog(
+                    '清空错词库',
+                    '确定要清空所有错词吗？此操作不可撤销。',
+                    function() {
+                        clearAllMistakes();
+                    }
+                );
+            });
+            
+            // 测试错词
+            testMistakesBtn.addEventListener('click', function() {
+                testMistakeWords();
+            });
+        }
+        
+        // 加载错词列表
+        function loadMistakes() {
+            fetch(`${API_BASE_URL}/mistakes`)
+                .then(response => response.json())
+                .then(mistakes => {
+                    const mistakesList = document.getElementById('mistakes-list');
+                    const noMistakesMessage = document.getElementById('no-mistakes-message');
+                    const mistakesCount = document.getElementById('mistakes-count');
+                    const clearMistakesBtn = document.getElementById('clear-mistakes-btn');
+                    const testMistakesBtn = document.getElementById('test-mistakes-btn');
+                    
+                    mistakesCount.textContent = mistakes.length;
+                    
+                    // 更新按钮状态
+                    clearMistakesBtn.disabled = mistakes.length === 0;
+                    testMistakesBtn.disabled = mistakes.length === 0;
+                    
+                    if (mistakes.length === 0) {
+                        mistakesList.innerHTML = '';
+                        noMistakesMessage.classList.remove('hidden');
+                    } else {
+                        noMistakesMessage.classList.add('hidden');
+                        mistakesList.innerHTML = '';
+                        
+                        mistakes.forEach(mistake => {
+                            const row = document.createElement('tr');
+                            row.className = 'hover:bg-gray-50 transition-custom';
+                            row.innerHTML = `
+                                <td class="px-4 py-3 whitespace-nowrap">
+                                    <div class="font-medium text-gray-900">${mistake.english}</div>
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap">
+                                    <div class="text-gray-700">${mistake.chinese}</div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="text-gray-600 text-sm ${mistake.example ? '' : 'text-gray-400 italic'}">${mistake.example || '无'}</div>
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
+                                    ${mistake.mistake_count}
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
+                                    ${mistake.correct_streak}
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                                    <button class="text-danger hover:text-danger/80 remove-mistake-btn" data-id="${mistake.id}">
+                                        <i class="fa fa-times mr-1"></i> 移除
+                                    </button>
+                                </td>
+                            `;
+                            mistakesList.appendChild(row);
+                        });
+                        
+                        // 添加移除按钮事件
+                        document.querySelectorAll('.remove-mistake-btn').forEach(btn => {
+                            btn.addEventListener('click', function() {
+                                const mistakeId = parseInt(this.dataset.id);
+                                removeMistake(mistakeId);
+                            });
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('加载错词失败:', error);
+                });
+        }
+        
+        // 搜索错词
+        function searchMistakesByName(query) {
+            fetch(`${API_BASE_URL}/mistakes/search/${query}`)
+                .then(response => response.json())
+                .then(mistakes => {
+                    const mistakesList = document.getElementById('mistakes-list');
+                    const noMistakesMessage = document.getElementById('no-mistakes-message');
+                    
+                    if (mistakes.length === 0) {
+                        mistakesList.innerHTML = '';
+                        noMistakesMessage.classList.remove('hidden');
+                        noMistakesMessage.querySelector('p:first-of-type').textContent = '未找到匹配的错词';
+                        noMistakesMessage.querySelector('p:last-of-type').textContent = '请尝试其他搜索词';
+                    } else {
+                        noMistakesMessage.classList.add('hidden');
+                        mistakesList.innerHTML = '';
+                        
+                        mistakes.forEach(mistake => {
+                            const row = document.createElement('tr');
+                            row.className = 'hover:bg-gray-50 transition-custom';
+                            row.innerHTML = `
+                                <td class="px-4 py-3 whitespace-nowrap">
+                                    <div class="font-medium text-gray-900">${mistake.english}</div>
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap">
+                                    <div class="text-gray-700">${mistake.chinese}</div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="text-gray-600 text-sm ${mistake.example ? '' : 'text-gray-400 italic'}">${mistake.example || '无'}</div>
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
+                                    ${mistake.mistake_count}
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
+                                    ${mistake.correct_streak}
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                                    <button class="text-danger hover:text-danger/80 remove-mistake-btn" data-id="${mistake.id}">
+                                        <i class="fa fa-times mr-1"></i> 移除
+                                    </button>
+                                </td>
+                            `;
+                            mistakesList.appendChild(row);
+                        });
+                        
+                        // 添加移除按钮事件
+                        document.querySelectorAll('.remove-mistake-btn').forEach(btn => {
+                            btn.addEventListener('click', function() {
+                                const mistakeId = parseInt(this.dataset.id);
+                                removeMistake(mistakeId);
+                            });
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('搜索错词失败:', error);
+                });
+        }
+        
+        // 移除单个错词
+        function removeMistake(mistakeId) {
+            fetch(`${API_BASE_URL}/mistakes/${mistakeId}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                    loadMistakes();
+                } else {
+                    alert('移除错词失败');
+                }
+            })
+            .catch(error => {
+                console.error('移除错词失败:', error);
+                alert('移除错词失败，请重试');
+            });
+        }
+        
+        // 清空所有错词
+        function clearAllMistakes() {
+            fetch(`${API_BASE_URL}/mistakes`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                    loadMistakes();
+                } else {
+                    alert('清空错词库失败');
+                }
+            })
+            .catch(error => {
+                console.error('清空错词库失败:', error);
+                alert('清空错词库失败，请重试');
+            });
+        }
+        
+        // 测试错词
+        function testMistakeWords() {
+            // 获取错词
+            fetch(`${API_BASE_URL}/mistakes`)
+                .then(response => response.json())
+                .then(mistakes => {
+                    if (mistakes.length === 0) {
+                        alert('暂无错词可测试');
+                        return;
+                    }
+                    
+                    // 从错词中提取单词
+                    const words = mistakes.map(mistake => ({
+                        id: mistake.word_id,
+                        english: mistake.english,
+                        chinese: mistake.chinese,
+                        example: mistake.example
+                    }));
+                    
+                    // 初始化测试状态
+                    currentTest = {
+                        words: words,
+                        currentIndex: 0,
+                        correctCount: 0,
+                        incorrectCount: 0,
+                        results: []
+                    };
+                    
+                    // 切换到测试模块
+                    document.getElementById('nav-test').click();
+                    
+                    // 显示测试进行中界面
+                    document.getElementById('test-settings').classList.add('hidden');
+                    document.getElementById('test-in-progress').classList.remove('hidden');
+                    
+                    // 更新当前问题和总问题数
+                    document.getElementById('current-question').textContent = 1;
+                    document.getElementById('total-questions').textContent = words.length;
+                    
+                    // 显示第一个问题
+                    showQuestion();
+                })
+                .catch(error => {
+                    console.error('获取错词失败:', error);
+                    alert('获取错词失败，请重试');
+                });
+        }
+        
+        // 初始化结果模块
+        function initResultsModule() {
+            const clearResultsBtn = document.getElementById('clear-results-btn');
+            const goToTestBtn = document.getElementById('go-to-test-btn');
+            
+            // 清空历史记录
+            clearResultsBtn.addEventListener('click', function() {
+                showConfirmDialog(
+                    '清空历史记录',
+                    '确定要清空所有测试历史记录吗？此操作不可撤销。',
+                    function() {
+                        clearAllTestResults();
+                    }
+                );
+            });
+            
+            // 前往测试页面
+            goToTestBtn.addEventListener('click', function() {
+                document.getElementById('nav-test').click();
+            });
+        }
+        
+        // 加载测试结果
+        function loadTestResults() {
+            fetch(`${API_BASE_URL}/test-results`)
+                .then(response => response.json())
+                .then(results => {
+                    const resultsList = document.getElementById('results-list');
+                    const noResultsMessage = document.getElementById('no-results-message');
+                    const clearResultsBtn = document.getElementById('clear-results-btn');
+                    const activityCalendar = document.getElementById('activity-calendar');
+                    const resultsChartContainer = document.getElementById('results-chart-container');
+                    
+                    // 更新按钮状态
+                    clearResultsBtn.disabled = results.length === 0;
+                    
+                    if (results.length === 0) {
+                        resultsList.innerHTML = '';
+                        noResultsMessage.classList.remove('hidden');
+                        activityCalendar.classList.add('hidden');
+                        resultsChartContainer.classList.add('hidden');
+                    } else {
+                        noResultsMessage.classList.add('hidden');
+                        
+                        // 显示活动日历
+                        activityCalendar.classList.remove('hidden');
+                        renderActivityCalendar(results);
+                        
+                        // 显示成绩图表
+                        resultsChartContainer.classList.remove('hidden');
+                        renderResultsChart(results);
+                        
+                        // 显示结果列表
+                        resultsList.innerHTML = '';
+                        results.forEach(result => {
+                            const row = document.createElement('tr');
+                            row.className = 'hover:bg-gray-50 transition-custom';
+                            row.innerHTML = `
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
+                                    ${formatDate(result.test_date)}
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
+                                    ${result.type === 'english-to-chinese-multiple' ? '英文 → 中文（选择题）' : result.type}
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-medium">
+                                            ${result.score}%
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
+                                    ${result.total_words}
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
+                                    ${result.correct_count}
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
+                                    ${result.incorrect_count}
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                                    <button class="text-danger hover:text-danger/80 delete-result-btn" data-id="${result.id}">
+                                        <i class="fa fa-trash mr-1"></i> 删除
+                                    </button>
+                                </td>
+                            `;
+                            resultsList.appendChild(row);
+                        });
+                        
+                        // 添加删除按钮事件
+                        document.querySelectorAll('.delete-result-btn').forEach(btn => {
+                            btn.addEventListener('click', function() {
+                                const resultId = parseInt(this.dataset.id);
+                                deleteTestResult(resultId);
+                            });
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('加载测试结果失败:', error);
+                });
+        }
+        
+        // 渲染活动日历
+        function renderActivityCalendar(results) {
+            const calendarGrid = document.getElementById('calendar-grid');
+            calendarGrid.innerHTML = '';
+            
+            // 获取过去100天的日期
+            const today = new Date();
+            const testDates = new Set();
+            
+            // 收集有测试的日期
+            results.forEach(result => {
+                const date = new Date(result.test_date);
+                testDates.add(formatDate(date, 'yyyy-MM-dd'));
+            });
+            
+            // 生成日历格子
+            for (let i = 99; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                const dateStr = formatDate(date, 'yyyy-MM-dd');
+                
+                const gridItem = document.createElement('div');
+                gridItem.className = `w-4 h-4 rounded ${testDates.has(dateStr) ? 'bg-primary' : 'bg-gray-200'}`;
+                gridItem.title = `${dateStr} ${testDates.has(dateStr) ? '有测试' : '无测试'}`;
+                
+                calendarGrid.appendChild(gridItem);
+            }
+        }
+        
+        // 渲染成绩图表
+        function renderResultsChart(results) {
+            const ctx = document.getElementById('results-chart').getContext('2d');
+            
+            // 准备图表数据
+            const labels = results.map(result => formatDate(result.test_date, 'MM-dd'));
+            const scores = results.map(result => result.score);
+            
+            // 销毁已存在的图表
+            if (window.resultsChart) {
+                window.resultsChart.destroy();
+            }
+            
+            // 创建新图表
+            window.resultsChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '测试得分',
+                        data: scores,
+                        borderColor: '#165DFF',
+                        backgroundColor: 'rgba(22, 93, 255, 0.1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#FFFFFF',
+                        pointBorderColor: '#165DFF',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `得分: ${context.parsed.y}%`;
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    }
+                }
+            });
+        }
+        
+        // 删除测试结果
+        function deleteTestResult(resultId) {
+            fetch(`${API_BASE_URL}/test-results/${resultId}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                    loadTestResults();
+                } else {
+                    alert('删除测试结果失败');
+                }
+            })
+            .catch(error => {
+                console.error('删除测试结果失败:', error);
+                alert('删除测试结果失败，请重试');
+            });
+        }
+        
+        // 清空所有测试结果
+        function clearAllTestResults() {
+            fetch(`${API_BASE_URL}/test-results`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                    loadTestResults();
+                } else {
+                    alert('清空测试结果失败');
+                }
+            })
+            .catch(error => {
+                console.error('清空测试结果失败:', error);
+                alert('清空测试结果失败，请重试');
+            });
+        }
+        
+        // 初始化确认对话框
+        function initConfirmDialog() {
+            const confirmDialog = document.getElementById('confirm-dialog');
+            const confirmTitle = document.getElementById('confirm-title');
+            const confirmMessage = document.getElementById('confirm-message');
+            const confirmCancel = document.getElementById('confirm-cancel');
+            const confirmOk = document.getElementById('confirm-ok');
+            
+            let confirmCallback = null;
+            
+            // 取消按钮
+            confirmCancel.addEventListener('click', function() {
+                confirmDialog.classList.add('hidden');
+                confirmCallback = null;
+            });
+            
+            // 确认按钮
+            confirmOk.addEventListener('click', function() {
+                if (confirmCallback) {
+                    confirmCallback();
+                }
+                confirmDialog.classList.add('hidden');
+                confirmCallback = null;
+            });
+            
+            // 全局函数，用于显示确认对话框
+            window.showConfirmDialog = function(title, message, callback) {
+                confirmTitle.textContent = title;
+                confirmMessage.textContent = message;
+                confirmCallback = callback;
+                confirmDialog.classList.remove('hidden');
+            };
+        }
+        
+        // 显示确认对话框
+        function showConfirmDialog(title, message, callback) {
+            const confirmDialog = document.getElementById('confirm-dialog');
+            const confirmTitle = document.getElementById('confirm-title');
+            const confirmMessage = document.getElementById('confirm-message');
+            
+            let confirmCallback = null;
+            
+            // 设置对话框内容
+            confirmTitle.textContent = title;
+            confirmMessage.textContent = message;
+            confirmCallback = callback;
+            
+            // 显示对话框
+            confirmDialog.classList.remove('hidden');
+            
+            // 重新绑定事件（避免多次绑定）
+            const confirmCancel = document.getElementById('confirm-cancel');
+            const confirmOk = document.getElementById('confirm-ok');
+            
+            // 移除之前的事件监听器
+            const newConfirmCancel = confirmCancel.cloneNode(true);
+            const newConfirmOk = confirmOk.cloneNode(true);
+            confirmCancel.parentNode.replaceChild(newConfirmCancel, confirmCancel);
+            confirmOk.parentNode.replaceChild(newConfirmOk, confirmOk);
+            
+            // 添加新的事件监听器
+            newConfirmCancel.addEventListener('click', function() {
+                confirmDialog.classList.add('hidden');
+            });
+            
+            newConfirmOk.addEventListener('click', function() {
+                if (confirmCallback) {
+                    confirmCallback();
+                }
+                confirmDialog.classList.add('hidden');
+            });
+        }
+        
+        // 格式化日期
+        function formatDate(date, format = 'yyyy-MM-dd HH:mm') {
+            if (typeof date === 'string') {
+                date = new Date(date);
+            }
+            
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            
+            return format
+                .replace('yyyy', year)
+                .replace('MM', month)
+                .replace('dd', day)
+                .replace('HH', hours)
+                .replace('mm', minutes);
+        }
+        
+        // 导入初始单词数据
+        function importInitialWords() {
+            // 检查是否已有单词
+            fetch(`${API_BASE_URL}/words/count`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.count === 0) {
+                        // 从单词表.txt导入单词
+                        fetch('../单词表.txt')
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('无法读取单词表文件');
+                                }
+                                return response.text();
+                            })
+                            .then(text => {
+                                const lines = text.split('\n');
+                                const words = [];
+                                
+                                lines.forEach((line, index) => {
+                                    const trimmedLine = line.trim();
+                                    if (!trimmedLine) return;
+                                    
+                                    const parts = trimmedLine.split(',');
+                                    if (parts.length >= 2) {
+                                        words.push({
+                                            english: parts[0].trim(),
+                                            chinese: parts[1].trim(),
+                                            example: parts.length > 2 ? parts[2].trim() : ''
+                                        });
+                                    }
+                                });
+                                
+                                // 批量导入单词
+                                if (words.length > 0) {
+                                    fetch(`${API_BASE_URL}/words/batch`, {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify(words)
+                                    })
+                                    .then(() => {
+                                        console.log('初始单词导入成功');
+                                    })
+                                    .catch(error => {
+                                        console.error('初始单词导入失败:', error);
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                console.error('读取单词表失败:', error);
+                            });
+                    }
+                })
+                .catch(error => {
+                    console.error('检查单词数量失败:', error);
+                });
+        }
+        
+        // 页面加载完成后初始化应用
+        document.addEventListener('DOMContentLoaded', function() {
+            init();
+        });
+    </script>
+</body>
+</html>
