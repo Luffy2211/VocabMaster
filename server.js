@@ -30,7 +30,9 @@ function initializeDatabase() {
     english TEXT NOT NULL UNIQUE,
     chinese TEXT NOT NULL,
     example TEXT,
-    added_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    added_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    familiarity INTEGER DEFAULT 0, -- 熟悉度：正确回答次数
+    exposure INTEGER DEFAULT 0     -- 曝光度：被测试次数
   )`, (err) => {
     if (err) {
       console.error('Error creating words table:', err.message);
@@ -78,6 +80,42 @@ app.get('/api/words', (req, res) => {
       return;
     }
     res.json(rows);
+  });
+});
+
+// 获取单词统计数据
+app.get('/api/words/stats', (req, res) => {
+  db.all('SELECT * FROM words', [], (err, words) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+
+    const total_words_count = words.length;
+    const tested_words_count = words.filter(word => word.exposure > 0).length;
+    const familiar_words_count = words.filter(word => word.familiarity >= 3).length;
+
+    const exposure_rate = total_words_count > 0 ? Math.round((tested_words_count / total_words_count) * 100) : 0;
+    const familiarity_rate = total_words_count > 0 ? Math.round((familiar_words_count / total_words_count) * 100) : 0;
+
+    res.status(200).json({
+      total_words_count,
+      tested_words_count,
+      familiar_words_count,
+      exposure_rate,
+      familiarity_rate
+    });
+  });
+});
+
+// 获取单词总数
+app.get('/api/words/count', (req, res) => {
+  db.get('SELECT COUNT(*) AS count FROM words', [], (err, row) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json({ count: row.count });
   });
 });
 
@@ -578,6 +616,43 @@ app.get('/api/test-activity', (req, res) => {
   );
 });
 
+// 更新单词熟悉度和曝光度
+app.post('/api/words/:id/update-stats', (req, res) => {
+  const wordId = req.params.id;
+  const { isCorrect } = req.body;
+
+  // 事务处理，确保数据一致性
+  db.run('BEGIN TRANSACTION');
+
+  // 更新曝光度
+  db.run('UPDATE words SET exposure = exposure + 1 WHERE id = ?', [wordId], (err) => {
+    if (err) {
+      db.run('ROLLBACK');
+      res.status(500).json({ error: err.message });
+      return;
+    }
+
+    // 如果答案正确，更新熟悉度
+    if (isCorrect) {
+      db.run('UPDATE words SET familiarity = familiarity + 1 WHERE id = ?', [wordId], (err) => {
+        if (err) {
+          db.run('ROLLBACK');
+          res.status(500).json({ error: err.message });
+          return;
+        }
+
+        db.run('COMMIT');
+        res.status(200).json({ success: true });
+      });
+    } else {
+      db.run('COMMIT');
+      res.status(200).json({ success: true });
+    }
+  });
+});
+
+
+
 // 导入初始单词数据
 app.post('/api/import-initial-words', (req, res) => {
   const words = req.body;
@@ -632,7 +707,7 @@ app.post('/api/import-initial-words', (req, res) => {
   });
 });
 
-// 提供静态文件服务
+// 提供静态文件服务 (放在所有路由后面)
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });

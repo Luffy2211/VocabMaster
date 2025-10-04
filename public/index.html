@@ -3,6 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- iOS Web App 图标配置 -->
+    <link rel="apple-touch-icon" href="./VocabMaster_logo.jpeg">
+    <!-- 标准浏览器图标配置 -->
+    <link rel="icon" href="./VocabMaster_logo.jpeg" type="image/jpeg">
+    <link rel="shortcut icon" href="./VocabMaster_logo.jpeg" type="image/jpeg">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="VocabMaster">
     <title>VocabMaster - Word Learning & Testing</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
@@ -304,6 +311,10 @@
                                     <input type="radio" name="test-type" value="english-to-chinese-multiple" class="text-primary focus:ring-primary" checked>
                                     <span class="ml-2 text-gray-700">English → Chinese (Multiple Choice)</span>
                                 </label>
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="test-type" value="chinese-to-english-multiple" class="text-primary focus:ring-primary">
+                                    <span class="ml-2 text-gray-700">Chinese → English (Multiple Choice)</span>
+                                </label>
                             </div>
                         </div>
                         
@@ -500,6 +511,30 @@
                         </button>
                     </div>
                     
+                    <!-- Word Statistics -->
+                    <div id="word-statistics" class="mb-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h3 class="text-lg font-semibold mb-4 text-gray-800">Exposure Rate</h3>
+                            <div class="text-center">
+                                <p class="text-4xl font-bold text-primary" id="exposure-rate">0%</p>
+                                <p class="text-gray-600 mt-2">Percentage of words that have been tested</p>
+                                <p class="text-gray-500 text-sm mt-1">
+                                    <span id="tested-words-count">0</span> tested / <span id="total-words-count">0</span> total words
+                                </p>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h3 class="text-lg font-semibold mb-4 text-gray-800">Familiarity Rate</h3>
+                            <div class="text-center">
+                                <p class="text-4xl font-bold text-secondary" id="familiarity-rate">0%</p>
+                                <p class="text-gray-600 mt-2">Percentage of words with 3+ correct answers</p>
+                                <p class="text-gray-500 text-sm mt-1">
+                                    <span id="familiar-words-count">0</span> familiar / <span id="total-words-count-2">0</span> total words
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Study Activity Calendar -->
                     <div id="activity-calendar" class="mb-8 hidden">
                         <h3 class="text-lg font-semibold mb-4 text-gray-800">Study Activity Calendar</h3>
@@ -1013,13 +1048,15 @@
             const selectAllWords = document.getElementById('select-all-words');
             const goToImportBtn = document.getElementById('go-to-import-btn');
             
-            // 搜索单词
-            searchWords.addEventListener('input', function() {
-                const query = this.value.trim();
-                if (query.length > 0) {
-                    searchWordsByName(query);
-                } else {
-                    loadWords();
+            // 搜索单词 - 按回车时触发
+            searchWords.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const query = this.value.trim();
+                    if (query.length > 0) {
+                        searchWordsByName(query);
+                    } else {
+                        loadWords();
+                    }
                 }
             });
             
@@ -1566,6 +1603,7 @@
         // 开始测试
         function startTest() {
             const testCount = parseInt(document.getElementById('test-count').value);
+            const testType = document.querySelector('input[name="test-type"]:checked').value;
             
             // 获取随机单词
             fetch(`${API_BASE_URL}/test/random/${testCount}`)
@@ -1577,7 +1615,8 @@
                         currentIndex: 0,
                         correctCount: 0,
                         incorrectCount: 0,
-                        results: []
+                        results: [],
+                        testType: testType
                     };
                     
                     // 显示测试进行中界面
@@ -1610,8 +1649,17 @@
             answerFeedback.classList.add('hidden');
             exampleContainer.classList.add('hidden');
             
-            // 显示问题
-            mcQuestion.textContent = currentWord.english;
+            // 根据测试类型显示问题
+            const isChineseToEnglish = currentTest.testType === 'chinese-to-english-multiple';
+            
+            if (isChineseToEnglish) {
+                // Chinese → English 测试
+                mcQuestion.textContent = currentWord.chinese;
+            } else {
+                // English → Chinese 测试
+                mcQuestion.textContent = currentWord.english;
+            }
+            
             wordExample.textContent = currentWord.example || '无例句';
             
             // 获取随机选项
@@ -1622,7 +1670,33 @@
                     optionsContainer.innerHTML = '';
                     
                     // 创建包含正确答案的完整选项列表
-                    const allOptions = [...distractors, currentWord.chinese];
+                    let allOptions;
+                    
+                    if (isChineseToEnglish) {
+                        // Chinese → English 测试：选项是英文单词
+                        // 从当前测试的单词中随机选择一些作为干扰项
+                        const shuffledWords = [...currentTest.words].sort(() => 0.5 - Math.random());
+                        const distractorWords = shuffledWords.filter(word => word.id !== currentWord.id).slice(0, 4);
+                        
+                        // 创建选项列表，包含正确答案和干扰项
+                        allOptions = [...distractorWords.map(word => word.english), currentWord.english];
+                        
+                        // 去重
+                        allOptions = [...new Set(allOptions)];
+                        
+                        // 确保有5个选项，如果不够就从当前测试的单词中补充
+                        if (allOptions.length < 5) {
+                            for (let i = allOptions.length; i < 5; i++) {
+                                const randomIndex = Math.floor(Math.random() * currentTest.words.length);
+                                allOptions.push(currentTest.words[randomIndex].english);
+                            }
+                            // 再次去重
+                            allOptions = [...new Set(allOptions)];
+                        }
+                    } else {
+                        // English → Chinese 测试：选项是中文释义
+                        allOptions = [...distractors, currentWord.chinese];
+                    }
                     
                     // 随机排序选项
                     for (let i = allOptions.length - 1; i > 0; i--) {
@@ -1643,10 +1717,16 @@
                             </div>
                         `;
                         
-                        // 添加点击事件
-                        optionElement.addEventListener('click', function() {
-                            checkAnswer({ chinese: option });
-                        });
+                        // 根据测试类型设置不同的点击事件
+                        if (isChineseToEnglish) {
+                            optionElement.addEventListener('click', function() {
+                                checkAnswer({ english: option });
+                            });
+                        } else {
+                            optionElement.addEventListener('click', function() {
+                                checkAnswer({ chinese: option });
+                            });
+                        }
                         
                         optionsContainer.appendChild(optionElement);
                     });
@@ -1664,6 +1744,7 @@
             const feedbackTitle = document.getElementById('feedback-title');
             const feedbackMessage = document.getElementById('feedback-message');
             const optionsContainer = document.getElementById('options-container');
+            const isChineseToEnglish = currentTest.testType === 'chinese-to-english-multiple';
             
             // 禁用所有选项
             Array.from(optionsContainer.children).forEach(option => {
@@ -1672,13 +1753,29 @@
             });
             
             // 记录答案结果
-            if (selectedOption.chinese === currentWord.chinese) {
+            let isCorrect;
+            
+            if (isChineseToEnglish) {
+                // Chinese → English 测试
+                isCorrect = selectedOption.english === currentWord.english;
+            } else {
+                // English → Chinese 测试
+                isCorrect = selectedOption.chinese === currentWord.chinese;
+            }
+            
+            if (isCorrect) {
                 // 答案正确
                 currentTest.correctCount++;
                 feedbackIcon.className = 'fa fa-check-circle text-green-500 text-xl mt-0.5 mr-3';
                 feedbackTitle.className = 'font-medium text-green-500';
                 feedbackTitle.textContent = '回答正确！';
-                feedbackMessage.textContent = `${currentWord.english} 的意思是 ${currentWord.chinese}`;
+                
+                if (isChineseToEnglish) {
+                    feedbackMessage.textContent = `${currentWord.chinese} 的英文是 ${currentWord.english}`;
+                } else {
+                    feedbackMessage.textContent = `${currentWord.english} 的意思是 ${currentWord.chinese}`;
+                }
+                
                 answerFeedback.className = 'mt-6 p-4 rounded-lg bg-green-50 border border-green-200';
                 
                 // 更新错词状态
@@ -1696,7 +1793,13 @@
                 feedbackIcon.className = 'fa fa-times-circle text-red-500 text-xl mt-0.5 mr-3';
                 feedbackTitle.className = 'font-medium text-red-500';
                 feedbackTitle.textContent = '回答错误！';
-                feedbackMessage.textContent = `${currentWord.english} 的意思是 ${currentWord.chinese}，您选择了 ${selectedOption.chinese}`;
+                
+                if (isChineseToEnglish) {
+                    feedbackMessage.textContent = `${currentWord.chinese} 的英文是 ${currentWord.english}，您选择了 ${selectedOption.english}`;
+                } else {
+                    feedbackMessage.textContent = `${currentWord.english} 的意思是 ${currentWord.chinese}，您选择了 ${selectedOption.chinese}`;
+                }
+                
                 answerFeedback.className = 'mt-6 p-4 rounded-lg bg-red-50 border border-red-200';
                 
                 // 添加到错词库
@@ -1710,6 +1813,18 @@
                 });
             }
             
+            // 更新单词的曝光度和熟悉度
+            fetch(`${API_BASE_URL}/words/${currentWord.id}/update-stats`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ isCorrect: isCorrect })
+            })
+            .catch(error => {
+                console.error('更新单词统计失败:', error);
+            });
+
             // 显示答案反馈
             answerFeedback.classList.remove('hidden');
         }
@@ -1738,6 +1853,7 @@
             const resultIncorrect = document.getElementById('result-incorrect');
             const detailedResults = document.getElementById('detailed-results');
             const reviewMistakesBtn = document.getElementById('review-mistakes-btn');
+            const isChineseToEnglish = currentTest.testType === 'chinese-to-english-multiple';
             
             // 计算得分
             const totalQuestions = currentTest.results.length;
@@ -1758,19 +1874,40 @@
             currentTest.results.forEach((result, index) => {
                 const resultItem = document.createElement('div');
                 resultItem.className = 'p-4 border border-gray-200 rounded-lg';
-                resultItem.innerHTML = `
-                    <div class="flex justify-between items-start mb-2">
-                        <div class="font-medium">${index + 1}. ${result.word.english}</div>
-                        <div class="flex-shrink-0 px-2 py-0.5 rounded text-xs font-medium ${result.correct ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
-                            ${result.correct ? '正确' : '错误'}
+                
+                // 根据测试类型生成不同的结果显示
+                if (isChineseToEnglish) {
+                    // Chinese → English 测试结果显示
+                    resultItem.innerHTML = `
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="font-medium">${index + 1}. ${result.word.chinese}</div>
+                            <div class="flex-shrink-0 px-2 py-0.5 rounded text-xs font-medium ${result.correct ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                ${result.correct ? '正确' : '错误'}
+                            </div>
                         </div>
-                    </div>
-                    <div class="text-gray-600 text-sm">
-                        <p><strong>正确答案:</strong> ${result.word.chinese}</p>
-                        ${!result.correct ? `<p><strong>您的答案:</strong> ${result.selectedOption.chinese}</p>` : ''}
-                        ${result.word.example ? `<p class="text-gray-500 mt-1">${result.word.example}</p>` : ''}
-                    </div>
-                `;
+                        <div class="text-gray-600 text-sm">
+                            <p><strong>正确答案:</strong> ${result.word.english}</p>
+                            ${!result.correct ? `<p><strong>您的答案:</strong> ${result.selectedOption.english}</p>` : ''}
+                            ${result.word.example ? `<p class="text-gray-500 mt-1">${result.word.example}</p>` : ''}
+                        </div>
+                    `;
+                } else {
+                    // English → Chinese 测试结果显示
+                    resultItem.innerHTML = `
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="font-medium">${index + 1}. ${result.word.english}</div>
+                            <div class="flex-shrink-0 px-2 py-0.5 rounded text-xs font-medium ${result.correct ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                ${result.correct ? '正确' : '错误'}
+                            </div>
+                        </div>
+                        <div class="text-gray-600 text-sm">
+                            <p><strong>正确答案:</strong> ${result.word.chinese}</p>
+                            ${!result.correct ? `<p><strong>您的答案:</strong> ${result.selectedOption.chinese}</p>` : ''}
+                            ${result.word.example ? `<p class="text-gray-500 mt-1">${result.word.example}</p>` : ''}
+                        </div>
+                    `;
+                }
+                
                 detailedResults.appendChild(resultItem);
             });
             
@@ -1786,7 +1923,7 @@
             const scorePercentage = Math.round((correctCount / totalQuestions) * 100);
             
             const testResult = {
-                type: 'english-to-chinese-multiple',
+                type: currentTest.testType || 'english-to-chinese-multiple',
                 score: scorePercentage,
                 total_words: totalQuestions,
                 correct_count: correctCount,
@@ -2055,13 +2192,18 @@
                         example: mistake.example
                     }));
                     
+                    // 获取当前选中的测试类型
+                    const testTypeElem = document.querySelector('input[name="test-type"]:checked');
+                    const testType = testTypeElem ? testTypeElem.value : 'english-to-chinese-multiple';
+                    
                     // 初始化测试状态
                     currentTest = {
                         words: words,
                         currentIndex: 0,
                         correctCount: 0,
                         incorrectCount: 0,
-                        results: []
+                        results: [],
+                        testType: testType
                     };
                     
                     // 切换到测试模块
@@ -2106,8 +2248,39 @@
             });
         }
         
+        // 获取单词统计数据
+        function loadWordStatistics() {
+            fetch(`${API_BASE_URL}/words/stats`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('获取单词统计数据失败');
+                    }
+                    return response.json();
+                })
+                .then(stats => {
+                    // 更新曝光率统计
+                    document.getElementById('exposure-rate').textContent = `${stats.exposure_rate}%`;
+                    document.getElementById('tested-words-count').textContent = stats.tested_words_count;
+                    document.getElementById('total-words-count').textContent = stats.total_words_count;
+                    document.getElementById('total-words-count-2').textContent = stats.total_words_count;
+                    
+                    // 更新熟悉度统计
+                    document.getElementById('familiarity-rate').textContent = `${stats.familiarity_rate}%`;
+                    document.getElementById('familiar-words-count').textContent = stats.familiar_words_count;
+                    
+                    // 显示统计区域
+                    document.getElementById('word-statistics').classList.remove('hidden');
+                })
+                .catch(error => {
+                    console.error('获取单词统计数据失败:', error);
+                });
+        }
+
         // 加载测试结果
         function loadTestResults() {
+            // 先加载单词统计数据
+            loadWordStatistics();
+            
             fetch(`${API_BASE_URL}/test-results`)
                 .then(response => response.json())
                 .then(results => {
@@ -2146,7 +2319,7 @@
                                     ${formatDate(result.test_date)}
                                 </td>
                                 <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
-                                    ${result.type === 'english-to-chinese-multiple' ? '英文 → 中文（选择题）' : result.type}
+                                    ${result.type === 'english-to-chinese-multiple' ? '英文 → 中文（选择题）' : result.type === 'chinese-to-english-multiple' ? '中文 → 英文（选择题）' : result.type}
                                 </td>
                                 <td class="px-4 py-3 whitespace-nowrap">
                                     <div class="flex items-center">
