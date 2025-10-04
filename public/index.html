@@ -315,6 +315,10 @@
                                     <input type="radio" name="test-type" value="chinese-to-english-multiple" class="text-primary focus:ring-primary">
                                     <span class="ml-2 text-gray-700">Chinese → English (Multiple Choice)</span>
                                 </label>
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="test-type" value="sentence-filling-multiple" class="text-primary focus:ring-primary">
+                                    <span class="ml-2 text-gray-700">Sentence Filling (Multiple Choice)</span>
+                                </label>
                             </div>
                         </div>
                         
@@ -1651,10 +1655,19 @@
             
             // 根据测试类型显示问题
             const isChineseToEnglish = currentTest.testType === 'chinese-to-english-multiple';
+            const isSentenceFilling = currentTest.testType === 'sentence-filling-multiple';
             
             if (isChineseToEnglish) {
                 // Chinese → English 测试
                 mcQuestion.textContent = currentWord.chinese;
+            } else if (isSentenceFilling) {
+                // Sentence Filling 测试
+                // 将例句中的单词替换为空白
+                const regex = new RegExp(`\\b${currentWord.english}\\b`, 'gi');
+                const maskedSentence = currentWord.example ? 
+                    currentWord.example.replace(regex, '______') : 
+                    `Complete the sentence with the correct word: ${currentWord.english}`;
+                mcQuestion.textContent = maskedSentence;
             } else {
                 // English → Chinese 测试
                 mcQuestion.textContent = currentWord.english;
@@ -1671,9 +1684,10 @@
                     
                     // 创建包含正确答案的完整选项列表
                     let allOptions;
+                    const isSentenceFilling = currentTest.testType === 'sentence-filling-multiple';
                     
-                    if (isChineseToEnglish) {
-                        // Chinese → English 测试：选项是英文单词
+                    if (isChineseToEnglish || isSentenceFilling) {
+                        // Chinese → English 测试 或 Sentence Filling 测试：选项是英文单词
                         // 从当前测试的单词中随机选择一些作为干扰项
                         const shuffledWords = [...currentTest.words].sort(() => 0.5 - Math.random());
                         const distractorWords = shuffledWords.filter(word => word.id !== currentWord.id).slice(0, 4);
@@ -1718,15 +1732,16 @@
                         `;
                         
                         // 根据测试类型设置不同的点击事件
-                        if (isChineseToEnglish) {
-                            optionElement.addEventListener('click', function() {
-                                checkAnswer({ english: option });
-                            });
-                        } else {
-                            optionElement.addEventListener('click', function() {
-                                checkAnswer({ chinese: option });
-                            });
-                        }
+                    const isSentenceFilling = currentTest.testType === 'sentence-filling-multiple';
+                    if (isChineseToEnglish || isSentenceFilling) {
+                        optionElement.addEventListener('click', function() {
+                            checkAnswer({ english: option });
+                        });
+                    } else {
+                        optionElement.addEventListener('click', function() {
+                            checkAnswer({ chinese: option });
+                        });
+                    }
                         
                         optionsContainer.appendChild(optionElement);
                     });
@@ -1754,9 +1769,10 @@
             
             // 记录答案结果
             let isCorrect;
+            const isSentenceFilling = currentTest.testType === 'sentence-filling-multiple';
             
-            if (isChineseToEnglish) {
-                // Chinese → English 测试
+            if (isChineseToEnglish || isSentenceFilling) {
+                // Chinese → English 测试 或 Sentence Filling 测试
                 isCorrect = selectedOption.english === currentWord.english;
             } else {
                 // English → Chinese 测试
@@ -1772,6 +1788,8 @@
                 
                 if (isChineseToEnglish) {
                     feedbackMessage.textContent = `${currentWord.chinese} 的英文是 ${currentWord.english}`;
+                } else if (isSentenceFilling) {
+                    feedbackMessage.textContent = `正确答案是 ${currentWord.english}。完整句子：${currentWord.example || 'No example available'}`;
                 } else {
                     feedbackMessage.textContent = `${currentWord.english} 的意思是 ${currentWord.chinese}`;
                 }
@@ -1796,6 +1814,8 @@
                 
                 if (isChineseToEnglish) {
                     feedbackMessage.textContent = `${currentWord.chinese} 的英文是 ${currentWord.english}，您选择了 ${selectedOption.english}`;
+                } else if (isSentenceFilling) {
+                    feedbackMessage.textContent = `正确答案是 ${currentWord.english}，您选择了 ${selectedOption.english}。完整句子：${currentWord.example || 'No example available'}`;
                 } else {
                     feedbackMessage.textContent = `${currentWord.english} 的意思是 ${currentWord.chinese}，您选择了 ${selectedOption.chinese}`;
                 }
