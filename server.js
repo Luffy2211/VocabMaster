@@ -60,10 +60,40 @@ function initializeDatabase() {
     total_words INTEGER NOT NULL,
     correct_count INTEGER NOT NULL,
     incorrect_count INTEGER NOT NULL,
+    type TEXT DEFAULT 'english-to-chinese-multiple',
     test_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   )`, (err) => {
     if (err) {
       console.error('Error creating test_results table:', err.message);
+    }
+  });
+
+  // 创建阅读文章表
+  db.run(`CREATE TABLE IF NOT EXISTS reading_passages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    added_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    exposure INTEGER DEFAULT 0
+  )`, (err) => {
+    if (err) {
+      console.error('Error creating reading_passages table:', err.message);
+    }
+  });
+
+  // 创建阅读题目表
+  db.run(`CREATE TABLE IF NOT EXISTS reading_questions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    passage_id INTEGER NOT NULL,
+    question_text TEXT NOT NULL,
+    option_a TEXT NOT NULL,
+    option_b TEXT NOT NULL,
+    option_c TEXT NOT NULL,
+    correct_answer TEXT NOT NULL,
+    FOREIGN KEY (passage_id) REFERENCES reading_passages(id) ON DELETE CASCADE
+  )`, (err) => {
+    if (err) {
+      console.error('Error creating reading_questions table:', err.message);
     }
   });
 }
@@ -543,7 +573,7 @@ app.get('/api/test-results', (req, res) => {
 
 // 保存测试结果
 app.post('/api/test-results', (req, res) => {
-  const { score, total_words, correct_count, incorrect_count } = req.body;
+  const { score, total_words, correct_count, incorrect_count, type = 'english-to-chinese-multiple' } = req.body;
   
   if (score === undefined || total_words === undefined || correct_count === undefined || incorrect_count === undefined) {
     res.status(400).json({ error: 'All test result fields are required' });
@@ -551,8 +581,8 @@ app.post('/api/test-results', (req, res) => {
   }
 
   db.run(
-    'INSERT INTO test_results (score, total_words, correct_count, incorrect_count) VALUES (?, ?, ?, ?)',
-    [score, total_words, correct_count, incorrect_count],
+    'INSERT INTO test_results (score, total_words, correct_count, incorrect_count, type) VALUES (?, ?, ?, ?, ?)',
+    [score, total_words, correct_count, incorrect_count, type],
     function(err) {
       if (err) {
         res.status(500).json({ error: err.message });
@@ -564,6 +594,7 @@ app.post('/api/test-results', (req, res) => {
         total_words,
         correct_count,
         incorrect_count,
+        type,
         test_date: new Date().toISOString()
       });
     }
@@ -707,6 +738,385 @@ app.post('/api/import-initial-words', (req, res) => {
   });
 });
 
+// 阅读理解相关API
+
+// 获取所有阅读文章列表
+app.get('/api/reading-passages', (req, res) => {
+  db.all('SELECT id, title, content, added_date, exposure FROM reading_passages ORDER BY added_date DESC', [], (err, rows) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json(rows);
+  });
+});
+
+// 导入阅读理解题目
+app.post('/api/reading/import', (req, res) => {
+  const { content } = req.body;
+  
+  if (!content) {
+    return res.status(400).json({ error: '内容不能为空' });
+  }
+
+  // 解析输入内容 - 允许分隔符前后有空格
+  const contentParts = content.split(/\s*阅读文本\s*|\s*选择题\s*|\s*答案\s*/);
+  if (contentParts.length < 4) {
+    return res.status(400).json({ error: '格式错误：请确保包含阅读文本、选择题和答案三个部分' });
+  }
+
+  const passageContent = contentParts[1].trim();
+  const questionsText = contentParts[2].trim();
+  const answersText = contentParts[3].trim();
+
+  // 提取标题和正文 - 提供更详细的阅读文本错误信息
+  const lines = passageContent.split('\n');
+  if (lines.length < 1) {
+    return res.status(400).json({ error: '阅读文本部分格式错误：阅读文本不能为空' });
+  }
+  const title = lines[0].trim();
+  if (!title) {
+    return res.status(400).json({ error: '阅读文本部分格式错误：请确保第一行为有效的标题' });
+  }
+  const actualContent = lines.slice(1).join('\n').trim();
+  if (!actualContent) {
+    return res.status(400).json({ error: '阅读文本部分格式错误：请确保标题后有正文内容' });
+  }
+
+  // 解析题目 - 更健壮的正则表达式，允许选项后的空格和换行
+  const questions = [];
+  const questionRegex = /(\d+)[.、]\s*(.*?)\s*A[.、]\s*(.*?)\s*B[.、]\s*(.*?)\s*C[.、]\s*(.*?)(?=\d+[.、]|$)/gs;
+  let match;
+  
+  try {
+    while ((match = questionRegex.exec(questionsText)) !== null) {
+      questions.push({
+        questionText: match[2].trim(),
+        optionA: match[3].trim(),
+        optionB: match[4].trim(),
+        optionC: match[5].trim()
+      });
+    }
+  } catch (err) {
+    return res.status(400).json({ error: '选择题部分格式错误：请确保题目格式正确' });
+  }
+
+  if (questions.length === 0) {
+    return res.status(400).json({ error: '选择题部分格式错误：没有找到有效的选择题，请检查题目编号和选项格式' });
+  }
+
+  // 验证题目内容完整性
+  for (let i = 0; i < questions.length; i++) {
+    const q = questions[i];
+    if (!q.questionText) {
+      return res.status(400).json({ error: `选择题部分格式错误：第${i+1}题题目内容不能为空` });
+    }
+    if (!q.optionA || !q.optionB || !q.optionC) {
+      return res.status(400).json({ error: `选择题部分格式错误：第${i+1}题选项不完整，请确保包含A、B、C三个选项` });
+    }
+  }
+
+  // 解析答案 - 更健壮的正则表达式，允许答案后的空格和换行
+  const answers = {};
+  const answerRegex = /(\d+)\s*[.、]\s*([ABC])\s*/g;
+  let answerErrors = [];
+  
+  try {
+    while ((match = answerRegex.exec(answersText)) !== null) {
+      const questionNum = match[1];
+      const option = match[2];
+      
+      if (!['A', 'B', 'C'].includes(option)) {
+        answerErrors.push(`第${questionNum}题答案不是有效的选项(A/B/C)`);
+      }
+      answers[questionNum] = option;
+    }
+  } catch (err) {
+    return res.status(400).json({ error: '答案部分格式错误：请确保答案格式正确' });
+  }
+
+  if (Object.keys(answers).length === 0) {
+    return res.status(400).json({ error: '答案部分格式错误：没有找到有效的答案，请检查答案格式（如：1. A）' });
+  }
+
+  if (answerErrors.length > 0) {
+    return res.status(400).json({ error: `答案部分格式错误：${answerErrors.join('，')}` });
+  }
+
+  // 验证题目和答案数量是否一致
+  if (questions.length !== Object.keys(answers).length) {
+    return res.status(400).json({ error: `格式错误：题目数量(${questions.length})和答案数量(${Object.keys(answers).length})不匹配` });
+  }
+
+  // 验证每个题目都有对应的答案
+  for (let i = 0; i < questions.length; i++) {
+    const questionNum = (i + 1).toString();
+    if (!answers[questionNum]) {
+      return res.status(400).json({ error: `答案部分格式错误：缺少第${questionNum}题的答案` });
+    }
+  }
+
+  // 开始事务
+  db.serialize(() => {
+    db.run('BEGIN TRANSACTION');
+
+    // 插入文章
+    db.run('INSERT INTO reading_passages (title, content) VALUES (?, ?)', [title, actualContent], function(err) {
+      if (err) {
+        db.run('ROLLBACK TRANSACTION');
+        if (err.code === 'SQLITE_CONSTRAINT') {
+          return res.status(500).json({ error: '系统错误：该阅读文章已存在' });
+        }
+        return res.status(500).json({ error: '系统错误：数据库操作失败，请稍后重试' });
+      }
+
+      const passageId = this.lastID;
+      let successCount = 0;
+      let failedCount = 0;
+
+      // 插入每个题目
+      questions.forEach((q, index) => {
+        const questionNum = (index + 1).toString();
+        const correctAnswer = answers[questionNum];
+
+        if (!correctAnswer) {
+          failedCount++;
+          return;
+        }
+
+        db.run(
+          'INSERT INTO reading_questions (passage_id, question_text, option_a, option_b, option_c, correct_answer) VALUES (?, ?, ?, ?, ?, ?)',
+          [passageId, q.questionText, q.optionA, q.optionB, q.optionC, correctAnswer],
+          (err) => {
+            if (err) {
+              failedCount++;
+            } else {
+              successCount++;
+            }
+          }
+        );
+      });
+
+      // 提交事务并响应
+      db.run('COMMIT TRANSACTION', () => {
+        res.json({
+          success_count: 1, // 成功导入的文章数量
+          total_questions: successCount // 成功导入的题目总数
+        });
+      });
+    });
+  });
+});
+
+// 获取所有阅读文章列表
+app.get('/api/reading/passages', (req, res) => {
+  db.all('SELECT id, title, added_date, exposure FROM reading_passages ORDER BY added_date DESC', (err, rows) => {
+    if (err) {
+      return res.status(500).json({ error: '获取文章列表失败: ' + err.message });
+    }
+    res.json(rows);
+  });
+});
+
+// 获取所有阅读文章列表 - 兼容前端调用路径
+app.get('/api/reading-passages', (req, res) => {
+  db.all('SELECT id, title, added_date, exposure FROM reading_passages ORDER BY added_date DESC', (err, rows) => {
+    if (err) {
+      return res.status(500).json({ error: '获取文章列表失败: ' + err.message });
+    }
+    res.json(rows);
+  });
+});
+
+// 获取指定文章及其题目
+app.get('/api/reading/passage/:id', (req, res) => {
+  const { id } = req.params;
+  
+  db.serialize(() => {
+    // 获取文章信息
+    db.get('SELECT * FROM reading_passages WHERE id = ?', [id], (err, passage) => {
+      if (err) {
+        return res.status(500).json({ error: '获取文章失败: ' + err.message });
+      }
+      if (!passage) {
+        return res.status(404).json({ error: '找不到指定的文章' });
+      }
+
+      // 获取题目
+      db.all('SELECT * FROM reading_questions WHERE passage_id = ?', [id], (err, questions) => {
+        if (err) {
+          return res.status(500).json({ error: '获取题目失败: ' + err.message });
+        }
+
+        // 更新文章的曝光度
+        db.run('UPDATE reading_passages SET exposure = exposure + 1 WHERE id = ?', [id]);
+
+        res.json({
+          passage,
+          questions
+        });
+      });
+    });
+  });
+});
+
+// 前端兼容端点 - 用于匹配前端代码中调用的URL
+app.get('/api/reading-passages/:id', (req, res) => {
+  const { id } = req.params;
+  
+  db.serialize(() => {
+    // 获取文章信息
+    db.get('SELECT * FROM reading_passages WHERE id = ?', [id], (err, passage) => {
+      if (err) {
+        return res.status(500).json({ error: '获取文章失败: ' + err.message });
+      }
+      if (!passage) {
+        return res.status(404).json({ error: '找不到指定的文章' });
+      }
+
+      // 获取题目
+      db.all('SELECT * FROM reading_questions WHERE passage_id = ?', [id], (err, questions) => {
+        if (err) {
+          return res.status(500).json({ error: '获取题目失败: ' + err.message });
+        }
+
+        // 更新文章的曝光度
+        db.run('UPDATE reading_passages SET exposure = exposure + 1 WHERE id = ?', [id]);
+
+        // 返回扁平化的数据结构，与前端期望的格式匹配
+        res.json({
+          id: passage.id,
+          title: passage.title,
+          content: passage.content,
+          added_date: passage.added_date,
+          exposure: passage.exposure,
+          questions: questions
+        });
+      });
+    });
+  });
+});
+
+// 提交答案并计算得分
+app.post('/api/reading/submit-answers', (req, res) => {
+  const { passageId, answers } = req.body;
+
+  if (!passageId || !answers) {
+    return res.status(400).json({ error: '缺少必要的参数' });
+  }
+
+  // 获取正确答案
+  db.all('SELECT id, correct_answer FROM reading_questions WHERE passage_id = ?', [passageId], (err, correctAnswers) => {
+    if (err) {
+      return res.status(500).json({ error: '获取正确答案失败: ' + err.message });
+    }
+
+    // 计算得分
+    let correctCount = 0;
+    const results = [];
+
+    correctAnswers.forEach((q) => {
+      const userAnswer = answers[q.id];
+      const isCorrect = userAnswer && userAnswer.toUpperCase() === q.correct_answer.toUpperCase();
+      
+      if (isCorrect) {
+        correctCount++;
+      }
+
+      results.push({
+        questionId: q.id,
+        userAnswer,
+        correctAnswer: q.correct_answer,
+        isCorrect
+      });
+    });
+
+    const totalQuestions = correctAnswers.length;
+    const score = Math.round((correctCount / totalQuestions) * 100);
+
+    // 保存测试结果
+    db.run(
+      'INSERT INTO test_results (score, total_words, correct_count, incorrect_count, type) VALUES (?, ?, ?, ?, ?)',
+      [score, totalQuestions, correctCount, totalQuestions - correctCount, 'reading-comprehension'],
+      (err) => {
+        if (err) {
+          console.error('保存测试结果失败:', err.message);
+        }
+
+        res.json({
+          success: true,
+          score,
+          correctCount,
+          totalQuestions,
+          results: results
+        });
+      }
+    );
+  });
+});
+
+// 提交答案并计算得分 - 兼容前端调用路径
+app.post('/api/reading-passages/:id/submit-answers', (req, res) => {
+  const { id } = req.params;
+  const { answers, passage_id } = req.body;
+
+  // 优先使用请求体中的passage_id，如果不存在则使用路径参数id
+  const passageId = passage_id || id;
+
+  if (!passageId || !answers) {
+    return res.status(400).json({ error: '缺少必要的参数' });
+  }
+
+  // 获取正确答案
+  db.all('SELECT id, correct_answer FROM reading_questions WHERE passage_id = ?', [passageId], (err, correctAnswers) => {
+    if (err) {
+      return res.status(500).json({ error: '获取正确答案失败: ' + err.message });
+    }
+
+    // 计算得分
+    let correctCount = 0;
+    const results = [];
+
+    correctAnswers.forEach((q) => {
+      const userAnswer = answers[q.id];
+      const isCorrect = userAnswer && userAnswer.toUpperCase() === q.correct_answer.toUpperCase();
+      
+      if (isCorrect) {
+        correctCount++;
+      }
+
+      results.push({
+        questionId: q.id,
+        userAnswer,
+        correctAnswer: q.correct_answer,
+        isCorrect
+      });
+    });
+
+    const totalQuestions = correctAnswers.length;
+    const score = Math.round((correctCount / totalQuestions) * 100);
+
+    // 保存测试结果
+    db.run(
+      'INSERT INTO test_results (score, total_words, correct_count, incorrect_count, type) VALUES (?, ?, ?, ?, ?)',
+      [score, totalQuestions, correctCount, totalQuestions - correctCount, 'reading-comprehension'],
+      (err) => {
+        if (err) {
+          console.error('保存测试结果失败:', err.message);
+        }
+
+        res.json({
+          success: true,
+          score,
+          correctCount,
+          totalQuestions,
+          results: results
+        });
+      }
+    );
+  });
+});
+
 // 提供静态文件服务 (放在所有路由后面)
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
@@ -714,7 +1124,7 @@ app.get('*', (req, res) => {
 
 // 启动服务器
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`VocabMaster server is running on port ${PORT}`);
 });
 
 // 优雅关闭数据库连接

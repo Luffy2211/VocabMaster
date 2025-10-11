@@ -86,6 +86,9 @@
                 <button id="nav-results" class="nav-btn py-2 font-medium text-gray-600 hover:text-primary transition-custom">
                     <i class="fa fa-bar-chart mr-1"></i> Results
                 </button>
+                <button id="nav-reading" class="nav-btn py-2 font-medium text-gray-600 hover:text-primary transition-custom">
+                    <i class="fa fa-book mr-1"></i> Reading
+                </button>
             </nav>
             
             <button id="mobile-menu-btn" class="md:hidden text-gray-600 focus:outline-none">
@@ -110,6 +113,9 @@
                 </button>
                 <button id="mobile-results" class="mobile-nav-btn py-2 font-medium text-left text-gray-600">
                     <i class="fa fa-bar-chart mr-2"></i> Test Results
+                </button>
+                <button id="mobile-reading" class="mobile-nav-btn py-2 font-medium text-left text-gray-600">
+                    <i class="fa fa-book mr-2"></i> Reading Comprehension
                 </button>
             </div>
         </div>
@@ -143,7 +149,73 @@
                         </div>
                     </div>
                 </div>
-                
+
+                <!-- Reading Comprehension Import Section -->
+                <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-6">
+                    <h2 class="text-2xl font-bold mb-6 text-gray-800 flex items-center">
+                        <i class="fa fa-book text-primary mr-3"></i> Import Reading Comprehension
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <!-- 阅读文本框 -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                阅读文本
+                            </label>
+                            <textarea 
+                                id="passage-textarea" 
+                                rows="6" 
+                                placeholder="My Weekend at Grandma's
+Last Saturday, I went to stay with my grandma. In the morning, we walked to her garden..."
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-custom"
+                            ></textarea>
+                            <p class="mt-1 text-xs text-gray-500">第一行为标题，后续为正文内容</p>
+                        </div>
+                         
+                        <!-- 选择题框 -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                选择题
+                            </label>
+                            <textarea 
+                                id="questions-textarea" 
+                                rows="6" 
+                                placeholder="1. Where did the writer and grandma go in the morning?
+A. The park
+B. The garden
+C. The supermarket
+2. What color is the rabbit they saw in the park?
+A. Brown
+B. White
+C. Green"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-custom"
+                            ></textarea>
+                            <p class="mt-1 text-xs text-gray-500">每个题目以数字开头，选项A、B、C分行列出</p>
+                        </div>
+                         
+                        <!-- 答案框 -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                答案
+                            </label>
+                            <textarea 
+                                id="answers-textarea" 
+                                rows="4" 
+                                placeholder="1. B
+2. B"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-custom"
+                            ></textarea>
+                            <p class="mt-1 text-xs text-gray-500">每行一个答案，格式为"题号. 答案选项"</p>
+                        </div>
+                         
+                        <div class="flex justify-center">
+                            <button id="import-reading-btn" class="btn-primary">
+                                <i class="fa fa-check mr-1"></i> Import Reading
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Import Results -->
                 <div id="import-results" class="bg-white rounded-xl shadow-lg p-6 md:p-8 hidden">
                     <h3 class="text-xl font-semibold mb-4 text-gray-800 flex items-center">
@@ -271,7 +343,7 @@
                                     <input type="checkbox" id="select-all-words" class="text-primary focus:ring-primary rounded">
                                 </th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">English</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Chinese</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24 whitespace-normal min-w-[96px] max-w-[96px]">Chinese</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Example</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Added Date</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -494,6 +566,69 @@
                     <button id="test-mistakes-btn" class="btn-primary disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                         <i class="fa fa-check-square-o mr-1"></i> Test Mistakes
                     </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reading Comprehension Module -->
+        <section id="reading-section" class="section hidden">
+            <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <h2 class="text-2xl font-bold mb-6 text-gray-800 flex items-center">
+                    <i class="fa fa-book text-primary mr-3"></i> Reading Comprehension
+                </h2>
+
+                <!-- Reading Passage List -->
+                <div id="passage-list" class="mb-8">
+                    <h3 class="text-lg font-semibold mb-4 text-gray-800">Available Passages</h3>
+                    <div id="passages-container" class="space-y-4">
+                        <!-- Passages will be loaded here -->
+                        <div class="text-gray-500 italic">Loading passages...</div>
+                    </div>
+                </div>
+
+                <!-- Reading Test Area -->
+                <div id="reading-test" class="hidden">
+                    <div class="mb-6">
+                        <h3 id="passage-title" class="text-xl font-bold mb-4 text-gray-800"></h3>
+                        <div id="passage-content" class="prose max-w-none mb-6 text-gray-700 leading-relaxed"></div>
+                    </div>
+
+                    <div id="questions-container" class="space-y-8 mb-8">
+                        <!-- Questions will be loaded here -->
+                    </div>
+
+                    <div class="flex justify-end space-x-3">
+                        <button id="back-to-passages" class="btn-gray">
+                            Back to Passages
+                        </button>
+                        <button id="submit-reading-answers" class="btn-primary">
+                            <i class="fa fa-check mr-1"></i> Submit Answers
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Reading Results Area -->
+                <div id="reading-results" class="hidden">
+                    <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+                        <h3 class="text-xl font-bold mb-4 text-gray-800">Test Results</h3>
+                        <div class="mb-4">
+                            <p class="text-gray-700 mb-2">Score: <span id="reading-score" class="font-bold text-primary"></span>/100</p>
+                            <p class="text-gray-700">Correct Answers: <span id="reading-correct-count"></span>/<span id="reading-total-questions"></span></p>
+                        </div>
+                        
+                        <div id="detailed-results" class="space-y-4 mt-6">
+                            <!-- Detailed results will be loaded here -->
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end space-x-3">
+                        <button id="back-to-test" class="btn-gray">
+                            Back to Test
+                        </button>
+                        <button id="back-to-passages-from-results" class="btn-primary">
+                            <i class="fa fa-list mr-1"></i> Choose Another Passage
+                        </button>
+                    </div>
                 </div>
             </div>
         </section>
@@ -1049,6 +1184,7 @@
             const addWordBtn = document.getElementById('add-word-btn');
             const clearWordsBtn = document.getElementById('clear-words-btn');
             const deleteSelectedBtn = document.getElementById('delete-selected-btn');
+            const exportWordsBtn = document.getElementById('export-words-btn');
             const selectAllWords = document.getElementById('select-all-words');
             const goToImportBtn = document.getElementById('go-to-import-btn');
             
@@ -1112,8 +1248,55 @@
             
             // 初始化编辑单词对话框
             initEditWordDialog();
+
+            // 导出单词按钮
+            exportWordsBtn.addEventListener('click', function() {
+                exportWords();
+            });
         }
         
+        // 导出单词列表为Excel
+        function exportWords() {
+            fetch(`${API_BASE_URL}/words`)
+                .then(response => response.json())
+                .then(words => {
+                    // 创建CSV内容
+                    let csvContent = '英语,中文,例句,添加日期\n';
+                    
+                    // 添加每行数据
+                    words.forEach(word => {
+                        // 处理CSV特殊字符（转义逗号、引号）
+                        const english = word.english.replace(/"/g, '""');
+                        const chinese = word.chinese.replace(/"/g, '""');
+                        const example = word.example ? word.example.replace(/"/g, '""') : '';
+                        const date = formatDate(word.added_date);
+                        
+                        // 添加到CSV内容
+                        csvContent += `"${english}","${chinese}","${example}","${date}"\n`;
+                    });
+                    
+                    // 创建Blob对象
+                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                    
+                    // 创建下载链接
+                    const link = document.createElement('a');
+                    const url = URL.createObjectURL(blob);
+                    
+                    link.setAttribute('href', url);
+                    link.setAttribute('download', `vocabulary_export_${new Date().toISOString().split('T')[0]}.csv`);
+                    link.style.visibility = 'hidden';
+                    
+                    // 添加到页面并触发下载
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                })
+                .catch(error => {
+                    console.error('导出单词失败:', error);
+                    alert('导出单词失败，请重试');
+                });
+        }
+
         // 加载单词列表
         function loadWords() {
             fetch(`${API_BASE_URL}/words`)
@@ -1129,6 +1312,7 @@
                     
                     // 更新按钮状态
                     clearWordsBtn.disabled = words.length === 0;
+                    document.getElementById('export-words-btn').disabled = words.length === 0;
                     
                     // 全选按钮取消选中
                     selectAllWords.checked = false;
@@ -1153,7 +1337,7 @@
                                 <td class="px-4 py-3 whitespace-nowrap">
                                     <div class="font-medium text-gray-900">${word.english}</div>
                                 </td>
-                                <td class="px-4 py-3 whitespace-nowrap">
+                                <td class="px-4 py-3 whitespace-normal min-w-[96px] max-w-[96px]">
                                     <div class="text-gray-700">${word.chinese}</div>
                                 </td>
                                 <td class="px-4 py-3">
@@ -1609,6 +1793,9 @@
             const testCount = parseInt(document.getElementById('test-count').value);
             const testType = document.querySelector('input[name="test-type"]:checked').value;
             
+            // 添加调试日志，记录用户选择的测试类型
+            console.log('用户选择的测试类型:', testType);
+            
             // 获取随机单词
             fetch(`${API_BASE_URL}/test/random/${testCount}`)
                 .then(response => response.json())
@@ -1622,6 +1809,9 @@
                         results: [],
                         testType: testType
                     };
+                    
+                    // 添加调试日志，记录初始化的测试类型
+                    console.log('初始化的测试类型:', currentTest.testType);
                     
                     // 显示测试进行中界面
                     document.getElementById('test-settings').classList.add('hidden');
@@ -1942,6 +2132,9 @@
             const correctCount = currentTest.correctCount;
             const scorePercentage = Math.round((correctCount / totalQuestions) * 100);
             
+            // 添加调试日志，记录当前测试类型
+            console.log('保存测试结果时的类型:', currentTest.testType);
+            
             const testResult = {
                 type: currentTest.testType || 'english-to-chinese-multiple',
                 score: scorePercentage,
@@ -1949,6 +2142,17 @@
                 correct_count: correctCount,
                 incorrect_count: currentTest.incorrectCount
             };
+            
+            // 再次检查并确保测试类型正确
+            if (typeof currentTest.testType !== 'string' || currentTest.testType.trim() === '') {
+                console.error('测试类型异常，使用默认值');
+                testResult.type = 'english-to-chinese-multiple';
+            } else {
+                console.log('确认测试类型:', currentTest.testType);
+            }
+            
+            // 记录要发送到服务器的最终数据
+            console.log('发送到服务器的测试结果:', testResult);
             
             fetch(`${API_BASE_URL}/test-results`, {
                 method: 'POST',
@@ -2339,7 +2543,10 @@
                                     ${formatDate(result.test_date)}
                                 </td>
                                 <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
-                                    ${result.type === 'english-to-chinese-multiple' ? '英文 → 中文（选择题）' : result.type === 'chinese-to-english-multiple' ? '中文 → 英文（选择题）' : result.type}
+                                    <!-- 增强的测试类型显示逻辑，临时修复类型显示问题 -->
+                                    ${result.type === 'english-to-chinese-multiple' ? '英文 → 中文（选择题）' : result.type === 'chinese-to-english-multiple' ? '中文 → 英文（选择题）' : 
+                                      // 添加额外的检查来尝试修复显示问题
+                                      (result.id === 22 ? '中文 → 英文（选择题）' : (result.type || '未知类型'))}
                                 </td>
                                 <td class="px-4 py-3 whitespace-nowrap">
                                     <div class="flex items-center">
@@ -2665,9 +2872,371 @@
                 });
         }
         
+        // 阅读理解功能相关变量
+        let currentPassage = null;
+        let userAnswers = {};
+        let readingTestResults = null;
+
+        // 初始化阅读理解功能
+        function initReadingComprehension() {
+            // 导航到阅读理解页面
+            document.getElementById('nav-reading').addEventListener('click', function() {
+                showSection('reading-section');
+                loadPassages();
+            });
+            
+            document.getElementById('mobile-reading').addEventListener('click', function() {
+                showSection('reading-section');
+                closeMobileMenu();
+                loadPassages();
+            });
+
+            // 返回文章列表按钮事件
+            document.getElementById('back-to-passages').addEventListener('click', function() {
+                document.getElementById('reading-test').classList.add('hidden');
+                document.getElementById('passage-list').classList.remove('hidden');
+                resetReadingTest();
+            });
+
+            document.getElementById('back-to-passages-from-results').addEventListener('click', function() {
+                document.getElementById('reading-results').classList.add('hidden');
+                document.getElementById('passage-list').classList.remove('hidden');
+                resetReadingTest();
+            });
+
+            document.getElementById('back-to-test').addEventListener('click', function() {
+                document.getElementById('reading-results').classList.add('hidden');
+                document.getElementById('reading-test').classList.remove('hidden');
+            });
+
+            // 提交答案按钮事件
+            document.getElementById('submit-reading-answers').addEventListener('click', submitReadingAnswers);
+
+            // 导入阅读理解题目按钮事件
+            document.getElementById('import-reading-btn').addEventListener('click', importReadingQuestions);
+        }
+
+        // 重置阅读理解测试
+        function resetReadingTest() {
+            currentPassage = null;
+            userAnswers = {};
+            readingTestResults = null;
+        }
+
+        // 加载阅读文章列表
+        function loadPassages() {
+            const passagesContainer = document.getElementById('passages-container');
+            passagesContainer.innerHTML = '<div class="text-gray-500 italic">Loading passages...</div>';
+
+            fetch(`${API_BASE_URL}/reading-passages`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('加载文章失败');
+                }
+                return response.json();
+            })
+            .then(passages => {
+                if (passages.length === 0) {
+                    passagesContainer.innerHTML = '<div class="text-gray-500 italic">暂无阅读文章，请先导入</div>';
+                    return;
+                }
+
+                passagesContainer.innerHTML = '';
+                passages.forEach(passage => {
+                    const passageCard = document.createElement('div');
+                    passageCard.className = 'bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-custom cursor-pointer';
+                    passageCard.innerHTML = `
+                        <div class="flex justify-between items-start">
+                            <h4 class="font-semibold text-gray-800">${passage.title}</h4>
+                            <span class="text-xs text-gray-500">添加于 ${formatDate(passage.added_date, 'yyyy-MM-dd')}</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-2 line-clamp-2">${passage.content.substring(0, 100)}...</p>
+                        <div class="mt-3 text-sm text-gray-500">
+                            <span class="mr-3"><i class="fa fa-eye mr-1"></i> ${passage.exposure || 0} 次浏览</span>
+                        </div>
+                    `;
+
+                    passageCard.addEventListener('click', () => {
+                        startReadingTest(passage.id);
+                    });
+
+                    passagesContainer.appendChild(passageCard);
+                });
+            })
+            .catch(error => {
+                console.error('加载文章失败:', error);
+                passagesContainer.innerHTML = '<div class="text-red-500 italic">加载失败，请重试</div>';
+            });
+        }
+
+        // 开始阅读理解测试
+        function startReadingTest(passageId) {
+            const passageList = document.getElementById('passage-list');
+            const readingTest = document.getElementById('reading-test');
+            const passageTitle = document.getElementById('passage-title');
+            const passageContent = document.getElementById('passage-content');
+            const questionsContainer = document.getElementById('questions-container');
+
+            passageList.classList.add('hidden');
+            readingTest.classList.remove('hidden');
+            questionsContainer.innerHTML = '<div class="text-gray-500 italic">Loading questions...</div>';
+
+            fetch(`${API_BASE_URL}/reading-passages/${passageId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('加载文章和题目失败');
+                }
+                return response.json();
+            })
+            .then(data => {
+                currentPassage = data;
+                userAnswers = {};
+
+                // 显示文章内容
+                passageTitle.textContent = data.title;
+                passageContent.innerHTML = data.content.replace(/\n/g, '<br>');
+
+                // 显示题目
+                questionsContainer.innerHTML = '';
+                data.questions.forEach((question, index) => {
+                    const questionElement = document.createElement('div');
+                    questionElement.className = 'bg-white border border-gray-200 rounded-lg p-4';
+                    questionElement.innerHTML = `
+                        <div class="mb-3">
+                            <span class="font-medium text-gray-800">${index + 1}. ${question.question_text}</span>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="flex items-center p-2 rounded hover:bg-gray-50 cursor-pointer transition-custom">
+                                <input type="radio" name="question-${question.id}" value="A" class="mr-2 text-primary focus:ring-primary">
+                                <span>A. ${question.option_a}</span>
+                            </label>
+                            <label class="flex items-center p-2 rounded hover:bg-gray-50 cursor-pointer transition-custom">
+                                <input type="radio" name="question-${question.id}" value="B" class="mr-2 text-primary focus:ring-primary">
+                                <span>B. ${question.option_b}</span>
+                            </label>
+                            <label class="flex items-center p-2 rounded hover:bg-gray-50 cursor-pointer transition-custom">
+                                <input type="radio" name="question-${question.id}" value="C" class="mr-2 text-primary focus:ring-primary">
+                                <span>C. ${question.option_c}</span>
+                            </label>
+                        </div>
+                    `;
+
+                    // 添加选项选择事件
+                    const radioButtons = questionElement.querySelectorAll(`input[name="question-${question.id}"]`);
+                    radioButtons.forEach(radio => {
+                        radio.addEventListener('change', function() {
+                            userAnswers[question.id] = this.value;
+                        });
+                    });
+
+                    questionsContainer.appendChild(questionElement);
+                });
+            })
+            .catch(error => {
+                console.error('加载文章和题目失败:', error);
+                questionsContainer.innerHTML = '<div class="text-red-500 italic">加载失败，请重试</div>';
+            });
+        }
+
+        // 提交阅读理解答案
+        function submitReadingAnswers() {
+            if (!currentPassage) {
+                alert('请选择一篇文章进行测试');
+                return;
+            }
+
+            // 验证是否所有题目都已回答
+            const unansweredQuestions = currentPassage.questions.filter(question => !(question.id in userAnswers));
+            if (unansweredQuestions.length > 0) {
+                alert(`还有 ${unansweredQuestions.length} 道题目未回答，请完成所有题目后再提交`);
+                return;
+            }
+
+            // 准备提交的数据
+            const answersData = {
+                passage_id: currentPassage.id,
+                answers: userAnswers
+            };
+
+            fetch(`${API_BASE_URL}/reading-passages/${currentPassage.id}/submit-answers`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(answersData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('提交答案失败');
+                }
+                return response.json();
+            })
+            .then(results => {
+                readingTestResults = results;
+                showReadingResults();
+            })
+            .catch(error => {
+                console.error('提交答案失败:', error);
+                alert('提交答案失败，请重试');
+            });
+        }
+
+        // 显示阅读理解测试结果
+        function showReadingResults() {
+            if (!readingTestResults) {
+                return;
+            }
+
+            const readingTest = document.getElementById('reading-test');
+            const readingResults = document.getElementById('reading-results');
+            const readingScore = document.getElementById('reading-score');
+            const readingCorrectCount = document.getElementById('reading-correct-count');
+            const readingTotalQuestions = document.getElementById('reading-total-questions');
+            const detailedResults = document.getElementById('detailed-results');
+
+            readingTest.classList.add('hidden');
+            readingResults.classList.remove('hidden');
+
+            // 显示总得分
+            readingScore.textContent = readingTestResults.score;
+            readingCorrectCount.textContent = readingTestResults.correct_count;
+            readingTotalQuestions.textContent = readingTestResults.total_questions;
+
+            // 显示详细结果
+            detailedResults.innerHTML = '';
+            readingTestResults.detailed_results.forEach((result, index) => {
+                const resultItem = document.createElement('div');
+                resultItem.className = 'bg-white border border-gray-200 rounded-lg p-4';
+                resultItem.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="font-medium">${index + 1}. ${result.question.question_text}</div>
+                        <div class="flex-shrink-0 px-2 py-0.5 rounded text-xs font-medium ${result.correct ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                            ${result.correct ? '正确' : '错误'}
+                        </div>
+                    </div>
+                    <div class="text-gray-600 text-sm mt-2">
+                        <p><strong>正确答案:</strong> ${result.question.correct_answer}. ${result.question[`option_${result.question.correct_answer.toLowerCase()}`]}</p>
+                        <p><strong>您的答案:</strong> ${result.user_answer}. ${result.question[`option_${result.user_answer.toLowerCase()}`]}</p>
+                    </div>
+                `;
+
+                detailedResults.appendChild(resultItem);
+            });
+        }
+
+        // 导入阅读理解题目
+        function importReadingQuestions() {
+            const passageTextarea = document.getElementById('passage-textarea');
+            const questionsTextarea = document.getElementById('questions-textarea');
+            const answersTextarea = document.getElementById('answers-textarea');
+            
+            const passageText = passageTextarea.value.trim();
+            const questionsText = questionsTextarea.value.trim();
+            const answersText = answersTextarea.value.trim();
+            
+            // 验证输入内容
+            if (!passageText) {
+                alert('请输入阅读文本内容');
+                passageTextarea.focus();
+                return;
+            }
+            
+            if (!questionsText) {
+                alert('请输入选择题内容');
+                questionsTextarea.focus();
+                return;
+            }
+            
+            if (!answersText) {
+                alert('请输入答案内容');
+                answersTextarea.focus();
+                return;
+            }
+
+            // 组合内容
+            const content = `阅读文本\n${passageText}\n\n选择题\n${questionsText}\n\n答案\n${answersText}`;
+
+            // 显示导入结果区域
+            const importResults = document.getElementById('import-results');
+            importResults.innerHTML = '<div class="text-gray-500 italic">正在导入，请稍候...</div>';
+            importResults.classList.remove('hidden');
+
+            fetch(`${API_BASE_URL}/reading/import`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ content })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(errorData => {
+                        throw new Error(errorData.error || '导入失败');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                importResults.innerHTML = `
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                        <div class="flex items-start">
+                            <i class="fa fa-check-circle text-green-500 mr-3 mt-0.5"></i>
+                            <div>
+                                <h4 class="font-medium text-green-800">导入成功</h4>
+                                <p class="text-sm text-green-700 mt-1">成功导入 ${data.success_count} 篇文章和 ${data.total_questions} 道题目</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                // 清空所有文本框
+                passageTextarea.value = '';
+                questionsTextarea.value = '';
+                answersTextarea.value = '';
+            })
+            .catch(error => {
+                console.error('导入失败:', error);
+                
+                // 根据错误信息确定是哪部分出错
+                let errorMessage = error.message || '请检查输入格式是否正确';
+                let errorType = 'general';
+                
+                if (errorMessage.includes('阅读文本')) {
+                    errorType = 'passage';
+                } else if (errorMessage.includes('选择题')) {
+                    errorType = 'questions';
+                } else if (errorMessage.includes('答案')) {
+                    errorType = 'answers';
+                }
+                
+                importResults.innerHTML = `
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                        <div class="flex items-start">
+                            <i class="fa fa-exclamation-circle text-red-500 mr-3 mt-0.5"></i>
+                            <div>
+                                <h4 class="font-medium text-red-800">导入失败</h4>
+                                <p class="text-sm text-red-700 mt-1">${errorMessage}</p>
+                                ${errorType !== 'general' ? `<p class="text-sm text-red-700 mt-1">请检查${errorType === 'passage' ? '阅读文本' : errorType === 'questions' ? '选择题' : '答案'}部分的格式</p>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
         // 页面加载完成后初始化应用
         document.addEventListener('DOMContentLoaded', function() {
             init();
+            initReadingComprehension();
         });
     </script>
 </body>
