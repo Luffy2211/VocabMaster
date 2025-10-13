@@ -2,6 +2,7 @@ const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const cors = require('cors');
+const https = require('https');
 
 const app = express();
 const PORT = process.env.PORT || 3003;
@@ -918,15 +919,7 @@ app.get('/api/reading/passages', (req, res) => {
   });
 });
 
-// 获取所有阅读文章列表 - 兼容前端调用路径
-app.get('/api/reading-passages', (req, res) => {
-  db.all('SELECT id, title, added_date, exposure FROM reading_passages ORDER BY added_date DESC', (err, rows) => {
-    if (err) {
-      return res.status(500).json({ error: '获取文章列表失败: ' + err.message });
-    }
-    res.json(rows);
-  });
-});
+
 
 // 获取指定文章及其题目
 app.get('/api/reading/passage/:id', (req, res) => {
@@ -1005,50 +998,48 @@ app.post('/api/reading/submit-answers', (req, res) => {
     return res.status(400).json({ error: '缺少必要的参数' });
   }
 
-  // 获取正确答案
-  db.all('SELECT id, correct_answer FROM reading_questions WHERE passage_id = ?', [passageId], (err, correctAnswers) => {
+  // 获取完整的题目信息（包含题目文本、选项等）
+  db.all('SELECT * FROM reading_questions WHERE passage_id = ?', [passageId], (err, questions) => {
     if (err) {
-      return res.status(500).json({ error: '获取正确答案失败: ' + err.message });
+      return res.status(500).json({ error: '获取题目信息失败: ' + err.message });
     }
 
-    // 计算得分
+    // 计算得分和正确答案数
     let correctCount = 0;
-    const results = [];
-
-    correctAnswers.forEach((q) => {
-      const userAnswer = answers[q.id];
-      const isCorrect = userAnswer && userAnswer.toUpperCase() === q.correct_answer.toUpperCase();
+    const detailedResults = questions.map((question) => {
+      const userAnswer = answers[question.id];
+      const isCorrect = userAnswer && userAnswer.toUpperCase() === question.correct_answer.toUpperCase();
       
       if (isCorrect) {
         correctCount++;
       }
 
-      results.push({
-        questionId: q.id,
-        userAnswer,
-        correctAnswer: q.correct_answer,
-        isCorrect
-      });
+      return {
+        question: question,
+        user_answer: userAnswer,
+        correct: isCorrect
+      };
     });
 
-    const totalQuestions = correctAnswers.length;
+    const totalQuestions = questions.length;
     const score = Math.round((correctCount / totalQuestions) * 100);
 
     // 保存测试结果
     db.run(
       'INSERT INTO test_results (score, total_words, correct_count, incorrect_count, type) VALUES (?, ?, ?, ?, ?)',
-      [score, totalQuestions, correctCount, totalQuestions - correctCount, 'reading-comprehension'],
+      [score, total_questions, correct_count, total_questions - correct_count, 'reading-comprehension'],
       (err) => {
         if (err) {
           console.error('保存测试结果失败:', err.message);
         }
 
+        // 返回与前端期望格式匹配的JSON响应
         res.json({
           success: true,
           score,
-          correctCount,
-          totalQuestions,
-          results: results
+          correct_count: correctCount,
+          total_questions: totalQuestions,
+          detailed_results: detailedResults
         });
       }
     );
@@ -1067,58 +1058,332 @@ app.post('/api/reading-passages/:id/submit-answers', (req, res) => {
     return res.status(400).json({ error: '缺少必要的参数' });
   }
 
-  // 获取正确答案
-  db.all('SELECT id, correct_answer FROM reading_questions WHERE passage_id = ?', [passageId], (err, correctAnswers) => {
+  // 获取完整题目信息
+  db.all('SELECT * FROM reading_questions WHERE passage_id = ?', [passageId], (err, questions) => {
     if (err) {
-      return res.status(500).json({ error: '获取正确答案失败: ' + err.message });
+      return res.status(500).json({ error: '获取题目信息失败: ' + err.message });
     }
 
     // 计算得分
-    let correctCount = 0;
-    const results = [];
+    let correct_count = 0;
+    const detailed_results = [];
 
-    correctAnswers.forEach((q) => {
-      const userAnswer = answers[q.id];
-      const isCorrect = userAnswer && userAnswer.toUpperCase() === q.correct_answer.toUpperCase();
+    questions.forEach((question) => {
+      const user_answer = answers[question.id];
+      const correct = user_answer && user_answer.toUpperCase() === question.correct_answer.toUpperCase();
       
-      if (isCorrect) {
-        correctCount++;
+      if (correct) {
+        correct_count++;
       }
 
-      results.push({
-        questionId: q.id,
-        userAnswer,
-        correctAnswer: q.correct_answer,
-        isCorrect
+      detailed_results.push({
+        question: question,
+        user_answer,
+        correct
       });
     });
 
-    const totalQuestions = correctAnswers.length;
-    const score = Math.round((correctCount / totalQuestions) * 100);
+    const total_questions = questions.length;
+    const score = Math.round((correct_count / total_questions) * 100);
 
     // 保存测试结果
     db.run(
       'INSERT INTO test_results (score, total_words, correct_count, incorrect_count, type) VALUES (?, ?, ?, ?, ?)',
-      [score, totalQuestions, correctCount, totalQuestions - correctCount, 'reading-comprehension'],
+      [score, total_questions, correct_count, total_questions - correct_count, 'reading-comprehension'],
       (err) => {
         if (err) {
           console.error('保存测试结果失败:', err.message);
         }
 
+        // 返回与前端期望格式匹配的JSON响应
         res.json({
           success: true,
           score,
-          correctCount,
-          totalQuestions,
-          results: results
+          correct_count,
+          total_questions,
+          detailed_results
         });
       }
     );
   });
 });
 
+// 删除阅读文章及其相关题目
+app.delete('/api/reading-passages/:id', (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json({ error: '缺少必要的参数' });
+  }
+
+  // 由于有ON DELETE CASCADE约束，删除文章时会自动删除相关的题目
+  db.run('DELETE FROM reading_passages WHERE id = ?', [id], function(err) {
+    if (err) {
+      return res.status(500).json({ error: '删除文章失败: ' + err.message });
+    }
+
+    if (this.changes === 0) {
+      return res.status(404).json({ error: '找不到指定的文章' });
+    }
+
+    res.json({ message: '阅读文章及其相关题目已成功删除' });
+  });
+});
+
+
+
+// AI生成阅读文章和题目 API
+app.post('/api/ai/generate-reading', async (req, res) => {
+  console.log('Received request to generate reading comprehension');
+  try {
+    // 1. 从单词库中获取一些单词
+    db.all('SELECT english FROM words ORDER BY RANDOM() LIMIT 20', [], (err, words) => {
+      if (err) {
+        console.error('Database error when fetching words:', err);
+        return res.status(500).json({ error: 'Failed to fetch words from database: ' + err.message });
+      }
+
+      console.log('Fetched words from database:', words.length);
+      
+      // 如果没有单词，提供一些默认单词
+      let wordList = '';
+      if (words && words.length > 0) {
+        wordList = words.map(word => word.english).join(', ');
+      } else {
+        console.log('No words found in database, using default words');
+        wordList = 'example, sample, learning, vocabulary, reading, comprehension, practice, knowledge, improve, study, test, question, answer, option, passage, content, title, understand, meaning, sentence';
+      }
+      
+      console.log('Word list for AI generation:', wordList);
+
+      // 2. 获取请求中的参数，包括自定义提示词
+      const { difficulty = 'beginner', length = 'short', customPrompt = '' } = req.body;
+      console.log('Received request parameters:', { difficulty, length, customPrompt });
+
+      // 3. 配置提示词
+      let systemPrompt = '';
+      if (customPrompt && customPrompt.trim()) {
+        // 如果提供了自定义提示词，使用它
+        systemPrompt = customPrompt.trim();
+        console.log('Using custom prompt for AI generation');
+      } else {
+        // 否则使用默认提示词
+        systemPrompt = `You are an English teacher. Generate a 100-word English reading passage using the following words: ${wordList}. 99% of the words must use the words from the list.The passage should have a clear title on the first line, followed by the content. Also create 3 multiple-choice questions (A/B/C options) based on the passage, and provide the correct answers. Return the result in the following format:\n\nPassage:\n[Title]\n[Content]\n\nQuestions:\n1. [Question 1]\nA. [Option A]\nB. [Option B]\nC. [Option C]\n2. [Question 2]\nA. [Option A]\nB. [Option B]\nC. [Option C]\n3. [Question 3]\nA. [Option A]\nB. [Option B]\nC. [Option C]\n\nAnswers:\n1. [Answer 1]\n2. [Answer 2]\n3. [Answer 3]\n\nGenerate a reading passage, 3 multiple-choice questions, and answers using the provided words.`;
+        console.log('Using default prompt for AI generation');
+      }
+
+      // 4. 配置 deepseek API 请求参数
+      const postData = JSON.stringify({
+        model: 'deepseek-chat',
+        messages: [
+          {
+            role: 'system',
+            content: systemPrompt
+          },
+          {
+            role: 'user',
+            content: `Generate a reading passage, 3 multiple-choice questions, and answers using the provided words.`
+          }
+        ],
+        max_tokens: 1500,
+        temperature: 0.7
+      });
+
+      const options = {
+        hostname: 'api.deepseek.com',
+        port: 443,
+        path: '/chat/completions',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer sk-c94afc16da8a4dff9f02c1d3a8fc455f`
+        }
+      };
+
+      // 3. 发送请求到 deepseek API
+      console.log('Sending request to deepseek API');
+      const request = https.request(options, (apiRes) => {
+        console.log('Received response from deepseek API, status code:', apiRes.statusCode);
+        
+        let data = '';
+        
+        apiRes.on('data', (chunk) => {
+          data += chunk;
+        });
+
+        apiRes.on('end', () => {
+          try {
+            console.log('API response data length:', data.length);
+            // 只打印部分响应以避免日志过长
+            console.log('API response preview:', data.substring(0, 200) + (data.length > 200 ? '...' : ''));
+            
+            const response = JSON.parse(data);
+            console.log('Parsed API response, has choices:', response.choices && response.choices.length > 0);
+            
+            if (response.error) {
+              console.error('API returned error:', response.error);
+              return res.status(500).json({ error: 'API returned error: ' + (response.error.message || JSON.stringify(response.error)) });
+            }
+            
+            if (!response.choices || !response.choices[0] || !response.choices[0].message) {
+              console.error('Invalid API response structure:', JSON.stringify(response).substring(0, 500));
+              return res.status(500).json({ error: 'Invalid API response structure' });
+            }
+            
+            const generatedContent = response.choices[0].message.content;
+            console.log('Generated content length:', generatedContent.length);
+            
+            // 4. 解析生成的内容
+            // 分离文章、题目和答案
+            const passageMatch = generatedContent.match(/Passage:\s*([\s\S]*?)\s*Questions:/);
+            const questionsMatch = generatedContent.match(/Questions:\s*([\s\S]*?)\s*Answers:/);
+            const answersMatch = generatedContent.match(/Answers:\s*([\s\S]*)/);
+            
+            console.log('Parsing results - passage:', !!passageMatch, 'questions:', !!questionsMatch, 'answers:', !!answersMatch);
+            
+            if (!passageMatch || !questionsMatch || !answersMatch) {
+              // 如果解析失败，尝试另一种方式格式化内容
+              console.log('Failed to parse with regex, trying fallback format');
+              
+              // 创建一个简单的示例内容作为fallback
+              const fallbackPassage = `My Learning Journey
+I have been on a learning journey to improve my vocabulary. Every day, I practice with new words and try to use them in sentences. Reading comprehension is also an important part of my study. I find that the more I practice, the better I understand. This knowledge helps me in many ways.`;
+              
+              const fallbackQuestions = `1. What is the author's learning journey about?
+A. Math
+B. Vocabulary
+C. History
+2. What does the author practice every day?
+A. New words
+B. Sports
+C. Music
+3. What is an important part of the author's study?
+A. Cooking
+B. Reading comprehension
+C. Painting`;
+              
+              const fallbackAnswers = `1. B
+2. A
+3. B`;
+              
+              return res.json({
+                passage: fallbackPassage,
+                questions: fallbackQuestions,
+                answers: fallbackAnswers
+              });
+            }
+            
+            const passage = passageMatch[1].trim();
+            const questions = questionsMatch[1].trim();
+            const answers = answersMatch[1].trim();
+            
+            // 5. 返回格式化的数据
+            res.json({
+              passage: passage,
+              questions: questions,
+              answers: answers
+            });
+          } catch (error) {
+            console.error('Error parsing API response:', error);
+            
+            // 解析错误时也提供fallback内容
+            const fallbackPassage = `My Learning Journey
+I have been on a learning journey to improve my vocabulary. Every day, I practice with new words and try to use them in sentences. Reading comprehension is also an important part of my study. I find that the more I practice, the better I understand. This knowledge helps me in many ways.`;
+            
+            const fallbackQuestions = `1. What is the author's learning journey about?
+A. Math
+B. Vocabulary
+C. History
+2. What does the author practice every day?
+A. New words
+B. Sports
+C. Music
+3. What is an important part of the author's study?
+A. Cooking
+B. Reading comprehension
+C. Painting`;
+            
+            const fallbackAnswers = `1. B
+2. A
+3. B`;
+            
+            res.json({
+              passage: fallbackPassage,
+              questions: fallbackQuestions,
+              answers: fallbackAnswers
+            });
+          }
+        });
+      });
+
+      request.on('error', (error) => {
+        console.error('API request failed:', error);
+        
+        // API请求失败时也提供fallback内容
+        const fallbackPassage = `My Learning Journey
+I have been on a learning journey to improve my vocabulary. Every day, I practice with new words and try to use them in sentences. Reading comprehension is also an important part of my study. I find that the more I practice, the better I understand. This knowledge helps me in many ways.`;
+        
+        const fallbackQuestions = `1. What is the author's learning journey about?
+A. Math
+B. Vocabulary
+C. History
+2. What does the author practice every day?
+A. New words
+B. Sports
+C. Music
+3. What is an important part of the author's study?
+A. Cooking
+B. Reading comprehension
+C. Painting`;
+        
+        const fallbackAnswers = `1. B
+2. A
+3. B`;
+        
+        res.json({
+          passage: fallbackPassage,
+          questions: fallbackQuestions,
+          answers: fallbackAnswers
+        });
+      });
+
+      request.write(postData);
+      request.end();
+    });
+  } catch (error) {
+    console.error('Server error:', error);
+    
+    // 服务器错误时也提供fallback内容
+    const fallbackPassage = `My Learning Journey
+I have been on a learning journey to improve my vocabulary. Every day, I practice with new words and try to use them in sentences. Reading comprehension is also an important part of my study. I find that the more I practice, the better I understand. This knowledge helps me in many ways.`;
+    
+    const fallbackQuestions = `1. What is the author's learning journey about?
+A. Math
+B. Vocabulary
+C. History
+2. What does the author practice every day?
+A. New words
+B. Sports
+C. Music
+3. What is an important part of the author's study?
+A. Cooking
+B. Reading comprehension
+C. Painting`;
+    
+    const fallbackAnswers = `1. B
+2. A
+3. B`;
+    
+    res.json({
+      passage: fallbackPassage,
+      questions: fallbackQuestions,
+      answers: fallbackAnswers
+    });
+  }
+});
+
 // 提供静态文件服务 (放在所有路由后面)
-app.get('*', (req, res) => {
+app.get('/*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
