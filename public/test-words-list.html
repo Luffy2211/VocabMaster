@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>单词列表测试 - VocabMaster</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2563eb;
+            margin: 0;
+        }
+        .summary {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .summary p {
+            font-size: 18px;
+            margin: 0;
+        }
+        .status {
+            color: #16a34a;
+            font-weight: bold;
+        }
+        .error {
+            color: #dc2626;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        th {
+            background-color: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+        }
+        tr:hover {
+            background-color: #f9fafb;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+        }
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+            font-style: italic;
+        }
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        button:hover {
+            background-color: #1d4ed8;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 5px;
+        }
+        .pagination button {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>单词列表测试页面</h1>
+        <p>此页面用于测试和展示单词库中的单词列表及总数</p>
+    </header>
+
+    <div class="controls">
+        <div>
+            <span class="status" id="api-status">准备中...</span>
+        </div>
+        <button id="refresh-btn">刷新数据</button>
+    </div>
+
+    <div class="summary">
+        <p>单词总数: <span id="total-words">0</span></p>
+        <p>当前显示: <span id="displayed-count">0</span> 个单词</p>
+    </div>
+
+    <table id="words-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>英文</th>
+                <th>中文</th>
+                <th>例句</th>
+                <th>添加日期</th>
+            </tr>
+        </thead>
+        <tbody id="words-body">
+            <tr>
+                <td colspan="5" class="loading">正在加载数据...</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="pagination" id="pagination">
+        <!-- 分页按钮将动态生成 -->
+    </div>
+
+    <script>
+        // API 基础URL - 使用相对路径
+        const API_BASE_URL = '/api';
+        
+        // 分页设置
+        const ITEMS_PER_PAGE = 50;
+        let currentPage = 1;
+        let totalWords = 0;
+        let allWords = [];
+        
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('refresh-btn').addEventListener('click', loadWords);
+            loadWords();
+        });
+        
+        // 加载单词数据
+        async function loadWords() {
+            try {
+                // 更新状态
+                updateStatus('loading');
+                const statusElement = document.getElementById('api-status');
+                statusElement.textContent = '正在获取数据...';
+                statusElement.className = 'status';
+                
+                // 先获取单词总数
+                const countResponse = await fetch(`${API_BASE_URL}/words/count`);
+                console.log(`/api/words/count 状态码: ${countResponse.status}`);
+                
+                if (!countResponse.ok) {
+                    throw new Error(`获取单词总数失败: ${countResponse.status}`);
+                }
+                
+                const countData = await countResponse.json();
+                totalWords = countData.total || 0;
+                document.getElementById('total-words').textContent = totalWords;
+                
+                // 然后获取所有单词
+                const wordsResponse = await fetch(`${API_BASE_URL}/words`);
+                console.log(`/api/words 状态码: ${wordsResponse.status}`);
+                
+                if (!wordsResponse.ok) {
+                    throw new Error(`获取单词列表失败: ${wordsResponse.status}`);
+                }
+                
+                allWords = await wordsResponse.json();
+                
+                // 验证数据
+                console.log(`获取到 ${allWords.length} 个单词`);
+                if (allWords.length !== totalWords) {
+                    console.warn(`单词数量不匹配: API返回总数 ${totalWords}, 实际获取 ${allWords.length}`);
+                }
+                
+                // 更新状态
+                updateStatus('success');
+                statusElement.textContent = 'API调用成功';
+                
+                // 渲染单词列表（带分页）
+                renderWordList();
+                
+            } catch (error) {
+                console.error('加载单词失败:', error);
+                updateStatus('error');
+                document.getElementById('api-status').textContent = `错误: ${error.message}`;
+                
+                const wordsBody = document.getElementById('words-body');
+                wordsBody.innerHTML = `<tr><td colspan="5" class="no-data error">加载失败: ${error.message}</td></tr>`;
+            }
+        }
+        
+        // 渲染单词列表
+        function renderWordList() {
+            const wordsBody = document.getElementById('words-body');
+            const displayedCountElement = document.getElementById('displayed-count');
+            
+            // 清空表格
+            wordsBody.innerHTML = '';
+            
+            if (allWords.length === 0) {
+                wordsBody.innerHTML = '<tr><td colspan="5" class="no-data">单词库为空</td></tr>';
+                displayedCountElement.textContent = '0';
+                document.getElementById('pagination').innerHTML = '';
+                return;
+            }
+            
+            // 计算分页
+            const totalPages = Math.ceil(allWords.length / ITEMS_PER_PAGE);
+            const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+            const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, allWords.length);
+            const pageWords = allWords.slice(startIndex, endIndex);
+            
+            // 更新显示计数
+            displayedCountElement.textContent = pageWords.length;
+            
+            // 添加单词行
+            pageWords.forEach(word => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${word.id}</td>
+                    <td>${escapeHtml(word.english)}</td>
+                    <td>${escapeHtml(word.chinese)}</td>
+                    <td>${word.example ? escapeHtml(word.example) : '<span style="color: #9ca3af;">无</span>'}</td>
+                    <td>${formatDate(word.added_date)}</td>
+                `;
+                wordsBody.appendChild(row);
+            });
+            
+            // 渲染分页控件
+            renderPagination(totalPages);
+        }
+        
+        // 渲染分页控件
+        function renderPagination(totalPages) {
+            const paginationContainer = document.getElementById('pagination');
+            paginationContainer.innerHTML = '';
+            
+            if (totalPages <= 1) return;
+            
+            // 上一页按钮
+            const prevBtn = document.createElement('button');
+            prevBtn.textContent = '上一页';
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderWordList();
+                }
+            });
+            paginationContainer.appendChild(prevBtn);
+            
+            // 页码按钮
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.textContent = i;
+                pageBtn.disabled = i === currentPage;
+                if (i === currentPage) {
+                    pageBtn.style.backgroundColor = '#1d4ed8';
+                }
+                pageBtn.addEventListener('click', () => {
+                    currentPage = i;
+                    renderWordList();
+                });
+                paginationContainer.appendChild(pageBtn);
+            }
+            
+            // 下一页按钮
+            const nextBtn = document.createElement('button');
+            nextBtn.textContent = '下一页';
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderWordList();
+                }
+            });
+            paginationContainer.appendChild(nextBtn);
+        }
+        
+        // 更新状态显示
+        function updateStatus(status) {
+            const wordsBody = document.getElementById('words-body');
+            
+            if (status === 'loading') {
+                wordsBody.innerHTML = '<tr><td colspan="5" class="loading">正在加载数据...</td></tr>';
+            }
+        }
+        
+        // 辅助函数：格式化日期
+        function formatDate(dateString) {
+            if (!dateString) return '未知';
+            
+            try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return dateString;
+                
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                
+                return `${year}-${month}-${day}`;
+            } catch (e) {
+                return dateString;
+            }
+        }
+        
+        // 辅助函数：转义HTML
+        function escapeHtml(text) {
+            if (!text) return '';
+            
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>

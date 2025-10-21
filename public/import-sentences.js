@@ -1,0 +1,371 @@
+// 句子导入功能JavaScript代码
+console.log('句子导入功能脚本开始加载...');
+
+// 当主页面加载完成后，插入缺失的导入句子UI元素
+function insertImportSentencesUI() {
+    console.log('开始执行insertImportSentencesUI函数');
+    // 创建导入句子的容器
+    const importContainer = document.createElement('div');
+    importContainer.id = 'english-translation-box';
+    importContainer.className = 'mb-8 bg-white p-6 rounded-xl shadow-sm border border-gray-100';
+    console.log('创建导入句子容器元素');
+    importContainer.innerHTML = `
+        <h3 class="text-xl font-bold text-gray-800 mb-4">英文句子导入</h3>
+        <p class="text-gray-600 mb-4">请按照以下格式输入英文句子及其对应的中文分词翻译：</p>
+        <div class="bg-gray-50 p-4 rounded-lg mb-4 text-sm text-gray-700">
+            <p class="mb-2"><strong>输入格式示例：</strong></p>
+            <p>I usually have breakfast at seven forty in the morning.</p>
+            <p>我，通常，早上，七点四十，吃，早餐。</p>
+            <p class="mt-2"><strong>注意事项：</strong></p>
+            <p>1. 每行一个英文句子，下一行是对应的中文分词（用英文逗号分隔）</p>
+            <p>2. 英文句子可以带编号（如：1. Hello world）</p>
+            <p>3. 中文分词必须用逗号分隔</p>
+        </div>
+        
+        <!-- 文本输入区域 -->
+        <textarea id="sentences-textarea" class="w-full h-64 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary resize-y transition-custom" placeholder="请输入英文句子及对应的中文分词..."></textarea>
+        
+        <!-- 导入按钮 -->
+        <button id="import-sentences-btn" class="mt-4 px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-custom font-medium flex items-center">
+            <i class="fa fa-upload mr-2"></i>
+            导入句子
+        </button>
+        
+        <!-- 导入结果显示区域 -->
+        <div id="import-results" class="mt-4 hidden">
+            <div id="import-results-content"></div>
+        </div>
+    `;
+    console.log('设置导入句子容器的HTML内容');
+    
+    // 查找一个合适的位置来插入这些元素
+    console.log('开始查找插入位置...');
+    // 假设我们找到一个名为'app-container'的主容器
+    const appContainer = document.querySelector('.container') || document.body;
+    console.log('找到的appContainer:', appContainer);
+    
+    // 在页面中插入导入容器
+    if (appContainer) {
+        console.log('成功找到插入容器，继续查找具体位置...');
+        // 尝试找到单词学习或阅读理解的部分，将导入功能放在附近
+        const readingBox = document.getElementById('reading-comprehension-box');
+        const testSettings = document.getElementById('test-settings');
+        
+        console.log('查找readingBox结果:', readingBox);
+        console.log('查找testSettings结果:', testSettings);
+        
+        if (readingBox) {
+            console.log('选择在readingBox后插入UI元素');
+            readingBox.parentNode.insertBefore(importContainer, readingBox.nextSibling);
+        } else if (testSettings) {
+            console.log('选择在testSettings后插入UI元素');
+            testSettings.parentNode.insertBefore(importContainer, testSettings.nextSibling);
+        } else {
+            console.log('未找到特定位置，添加到appContainer末尾');
+            // 如果没有找到合适的位置，就添加到容器末尾
+            appContainer.appendChild(importContainer);
+        }
+        
+        console.log('成功插入句子导入UI元素');
+        
+        // 验证UI元素是否成功创建
+        const importedTextarea = document.getElementById('sentences-textarea');
+        const importedButton = document.getElementById('import-sentences-btn');
+        const importedResults = document.getElementById('import-results');
+        console.log('验证UI元素创建结果:');
+        console.log('sentences-textarea:', importedTextarea);
+        console.log('import-sentences-btn:', importedButton);
+        console.log('import-results:', importedResults);
+        
+        // 为导入按钮添加事件监听器
+        setupImportButtonEvent();
+    } else {
+        console.error('未找到合适的容器来插入句子导入UI元素');
+    }
+}
+
+// 为导入按钮设置事件监听器
+function setupImportButtonEvent() {
+    console.log('开始执行setupImportButtonEvent函数');
+    const importBtn = document.getElementById('import-sentences-btn');
+    console.log('查找导入按钮结果:', importBtn);
+    if (importBtn) {
+        console.log('成功找到导入按钮，准备绑定点击事件');
+        importBtn.addEventListener('click', function() {
+            console.log('导入按钮被点击，开始处理点击事件');
+            const textarea = document.getElementById('sentences-textarea');
+            console.log('查找输入区域结果:', textarea);
+            if (!textarea) {
+                console.error('未找到句子输入区域');
+                showImportResults('系统错误：未找到输入区域', 'error');
+                return;
+            }
+            
+            const sentencesText = textarea.value.trim();
+            console.log('获取到的输入文本长度:', sentencesText.length);
+            
+            if (!sentencesText) {
+                console.log('输入文本为空，显示提示信息');
+                showImportResults('请输入英文语句及对应的中文分词', 'error');
+                return;
+            }
+
+            // 解析输入的句子
+            console.log('准备解析输入的句子');
+            const sentences = parseSentences(sentencesText);
+            console.log('解析结果：成功解析出', sentences.length, '个句子');
+            
+            if (sentences.length === 0) {
+                console.log('未能解析出有效句子，显示错误信息');
+                showImportResults('未能解析出有效的句子，请检查输入格式', 'error');
+                return;
+            }
+
+            // 发送到服务器保存
+            console.log('准备将解析出的句子发送到服务器保存');
+            saveSentencesToServer(sentences);
+        });
+        console.log('成功为导入按钮绑定点击事件');
+    } else {
+        console.error('未找到导入句子按钮');
+    }
+}
+
+// 解析用户输入的句子
+function parseSentences(text) {
+    console.log('开始解析句子，输入文本长度:', text.length);
+    const sentences = [];
+    const lines = text.split('\n');
+    console.log('解析出的行数:', lines.length);
+    
+    let currentEnglishSentence = '';
+    let englishCount = 0;
+    let chineseCount = 0;
+    
+    lines.forEach((line, index) => {
+        line = line.trim();
+        console.log('处理第', index + 1, '行: "' + line.substring(0, 30) + (line.length > 30 ? '...' : '') + '"');
+        if (!line) {
+            console.log('第', index + 1, '行为空，跳过');
+            return;
+        }
+
+        // 检查是否是英文句子（带或不带编号）
+        if (isEnglishSentence(line)) {
+            englishCount++;
+            console.log('第', index + 1, '行被识别为英文句子');
+            // 如果已经有未配对的英文句子，先处理它
+            if (currentEnglishSentence) {
+                console.log('发现未配对的英文句子，先添加到列表');
+                // 如果之前的英文句子没有找到对应的中文分词，添加到列表但没有答案
+                sentences.push({
+                    sentence: currentEnglishSentence,
+                    answers: ''
+                });
+            }
+            // 提取英文句子（去除可能的编号）
+            currentEnglishSentence = extractEnglishSentence(line);
+            console.log('提取后的英文句子:', currentEnglishSentence.substring(0, 50) + (currentEnglishSentence.length > 50 ? '...' : ''));
+        } else if (isChineseText(line) && currentEnglishSentence) {
+            chineseCount++;
+            console.log('第', index + 1, '行被识别为中文翻译且有未配对的英文句子');
+            // 如果是中文文本且有未配对的英文句子，将它们配对
+            const answers = normalizeChineseAnswers(line);
+            console.log('标准化后的中文答案:', answers.substring(0, 50) + (answers.length > 50 ? '...' : ''));
+            sentences.push({
+                sentence: currentEnglishSentence,
+                answers: answers
+            });
+            currentEnglishSentence = '';
+            console.log('成功配对英文句子和中文翻译');
+        } else {
+            console.log('第', index + 1, '行既不是英文句子也不是与当前英文句子配对的中文翻译，跳过');
+        }
+    });
+
+    // 处理最后一个未配对的英文句子
+    if (currentEnglishSentence) {
+        console.log('处理最后一个未配对的英文句子');
+        sentences.push({
+            sentence: currentEnglishSentence,
+            answers: ''
+        });
+    }
+
+    console.log('句子解析完成，总计识别英文句子:', englishCount, '个，中文翻译:', chineseCount, '个，成功配对:', sentences.length, '组');
+    return sentences;
+}
+
+// 判断是否是英文句子
+function isEnglishSentence(text) {
+    // 带编号的英文句子，如 '1. Hello world'
+    if (/^\d+\.\s*[a-zA-Z]/.test(text)) {
+        return true;
+    }
+    // 不带编号的英文句子，以英文开头
+    if (/^[a-zA-Z]/.test(text)) {
+        return true;
+    }
+    return false;
+}
+
+// 提取英文句子（去除编号）
+function extractEnglishSentence(text) {
+    // 去除编号部分
+    const match = text.match(/^(\d+\.\s*)(.*)$/);
+    if (match) {
+        return match[2].trim();
+    }
+    return text.trim();
+}
+
+// 判断是否是中文文本
+function isChineseText(text) {
+    // 检查是否包含中文字符
+    return /[\u4e00-\u9fa5]/.test(text);
+}
+
+// 标准化中文答案（统一使用英文逗号分隔）
+function normalizeChineseAnswers(text) {
+    // 将中文逗号、顿号等替换为英文逗号
+    text = text.replace(/[，、；；]/g, ',');
+    // 去除多余的空格
+    text = text.replace(/\s+/g, '');
+    // 去除可能的括号或其他符号
+    text = text.replace(/[()（）]/g, '');
+    return text.trim();
+}
+
+// 保存句子到服务器
+function saveSentencesToServer(sentences) {
+    console.log('开始将句子保存到服务器，句子总数:', sentences.length);
+    // 为每个句子单独发送请求
+    let successCount = 0;
+    let totalCount = sentences.length;
+    let promises = [];
+    
+    sentences.forEach((sentenceObj, index) => {
+        console.log('准备发送第', index + 1, '个句子到服务器');
+        console.log('待发送的句子数据:', { sentence: sentenceObj.sentence.substring(0, 30) + (sentenceObj.sentence.length > 30 ? '...' : ''), answers: sentenceObj.answers.substring(0, 30) + (sentenceObj.answers.length > 30 ? '...' : '') });
+        promises.push(
+            fetch('http://localhost:3003/api/sentences', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(sentenceObj)
+            })
+            .then(response => {
+                console.log('收到第', index + 1, '个句子的服务器响应，状态码:', response.status);
+                if (!response.ok) {
+                    throw new Error(`服务器响应错误，状态码: ${response.status}`);
+                }
+                return response.json().then(data => {
+                    console.log('第', index + 1, '个句子的响应数据:', data);
+                    // 检查是否成功 - 由于服务器返回的JSON不包含success字段，我们需要根据其他字段判断
+                    data.success = response.status === 201; // 201表示创建成功
+                    return data;
+                });
+            })
+            .then(data => {
+                if (data.success) {
+                    successCount++;
+                    console.log('第', index + 1, '个句子保存成功，累计成功:', successCount);
+                } else {
+                    console.log('第', index + 1, '个句子保存失败，服务器返回非成功状态');
+                }
+            })
+            .catch(error => {
+                console.error('保存第', index + 1, '个句子失败:', error);
+            })
+        );
+    });
+    
+    // 等待所有请求完成
+    console.log('等待所有', promises.length, '个请求完成');
+    Promise.all(promises)
+        .then(() => {
+            console.log('所有请求完成，成功导入', successCount, '个句子，共', totalCount, '个句子');
+            // 显示导入结果
+            showImportResults(
+                `成功导入 ${successCount} 个句子，共 ${totalCount} 个句子`,
+                successCount === totalCount ? 'success' : 'warning'
+            );
+        })
+        .catch(error => {
+            console.error('导入过程中出现错误:', error);
+            showImportResults('导入过程中出现错误，请重试', 'error');
+        });
+}
+
+// 显示导入结果
+function showImportResults(message, type) {
+    console.log('开始显示导入结果，消息类型:', type, '，消息内容:', message);
+    const resultsContainer = document.getElementById('import-results');
+    const resultsContent = document.getElementById('import-results-content');
+    console.log('查找导入结果容器结果 - resultsContainer:', resultsContainer ? '找到' : '未找到', '; resultsContent:', resultsContent ? '找到' : '未找到');
+    
+    if (resultsContainer && resultsContent) {
+        console.log('使用容器显示消息');
+        // 设置消息类型的样式
+        let bgColor = '';
+        let textColor = '';
+        let icon = '';
+        console.log('开始根据消息类型设置样式，类型:', type);
+        
+        switch (type) {
+            case 'success':
+                bgColor = 'bg-green-50';
+                textColor = 'text-green-800';
+                icon = 'fa-check-circle';
+                break;
+            case 'error':
+                bgColor = 'bg-red-50';
+                textColor = 'text-red-800';
+                icon = 'fa-exclamation-circle';
+                break;
+            case 'warning':
+                bgColor = 'bg-yellow-50';
+                textColor = 'text-yellow-800';
+                icon = 'fa-exclamation-triangle';
+                break;
+            default:
+                bgColor = 'bg-blue-50';
+                textColor = 'text-blue-800';
+                icon = 'fa-info-circle';
+        }
+        
+        console.log('样式设置完成 - bgColor:', bgColor, '; textColor:', textColor, '; icon:', icon);
+        
+        // 设置消息内容
+        resultsContent.innerHTML = `
+            <div class="${bgColor} ${textColor} p-4 rounded-lg flex items-start">
+                <i class="fa ${icon} text-xl mt-0.5 mr-3"></i>
+                <p>${message}</p>
+            </div>
+        `;
+        console.log('消息内容HTML已设置到resultsContent');
+        
+        // 显示结果容器
+        resultsContainer.classList.remove('hidden');
+        console.log('已移除结果容器的hidden类，现在可见');
+        
+        // 滚动到结果区域
+        resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        console.log('已滚动到结果区域');
+    } else {
+        // 如果没有找到结果容器，使用alert显示消息
+        console.warn('未找到结果显示区域，使用alert显示消息');
+        alert(message);
+        console.log('alert消息已显示');
+    }
+    console.log('导入结果显示过程完成');
+}
+
+// 等待页面加载完成后执行插入操作
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', insertImportSentencesUI);
+} else {
+    // 如果页面已经加载完成，直接执行插入操作
+    setTimeout(insertImportSentencesUI, 1000);
+}

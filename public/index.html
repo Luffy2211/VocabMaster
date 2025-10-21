@@ -60,6 +60,16 @@
             }
         }
     </style>
+    
+    <!-- 简化版句子导入功能 -->
+    <!-- <script src="./simple-import.js"></script> -->
+    <!-- 直接API测试脚本 -->
+    <!-- <script src="./direct-api-test.js"></script> -->
+    
+    <script>
+        // API 基础URL - 使用相对路径
+        const API_BASE_URL = '/api';
+    </script>
 </head>
 <body class="bg-gray-50 font-sans text-dark">
     <!-- Top Navigation -->
@@ -86,12 +96,6 @@
                 <button id="nav-results" class="nav-btn py-2 font-medium text-gray-600 hover:text-primary transition-custom">
                     <i class="fa fa-bar-chart mr-1"></i> Results
                 </button>
-                <button id="nav-reading" class="nav-btn py-2 font-medium text-gray-600 hover:text-primary transition-custom">
-                    <i class="fa fa-book mr-1"></i> Reading
-                </button>
-                <button id="nav-setting" class="nav-btn py-2 font-medium text-gray-600 hover:text-primary transition-custom">
-                    <i class="fa fa-cog mr-1"></i> Setting
-                </button>
             </nav>
             
             <button id="mobile-menu-btn" class="md:hidden text-gray-600 focus:outline-none">
@@ -116,12 +120,6 @@
                 </button>
                 <button id="mobile-results" class="mobile-nav-btn py-2 font-medium text-left text-gray-600">
                     <i class="fa fa-bar-chart mr-2"></i> Test Results
-                </button>
-                <button id="mobile-reading" class="mobile-nav-btn py-2 font-medium text-left text-gray-600">
-                    <i class="fa fa-book mr-2"></i> Reading Comprehension
-                </button>
-                <button id="mobile-setting" class="mobile-nav-btn py-2 font-medium text-left text-gray-600">
-                    <i class="fa fa-cog mr-2"></i> Settings
                 </button>
             </div>
         </div>
@@ -161,22 +159,64 @@
                                 </div>
                             </div>
                             
-                            <!-- Article Length -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Article Length</label>
-                                <div class="grid grid-cols-1 gap-3">
-                                    <label class="inline-flex items-center">
-                                        <input type="radio" name="article-length" value="short" class="text-primary focus:ring-primary" checked>
-                                        <span class="ml-2 text-gray-700">Short (短篇)</span>
-                                    </label>
-                                    <label class="inline-flex items-center">
-                                        <input type="radio" name="article-length" value="medium" class="text-primary focus:ring-primary">
-                                        <span class="ml-2 text-gray-700">Medium (中篇)</span>
-                                    </label>
-                                    <label class="inline-flex items-center">
-                                        <input type="radio" name="article-length" value="long" class="text-primary focus:ring-primary">
-                                        <span class="ml-2 text-gray-700">Long (长篇)</span>
-                                    </label>
+
+                            
+                            <!-- Custom Parameters -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Article Word Count (AA) -->
+                                <div>
+                                    <label for="article-word-count" class="block text-sm font-medium text-gray-700 mb-2">Article Word Count (AA)</label>
+                                    <input 
+                                        type="number" 
+                                        id="article-word-count" 
+                                        min="50" 
+                                        max="500" 
+                                        value="100" 
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-custom"
+                                    >
+                                    <p class="mt-1 text-xs text-gray-500">Default: 100 words</p>
+                                </div>
+                                
+                                <!-- New Words Percentage (BB) -->
+                                <div>
+                                    <label for="new-words-percentage" class="block text-sm font-medium text-gray-700 mb-2">New Words Percentage (BB)</label>
+                                    <input 
+                                        type="number" 
+                                        id="new-words-percentage" 
+                                        min="0" 
+                                        max="100" 
+                                        value="0" 
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-custom"
+                                    >
+                                    <p class="mt-1 text-xs text-gray-500">Default: 0%</p>
+                                </div>
+                                
+                                <!-- Number of Questions (CC) -->
+                                <div>
+                                    <label for="number-of-questions" class="block text-sm font-medium text-gray-700 mb-2">Number of Questions (CC)</label>
+                                    <input 
+                                        type="number" 
+                                        id="number-of-questions" 
+                                        min="1" 
+                                        max="10" 
+                                        value="3" 
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-custom"
+                                    >
+                                    <p class="mt-1 text-xs text-gray-500">Default: 3 questions</p>
+                                </div>
+                                
+                                <!-- Number of Options (DD) -->
+                                <div>
+                                    <label for="number-of-options" class="block text-sm font-medium text-gray-700 mb-2">Number of Options (DD)</label>
+                                    <input 
+                                        type="number" 
+                                        id="number-of-options" 
+                                        min="2" 
+                                        max="5" 
+                                        value="3" 
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-custom"
+                                    >
+                                    <p class="mt-1 text-xs text-gray-500">Default: 3 options</p>
                                 </div>
                             </div>
                             
@@ -199,6 +239,63 @@
                         <button id="save-settings-btn" class="btn-primary">
                             <i class="fa fa-save mr-1"></i> Save Settings
                         </button>
+                    </div>
+                </div>
+
+                <!-- English Translation Test View -->
+                <div id="translation-test-view" class="hidden">
+                    <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800">English Translation Test</h2>
+                            <div class="text-sm text-gray-500">
+                                Question <span id="translation-current-question">1</span> of <span id="translation-total-questions">3</span>
+                            </div>
+                        </div>
+
+                        <!-- English Sentence Display -->
+                        <div class="p-6 bg-gray-50 rounded-xl mb-6 border border-gray-200">
+                            <p id="translation-english-sentence" class="text-xl font-medium text-gray-800 leading-relaxed">
+                                Lily usually helps mom cook at six p.m.
+                            </p>
+                        </div>
+
+                        <!-- Answer Area -->
+                        <div class="mb-8">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Your Answer</label>
+                            <div id="translation-answer-area" class="min-h-[60px] p-4 bg-white rounded-lg border-2 border-dashed border-gray-300 flex flex-wrap items-center gap-2">
+                                <!-- Selected words will be displayed here -->
+                            </div>
+                        </div>
+
+                        <!-- Word Selection Area -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Select Words</label>
+                            <div id="translation-word-options" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                                <!-- Word options will be dynamically inserted here -->
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex justify-between">
+                            <button id="translation-clear-btn" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-custom">
+                                Clear Selection
+                            </button>
+                            <button id="translation-submit-btn" class="btn-primary">
+                                Submit Answer
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Translation Result Feedback -->
+                    <div id="translation-result-feedback" class="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-6 hidden">
+                        <div id="translation-result-content" class="text-center py-4">
+                            <!-- Result content will be inserted here -->
+                        </div>
+                        <div class="flex justify-center">
+                            <button id="translation-next-btn" class="btn-primary">
+                                Next Question
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -307,6 +404,36 @@ C. Green"
                     </div>
                 </div>
 
+                <!-- English Sentence Translation Import Section -->
+                <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-6">
+                    <h2 class="text-2xl font-bold mb-6 text-gray-800 flex items-center">
+                        <i class="fa fa-language text-primary mr-3"></i> Import English Sentence Translation
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <!-- Sentence Text Area -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                输入英文语句及对应的中文分词
+                            </label>
+                            <textarea 
+                                id="sentences-textarea" 
+                                rows="8" 
+                                placeholder="Lily usually helps mom cook at six p.m.
+莉莉，通常，下午六点，帮，妈妈，做饭。
+
+1. I go to school by bus every day.
+我，每天，乘公交车，去上学。" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-custom"
+                            ></textarea>
+                            <p class="mt-1 text-xs text-gray-500">英文语句可以带编号或不带编号，中文分词用逗号或顿号分隔</p>
+                            <button id="import-sentences-btn" class="mt-3 btn-primary">
+                                <i class="fa fa-check mr-1"></i> Import Sentences
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Import Results -->
                 <div id="import-results" class="bg-white rounded-xl shadow-lg p-6 md:p-8 hidden">
                     <h3 class="text-xl font-semibold mb-4 text-gray-800 flex items-center">
@@ -389,7 +516,7 @@ C. Green"
 
         <!-- Word Management Module -->
         <section id="manage-section" class="section hidden">
-            <div class="max-w-5xl mx-auto bg-white rounded-xl shadow-lg p-6 md:p-8">
+            <div class="max-w-5xl mx-auto bg-white rounded-xl shadow-lg p-6 md:p-8 mb-6">
                 <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
                     <h2 class="text-2xl font-bold text-gray-800 flex items-center">
                         <i class="fa fa-list text-primary mr-3"></i> Manage Vocabulary
@@ -455,6 +582,73 @@ C. Green"
                     </button>
                 </div>
             </div>
+            
+            <!-- Sentence Management Module -->
+            <div class="max-w-5xl mx-auto bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                        <i class="fa fa-align-left text-primary mr-3"></i> Manage Sentences
+                    </h2>
+                    
+                    <div class="mt-4 md:mt-0 flex flex-col sm:flex-row gap-3">
+                        <div class="relative">
+                            <input 
+                                id="search-sentences" 
+                                type="text" 
+                                placeholder="Search sentences..." 
+                                class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-custom w-full sm:w-64"
+                            >
+                            <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                        <button id="add-sentence-btn" class="btn-secondary">
+                            <i class="fa fa-plus mr-1"></i> Add Sentence
+                        </button>
+                        <button id="export-sentences-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-custom disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            <i class="fa fa-download mr-1"></i> Export
+                        </button>
+                        <button id="clear-sentences-btn" class="btn-danger disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            <i class="fa fa-trash mr-1"></i> Clear All
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="no-sentences-message" class="hidden py-16 text-center">
+                    <i class="fa fa-align-left text-5xl text-gray-300 mb-4"></i>
+                    <p class="text-gray-500 text-lg">No sentences available</p>
+                    <p class="text-gray-400 mt-2">Import or add sentences to start practicing</p>
+                    <button id="go-to-import-sentences-btn" class="mt-4 btn-primary">
+                        <i class="fa fa-upload mr-1"></i> Import Sentences
+                    </button>
+                </div>
+                
+                <div id="sentences-container" class="overflow-auto max-h-[60vh] rounded-lg border border-gray-200">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50 sticky top-0 z-10">
+                            <tr>
+                                <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
+                                    <input type="checkbox" id="select-all-sentences" class="text-primary focus:ring-primary rounded">
+                                </th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">English Sentence</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Chinese Answers</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Added Date</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sentences-list" class="bg-white divide-y divide-gray-200">
+                            <!-- 句子列表将在这里动态添加 -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-4 flex justify-between items-center">
+                    <p class="text-sm text-gray-600">
+                        Total <span id="total-sentences">0</span> sentences
+                    </p>
+                    <button id="delete-selected-sentences-btn" class="btn-danger disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        <i class="fa fa-trash mr-1"></i> Delete Selected
+                    </button>
+                </div>
+            </div>
         </section>
 
         <!-- 测试模块 -->
@@ -505,6 +699,52 @@ C. Green"
                         </button>
                     </div>
                 </div>
+
+                <!-- Reading Comprehension Section -->
+                <div id="reading-comprehension-box" class="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-6">
+                    <h2 class="text-2xl font-bold mb-6 text-gray-800 flex items-center">
+                        <i class="fa fa-book text-primary mr-3"></i> Reading Comprehension
+                    </h2>
+                    
+                    <div class="space-y-5">
+                        <div class="p-4 bg-blue-50 rounded-lg border border-blue-100">
+                            <p class="text-gray-700">Take a reading comprehension test to improve your reading skills and vocabulary understanding.</p>
+                        </div>
+                        
+                        <button id="start-reading-test-btn" class="w-full btn-primary">
+                            <i class="fa fa-book mr-2"></i> Start Test
+                        </button>
+                    </div>
+                </div>
+
+                <!-- English Translation Test Section -->
+                <div id="english-translation-box" class="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-6">
+                    <h2 class="text-2xl font-bold mb-6 text-gray-800 flex items-center">
+                        <i class="fa fa-language text-primary mr-3"></i> English Translation
+                    </h2>
+                    
+                    <div class="space-y-5">
+                        <div class="p-4 bg-blue-50 rounded-lg border border-blue-100">
+                            <p class="text-gray-700">Translate English sentences into Chinese by selecting the correct word sequence.</p>
+                        </div>
+                        
+                        <div>
+                            <label for="translation-test-count" class="block text-sm font-medium text-gray-700 mb-1">Number of Test Sentences</label>
+                            <input 
+                                type="number" 
+                                id="translation-test-count" 
+                                min="1" 
+                                max="20" 
+                                value="3" 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-custom"
+                            >
+                        </div>
+                        
+                        <button id="start-translation-test-btn" class="w-full btn-primary">
+                            <i class="fa fa-play mr-2"></i> Start Test
+                        </button>
+                    </div>
+                </div>
                 
                 <!-- Test in Progress -->
                 <div id="test-in-progress" class="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-6 hidden">
@@ -548,6 +788,61 @@ C. Green"
                         <button id="next-question-btn" class="mt-4 bg-primary/10 hover:bg-primary/20 text-primary font-medium py-2 px-4 rounded-lg transition-custom">
                             Next Question
                         </button>
+                    </div>
+                </div>
+                
+                <!-- English Translation Test View -->
+                <div id="translation-test-view" class="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-6 hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                            <i class="fa fa-language text-primary mr-3"></i> English Translation Test
+                        </h2>
+                        <div class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm font-medium">
+                            <span id="translation-current-question">1</span>/<span id="translation-total-questions">0</span>
+                        </div>
+                    </div>
+                    
+                    <!-- English Sentence Display -->
+                    <div class="bg-neutral p-6 rounded-lg mb-6">
+                        <p id="translation-english-sentence" class="text-xl font-medium text-gray-800"></p>
+                    </div>
+                    
+                    <!-- Answer Area -->
+                    <div class="mb-6">
+                        <p class="text-gray-500 text-sm mb-2">Your Translation</p>
+                        <div id="translation-answer-area" class="min-h-12 p-4 bg-blue-50 border border-blue-100 rounded-lg flex flex-wrap gap-2">
+                            <!-- Selected words will be displayed here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Word Options -->
+                    <div class="mb-6">
+                        <p class="text-gray-500 text-sm mb-2">Select Chinese Words</p>
+                        <div id="translation-word-options" class="flex flex-wrap gap-2">
+                            <!-- Word options will be dynamically added here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="flex justify-between">
+                        <button id="translation-clear-btn" class="btn-gray">
+                            <i class="fa fa-eraser mr-1"></i> Clear Selection
+                        </button>
+                        <button id="translation-submit-btn" class="btn-primary">
+                            <i class="fa fa-check mr-1"></i> Submit Answer
+                        </button>
+                    </div>
+                    
+                    <!-- Result Feedback -->
+                    <div id="translation-result-feedback" class="mt-6 p-4 rounded-lg hidden">
+                        <div id="translation-result-content" class="text-center py-4">
+                            <!-- Result content will be inserted here -->
+                        </div>
+                        <div class="flex justify-center">
+                            <button id="translation-next-btn" class="btn-primary">
+                                Next Question
+                            </button>
+                        </div>
                     </div>
                 </div>
                 
@@ -1012,8 +1307,8 @@ C. Green"
     </footer>
 
     <script>
-        // API 基础URL
-        const API_BASE_URL = '/api';
+        // 全局定义API基础URL
+        window.API_BASE_URL = 'http://localhost:3003/api';
         
         // 当前选中的单词ID列表
         let selectedWordIds = [];
@@ -1039,6 +1334,7 @@ C. Green"
             initMistakesModule();
             initResultsModule();
             initSettingModule();
+            initReadingComprehension();
             
             // 初始化确认对话框
             initConfirmDialog();
@@ -1116,6 +1412,10 @@ C. Green"
             // 如果是结果模块，加载测试结果
             if (sectionId === 'results-section') {
                 loadTestResults();
+            }
+            // 如果是设置模块，初始化设置
+            if (sectionId === 'setting-section') {
+                initSettingModule();
             }
         }
         
@@ -1398,7 +1698,18 @@ C. Green"
         // 导出单词列表为Excel
         function exportWords() {
             fetch(`${API_BASE_URL}/words`)
-                .then(response => response.json())
+                .then(response => {
+                    console.log('导出API 状态码:', response.status);
+                    if (!response.ok) {
+                        throw new Error(`获取导出数据失败: ${response.status}`);
+                    }
+                    // 检查响应类型是否为JSON
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/json')) {
+                        throw new Error('API返回非JSON格式数据');
+                    }
+                    return response.json();
+                })
                 .then(words => {
                     // 创建CSV内容
                     let csvContent = '英语,中文,例句,添加日期\n';
@@ -1439,16 +1750,77 @@ C. Green"
 
         // 加载单词列表
         function loadWords() {
-            fetch(`${API_BASE_URL}/words`)
-                .then(response => response.json())
-                .then(words => {
+            // 先获取单词总数
+            fetch(`${API_BASE_URL}/words/count`)
+                .then(response => {
+                    console.log('Count API 状态码:', response.status);
+                    if (!response.ok) {
+                        // 检查响应类型，看看是否返回HTML错误页面
+                        const contentType = response.headers.get('content-type');
+                        if (contentType && contentType.includes('text/html')) {
+                            throw new Error(`获取单词总数失败: 服务器返回HTML错误页面，状态码 ${response.status}`);
+                        }
+                        throw new Error(`获取单词总数失败: ${response.status}`);
+                    }
+                    // 检查响应类型是否为JSON
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/json')) {
+                        throw new Error('API返回非JSON格式数据');
+                    }
+                    return response.json();
+                })
+                .then(countData => {
+                    console.log('获取到单词总数:', countData.total || 0);
+                    const totalWords = document.getElementById('total-words');
+                    // 更新单词总数显示
+                    totalWords.textContent = countData.total || 0;
+                    
+                    // 然后获取单词列表
+                    return fetch(`${API_BASE_URL}/words`);
+                })
+                .then(response => {
+                    console.log('Words API 状态码:', response.status);
+                    if (!response.ok) {
+                        // 检查响应类型，看看是否返回HTML错误页面
+                        const contentType = response.headers.get('content-type');
+                        if (contentType && contentType.includes('text/html')) {
+                            throw new Error(`获取单词列表失败: 服务器返回HTML错误页面，状态码 ${response.status}`);
+                        }
+                        throw new Error(`获取单词列表失败: ${response.status}`);
+                    }
+                    // 检查响应类型是否为JSON
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/json')) {
+                        throw new Error('API返回非JSON格式数据');
+                    }
+                    return response.json();
+                })
+                .catch(error => {
+                    console.error('加载单词失败:', error);
+                    alert('加载单词失败: ' + error.message);
+                    // 重置UI显示
                     const wordsList = document.getElementById('words-list');
                     const noWordsMessage = document.getElementById('no-words-message');
                     const totalWords = document.getElementById('total-words');
                     const clearWordsBtn = document.getElementById('clear-words-btn');
-                    const selectAllWords = document.getElementById('select-all-words');
                     
-                    totalWords.textContent = words.length;
+                    wordsList.innerHTML = '';
+                    noWordsMessage.classList.remove('hidden');
+                    noWordsMessage.textContent = '加载单词失败，请刷新页面重试';
+                    totalWords.textContent = '0';
+                    clearWordsBtn.disabled = true;
+                    document.getElementById('export-words-btn').disabled = true;
+                    document.getElementById('select-all-words').checked = false;
+                    selectedWordIds = [];
+                    
+                    // 返回一个空数组以避免后续处理错误
+                    return [];
+                })
+                .then(words => {
+                    const wordsList = document.getElementById('words-list');
+                    const noWordsMessage = document.getElementById('no-words-message');
+                    const clearWordsBtn = document.getElementById('clear-words-btn');
+                    const selectAllWords = document.getElementById('select-all-words');
                     
                     // 更新按钮状态
                     clearWordsBtn.disabled = words.length === 0;
@@ -1472,7 +1844,7 @@ C. Green"
                             row.className = 'hover:bg-gray-50 transition-custom';
                             row.innerHTML = `
                                 <td class="px-4 py-3 whitespace-nowrap">
-                                    <input type="checkbox" class="word-checkbox" data-id="${word.id}" class="text-primary focus:ring-primary rounded">
+                                    <input type="checkbox" class="word-checkbox text-primary focus:ring-primary rounded" data-id="${word.id}">
                                 </td>
                                 <td class="px-4 py-3 whitespace-nowrap">
                                     <div class="font-medium text-gray-900">${word.english}</div>
@@ -1524,13 +1896,36 @@ C. Green"
                 })
                 .catch(error => {
                     console.error('加载单词失败:', error);
+                    // 显示错误信息
+                    const wordsList = document.getElementById('words-list');
+                    const noWordsMessage = document.getElementById('no-words-message');
+                    wordsList.innerHTML = '';
+                    noWordsMessage.classList.remove('hidden');
+                    noWordsMessage.innerHTML = `加载失败: ${error.message}`;
+                    noWordsMessage.classList.add('text-danger');
+                    // 重置计数显示
+                    document.getElementById('total-words').textContent = '0';
+                    // 禁用相关按钮
+                    document.getElementById('clear-words-btn').disabled = true;
+                    document.getElementById('export-words-btn').disabled = true;
                 });
         }
         
         // 搜索单词
         function searchWordsByName(query) {
             fetch(`${API_BASE_URL}/words/search/${query}`)
-                .then(response => response.json())
+                .then(response => {
+                    console.log('搜索API 状态码:', response.status);
+                    if (!response.ok) {
+                        throw new Error(`搜索失败: ${response.status}`);
+                    }
+                    // 检查响应类型是否为JSON
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/json')) {
+                        throw new Error('API返回非JSON格式数据');
+                    }
+                    return response.json();
+                })
                 .then(words => {
                     const wordsList = document.getElementById('words-list');
                     const noWordsMessage = document.getElementById('no-words-message');
@@ -1870,10 +2265,17 @@ C. Green"
             const restartTestBtn = document.getElementById('restart-test-btn');
             const reviewMistakesBtn = document.getElementById('review-mistakes-btn');
             const saveResultsBtn = document.getElementById('save-results-btn');
+            const startReadingTestBtn = document.getElementById('start-reading-test-btn');
             
             // 开始测试
             startTestBtn.addEventListener('click', function() {
                 startTest();
+            });
+            
+            // 开始阅读理解测试
+            startReadingTestBtn.addEventListener('click', function() {
+                showSection('reading-section');
+                loadPassages();
             });
             
             // 显示例句
@@ -2039,7 +2441,7 @@ C. Green"
                         }
                     } else {
                         // English → Chinese 测试：选项是中文释义
-                        allOptions = [...distractors, currentWord.chinese];
+                        allOptions = [...distractors.map(d => d.chinese), currentWord.chinese];
                     }
                     
                     // 随机排序选项
@@ -2048,10 +2450,27 @@ C. Green"
                         [allOptions[i], allOptions[j]] = [allOptions[j], allOptions[i]];
                     }
                     
+                    // 为options-container添加总背景框样式
+                    optionsContainer.className = 'bg-white border border-gray-200 rounded-xl p-4 space-y-3 transition-colors duration-300';
+                    
+                    // 记录正确答案索引，方便后续标识
+                    const correctAnswerIndex = allOptions.findIndex(opt => {
+                        if (isChineseToEnglish || isSentenceFilling) {
+                            return opt === currentWord.english;
+                        } else {
+                            return opt === currentWord.chinese;
+                        }
+                    });
+                    
                     // 显示选项
                     allOptions.forEach((option, index) => {
                         const optionElement = document.createElement('div');
-                        optionElement.className = 'p-4 border border-gray-200 rounded-lg option-hover';
+                        optionElement.className = 'p-4 border border-gray-200 rounded-lg option-hover transition-colors duration-200';
+                        optionElement.dataset.optionIndex = index;
+                        if (index === correctAnswerIndex) {
+                            optionElement.dataset.isCorrect = 'true';
+                        }
+                        
                         optionElement.innerHTML = `
                             <div class="flex items-center">
                                 <div class="w-6 h-6 flex-shrink-0 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 mr-3">
@@ -2062,16 +2481,15 @@ C. Green"
                         `;
                         
                         // 根据测试类型设置不同的点击事件
-                    const isSentenceFilling = currentTest.testType === 'sentence-filling-multiple';
-                    if (isChineseToEnglish || isSentenceFilling) {
-                        optionElement.addEventListener('click', function() {
-                            checkAnswer({ english: option });
-                        });
-                    } else {
-                        optionElement.addEventListener('click', function() {
-                            checkAnswer({ chinese: option });
-                        });
-                    }
+                        if (isChineseToEnglish || isSentenceFilling) {
+                            optionElement.addEventListener('click', function() {
+                                checkAnswer({ english: option }, index);
+                            });
+                        } else {
+                            optionElement.addEventListener('click', function() {
+                                checkAnswer({ chinese: option }, index);
+                            });
+                        }
                         
                         optionsContainer.appendChild(optionElement);
                     });
@@ -2082,7 +2500,7 @@ C. Green"
         }
         
         // 检查答案
-        function checkAnswer(selectedOption) {
+        function checkAnswer(selectedOption, selectedIndex) {
             const currentWord = currentTest.words[currentTest.currentIndex];
             const answerFeedback = document.getElementById('answer-feedback');
             const feedbackIcon = document.getElementById('feedback-icon');
@@ -2109,6 +2527,12 @@ C. Green"
                 isCorrect = selectedOption.chinese === currentWord.chinese;
             }
             
+            // 获取当前选中的选项元素
+            const selectedOptionElement = optionsContainer.querySelector(`[data-option-index="${selectedIndex}"]`);
+            // 获取正确答案的选项元素
+            const correctOptionElement = optionsContainer.querySelector('[data-is-correct="true"]');
+            const correctIndex = correctOptionElement ? correctOptionElement.dataset.optionIndex : -1;
+            
             if (isCorrect) {
                 // 答案正确
                 currentTest.correctCount++;
@@ -2125,6 +2549,18 @@ C. Green"
                 }
                 
                 answerFeedback.className = 'mt-6 p-4 rounded-lg bg-green-50 border border-green-200';
+                
+                // 设置整个选项容器的背景为浅绿色
+                optionsContainer.className = 'bg-green-50 border border-green-200 rounded-xl p-4 space-y-3 transition-colors duration-300';
+                
+                // 高亮显示选中的正确选项
+                if (selectedOptionElement) {
+                    selectedOptionElement.className = 'p-4 border border-green-300 rounded-lg bg-green-100 option-hover transition-colors duration-200';
+                    // 添加正确标记
+                    selectedOptionElement.querySelector('div:first-child').innerHTML += `
+                        <i class="fa fa-check-circle text-green-500 ml-2"></i>
+                    `;
+                }
                 
                 // 更新错词状态
                 updateMistakeStatus(currentWord.id, true);
@@ -2151,6 +2587,27 @@ C. Green"
                 }
                 
                 answerFeedback.className = 'mt-6 p-4 rounded-lg bg-red-50 border border-red-200';
+                
+                // 设置整个选项容器的背景为浅红色
+                optionsContainer.className = 'bg-red-50 border border-red-200 rounded-xl p-4 space-y-3 transition-colors duration-300';
+                
+                // 高亮显示选中的错误选项
+                if (selectedOptionElement) {
+                    selectedOptionElement.className = 'p-4 border border-red-300 rounded-lg bg-red-100 option-hover transition-colors duration-200';
+                    // 添加错误标记
+                    selectedOptionElement.querySelector('div:first-child').innerHTML += `
+                        <i class="fa fa-times-circle text-red-500 ml-2"></i>
+                    `;
+                }
+                
+                // 高亮显示正确答案选项
+                if (correctOptionElement && correctIndex !== selectedIndex) {
+                    correctOptionElement.className = 'p-4 border border-green-300 rounded-lg bg-green-100 option-hover transition-colors duration-200';
+                    // 添加正确标记
+                    correctOptionElement.querySelector('div:first-child').innerHTML += `
+                        <i class="fa fa-check-circle text-green-500 ml-2"></i>
+                    `;
+                }
                 
                 // 添加到错词库
                 addToMistakes(currentWord.id);
@@ -3292,45 +3749,75 @@ C. Green"
         
         function initReadingComprehension() {
             // 导航到阅读理解页面
-            document.getElementById('nav-reading').addEventListener('click', function() {
-                showSection('reading-section');
-                loadPassages();
-            });
+            const navReading = document.getElementById('nav-reading');
+            if (navReading) {
+                navReading.addEventListener('click', function() {
+                    showSection('reading-section');
+                    loadPassages();
+                });
+            }
             
-            document.getElementById('mobile-reading').addEventListener('click', function() {
-                showSection('reading-section');
-                closeMobileMenu();
-                loadPassages();
-            });
+            const mobileReading = document.getElementById('mobile-reading');
+            if (mobileReading) {
+                mobileReading.addEventListener('click', function() {
+                    showSection('reading-section');
+                    closeMobileMenu();
+                    loadPassages();
+                });
+            }
 
             // 返回文章列表按钮事件
-            document.getElementById('back-to-passages').addEventListener('click', function() {
-                document.getElementById('reading-test').classList.add('hidden');
-                document.getElementById('passage-list').classList.remove('hidden');
-                resetReadingTest();
-            });
+            const backToPassages = document.getElementById('back-to-passages');
+            if (backToPassages) {
+                backToPassages.addEventListener('click', function() {
+                    const readingTest = document.getElementById('reading-test');
+                    const passageList = document.getElementById('passage-list');
+                    if (readingTest) readingTest.classList.add('hidden');
+                    if (passageList) passageList.classList.remove('hidden');
+                    resetReadingTest();
+                });
+            }
 
-            document.getElementById('back-to-passages-from-results').addEventListener('click', function() {
-                document.getElementById('reading-results').classList.add('hidden');
-                document.getElementById('passage-list').classList.remove('hidden');
-                resetReadingTest();
-            });
+            const backToPassagesFromResults = document.getElementById('back-to-passages-from-results');
+            if (backToPassagesFromResults) {
+                backToPassagesFromResults.addEventListener('click', function() {
+                    const readingResults = document.getElementById('reading-results');
+                    const passageList = document.getElementById('passage-list');
+                    if (readingResults) readingResults.classList.add('hidden');
+                    if (passageList) passageList.classList.remove('hidden');
+                    resetReadingTest();
+                });
+            }
 
-            document.getElementById('back-to-test').addEventListener('click', function() {
-                document.getElementById('reading-results').classList.add('hidden');
-                document.getElementById('reading-test').classList.remove('hidden');
-            });
+            const backToTest = document.getElementById('back-to-test');
+            if (backToTest) {
+                backToTest.addEventListener('click', function() {
+                    const readingResults = document.getElementById('reading-results');
+                    const readingTest = document.getElementById('reading-test');
+                    if (readingResults) readingResults.classList.add('hidden');
+                    if (readingTest) readingTest.classList.remove('hidden');
+                });
+            }
 
             // 提交答案按钮事件
-            document.getElementById('submit-reading-answers').addEventListener('click', submitReadingAnswers);
+            const submitReadingAnswersBtn = document.getElementById('submit-reading-answers');
+            if (submitReadingAnswersBtn) {
+                submitReadingAnswersBtn.addEventListener('click', submitReadingAnswers);
+            }
 
             // 导入阅读理解题目按钮事件
-            document.getElementById('import-reading-btn').addEventListener('click', importReadingQuestions);
+            const importReadingBtn = document.getElementById('import-reading-btn');
+            if (importReadingBtn) {
+                importReadingBtn.addEventListener('click', importReadingQuestions);
+            }
 
             // 阅读设置按钮事件
-            document.getElementById('reading-setting-btn').addEventListener('click', function() {
-                showSection('setting-section');
-            });
+            const readingSettingBtn = document.getElementById('reading-setting-btn');
+            if (readingSettingBtn) {
+                readingSettingBtn.addEventListener('click', function() {
+                    showSection('setting-section');
+                });
+            }
         }
 
         // 重置阅读理解测试
@@ -3522,7 +4009,8 @@ C. Green"
                 questionsContainer.innerHTML = '';
                 data.questions.forEach((question, index) => {
                     const questionElement = document.createElement('div');
-                    questionElement.className = 'bg-white border border-gray-200 rounded-lg p-4';
+                    questionElement.className = 'bg-white border border-gray-200 rounded-lg p-4 transition-colors duration-300';
+                    questionElement.dataset.questionId = question.id;
                     questionElement.innerHTML = `
                         <div class="mb-3">
                             <span class="font-medium text-gray-800">${index + 1}. ${question.question_text}</span>
@@ -3548,6 +4036,64 @@ C. Green"
                     radioButtons.forEach(radio => {
                         radio.addEventListener('change', function() {
                             userAnswers[question.id] = this.value;
+                            
+                            // 获取当前题目的正确答案
+                            const correctAnswer = question.correct_answer;
+                            const isCorrect = this.value.toUpperCase() === correctAnswer.toUpperCase();
+                            
+                            // 重置所有选项的样式
+                            const labels = questionElement.querySelectorAll('label');
+                            labels.forEach(label => {
+                                label.classList.remove('bg-green-100', 'bg-red-100', 'font-bold');
+                                label.classList.add('hover:bg-gray-50');
+                                
+                                const span = label.querySelector('span');
+                                const icon = span.querySelector('i');
+                                if (icon) {
+                                    span.removeChild(icon);
+                                }
+                            });
+                            
+                            // 更新题目方框的背景颜色
+                            if (isCorrect) {
+                                questionElement.classList.remove('bg-white', 'bg-red-50');
+                                questionElement.classList.add('bg-green-50', 'border-green-300');
+                                
+                                // 为正确的选项添加对勾图标
+                                const label = this.parentElement;
+                                const span = label.querySelector('span');
+                                label.classList.remove('hover:bg-gray-50');
+                                label.classList.add('bg-green-100');
+                                
+                                if (!span.querySelector('i')) {
+                                    const icon = document.createElement('i');
+                                    icon.className = 'fa fa-check-circle text-green-600 mr-2';
+                                    span.prepend(icon);
+                                }
+                            } else {
+                                questionElement.classList.remove('bg-white', 'bg-green-50');
+                                questionElement.classList.add('bg-red-50', 'border-red-300');
+                                
+                                // 标记用户选择的选项
+                                const userLabel = this.parentElement;
+                                userLabel.classList.remove('hover:bg-gray-50');
+                                userLabel.classList.add('bg-red-100');
+                                
+                                // 标记正确的选项
+                                const correctOption = questionElement.querySelector(`input[value="${correctAnswer}"]`);
+                                if (correctOption) {
+                                    const correctLabel = correctOption.parentElement;
+                                    correctLabel.classList.remove('hover:bg-gray-50');
+                                    correctLabel.classList.add('bg-green-100', 'font-bold');
+                                    
+                                    const span = correctLabel.querySelector('span');
+                                    if (!span.querySelector('i')) {
+                                        const icon = document.createElement('i');
+                                        icon.className = 'fa fa-check-circle text-green-600 mr-2';
+                                        span.prepend(icon);
+                                    }
+                                }
+                            }
                         });
                     });
 
@@ -3824,10 +4370,21 @@ C. Green"
                     console.error('Failed to parse saved settings:', e);
                 }
             }
+            
+            // 使用generateDefaultPrompt函数生成默认提示词
+            const defaultWordCount = 100;
+            const defaultNewWordsPercent = 0;
+            const defaultQuestionCount = 3;
+            const defaultOptionCount = 3;
+            const defaultPrompt = generateDefaultPrompt(defaultWordCount, defaultNewWordsPercent, defaultQuestionCount, defaultOptionCount);
+            
             return {
                 readingDifficulty: 'beginner',
-                articleLength: 'short',
-                customPrompt: ''
+                customPrompt: defaultPrompt,
+                articleWordCount: defaultWordCount,
+                newWordsPercentage: defaultNewWordsPercent,
+                numberOfQuestions: defaultQuestionCount,
+                numberOfOptions: defaultOptionCount
             };
         }
 
@@ -3836,16 +4393,42 @@ C. Green"
             localStorage.setItem('vocabMasterSettings', JSON.stringify(settings));
         }
 
+        // 根据参数生成默认提示词
+        function generateDefaultPrompt(wordCount, newWordsPercent, questionCount, optionCount) {
+            // 生成题目和选项模板
+            let questionsTemplate = '';
+            for (let i = 1; i <= questionCount; i++) {
+                questionsTemplate += `${i}. [Question ${i}]\n`;
+                for (let j = 0; j < optionCount; j++) {
+                    questionsTemplate += `${String.fromCharCode(65 + j)}. [Option ${String.fromCharCode(65 + j)}]\n`;
+                }
+                if (i < questionCount) questionsTemplate += '\n';
+            }
+            
+            // 生成答案模板
+            let answersTemplate = '';
+            for (let i = 1; i <= questionCount; i++) {
+                answersTemplate += `${i}. [Answer ${i}]`;
+                if (i < questionCount) answersTemplate += '\n';
+            }
+            
+            return `You are an English teacher. Generate a AA-word English reading passage using the provided words. BB% of the words must use the words from the list. The passage should have a clear title on the first line, followed by the content. Also create CC multiple-choice questions (with DD options each) based on the passage, and provide the correct answers.\n\nIMPORTANT: You must strictly follow this output format. Do not add any extra explanations or text outside the specified sections:\n\nPassage:\n[Title]\n[Content]\n\nQuestions:\n${questionsTemplate}\nAnswers:\n${answersTemplate}`;
+        }
+        
         // 初始化设置模块
         function initSettingModule() {
             const saveSettingsBtn = document.getElementById('save-settings-btn');
             const difficultyRadios = document.getElementsByName('reading-difficulty');
-            const lengthRadios = document.getElementsByName('article-length');
+
             const customPromptElement = document.getElementById('custom-prompt');
+            const articleWordCountElement = document.getElementById('article-word-count');
+            const newWordsPercentageElement = document.getElementById('new-words-percentage');
+            const numberOfQuestionsElement = document.getElementById('number-of-questions');
+            const numberOfOptionsElement = document.getElementById('number-of-options');
             
             if (saveSettingsBtn) {
                 // 加载保存的设置
-                const settings = loadSettings();
+                let settings = loadSettings();
                 
                 // 设置难度选项
                 difficultyRadios.forEach(radio => {
@@ -3854,22 +4437,76 @@ C. Green"
                     }
                 });
                 
-                // 设置长度选项
-                lengthRadios.forEach(radio => {
-                    if (radio.value === settings.articleLength) {
-                        radio.checked = true;
-                    }
-                });
+
                 
-                // 设置自定义提示词
-                if (customPromptElement && settings.customPrompt) {
+                // 检查是否是旧格式的提示词
+                const isOldFormat = settings.customPrompt && 
+                                  (settings.customPrompt.includes('${wordCount}') || 
+                                   settings.customPrompt.includes('${100 - newWordsPercent}') ||
+                                   settings.customPrompt.includes('一篇200词的英语阅读理解文本'));
+                
+                // 如果是旧格式，使用新的参数占位符格式
+                if (isOldFormat && customPromptElement) {
+                    const wordCount = settings.articleWordCount || 100;
+                    const newWordsPercent = settings.newWordsPercentage || 0;
+                    const questionCount = settings.numberOfQuestions || 3;
+                    const optionCount = settings.numberOfOptions || 3;
+                    
+                    // 使用新的参数占位符格式
+                    const newPrompt = generateDefaultPrompt(wordCount, newWordsPercent, questionCount, optionCount);
+                    customPromptElement.value = newPrompt;
+                    
+                    // 更新设置
+                    settings.customPrompt = newPrompt;
+                    saveSettings(settings);
+                } else if (customPromptElement && settings.customPrompt) {
+                    // 设置自定义提示词
                     customPromptElement.value = settings.customPrompt;
+                }
+                
+                // 设置自定义参数
+                if (articleWordCountElement) {
+                    articleWordCountElement.value = settings.articleWordCount || 100;
+                }
+                if (newWordsPercentageElement) {
+                    newWordsPercentageElement.value = settings.newWordsPercentage || 0;
+                }
+                if (numberOfQuestionsElement) {
+                    numberOfQuestionsElement.value = settings.numberOfQuestions || 3;
+                }
+                if (numberOfOptionsElement) {
+                    numberOfOptionsElement.value = settings.numberOfOptions || 3;
+                }
+                
+                // 添加事件监听器，当参数变化时更新默认提示词
+                function updatePromptOnChange() {
+                    if (customPromptElement && customPromptElement.value === loadSettings().customPrompt) {
+                        // 只有当用户没有修改过提示词时才自动更新
+                        const wordCount = parseInt(articleWordCountElement.value) || 100;
+                        const newWordsPercent = parseInt(newWordsPercentageElement.value) || 0;
+                        const questionCount = parseInt(numberOfQuestionsElement.value) || 3;
+                        const optionCount = parseInt(numberOfOptionsElement.value) || 3;
+                        
+                        customPromptElement.value = generateDefaultPrompt(wordCount, newWordsPercent, questionCount, optionCount);
+                    }
+                }
+                
+                if (articleWordCountElement) {
+                    articleWordCountElement.addEventListener('change', updatePromptOnChange);
+                }
+                if (newWordsPercentageElement) {
+                    newWordsPercentageElement.addEventListener('change', updatePromptOnChange);
+                }
+                if (numberOfQuestionsElement) {
+                    numberOfQuestionsElement.addEventListener('change', updatePromptOnChange);
+                }
+                if (numberOfOptionsElement) {
+                    numberOfOptionsElement.addEventListener('change', updatePromptOnChange);
                 }
                 
                 // 保存设置按钮点击事件
                 saveSettingsBtn.addEventListener('click', function() {
                     let selectedDifficulty = 'beginner';
-                    let selectedLength = 'short';
                     
                     // 获取选中的难度
                     difficultyRadios.forEach(radio => {
@@ -3878,22 +4515,31 @@ C. Green"
                         }
                     });
                     
-                    // 获取选中的长度
-                    lengthRadios.forEach(radio => {
-                        if (radio.checked) {
-                            selectedLength = radio.value;
-                        }
-                    });
-                    
                     // 获取自定义提示词
                     const customPromptElement = document.getElementById('custom-prompt');
                     const customPrompt = customPromptElement ? customPromptElement.value.trim() : '';
                     
+                    // 获取自定义参数
+                    const articleWordCountElement = document.getElementById('article-word-count');
+                    const articleWordCount = articleWordCountElement ? parseInt(articleWordCountElement.value) || 100 : 100;
+                    
+                    const newWordsPercentageElement = document.getElementById('new-words-percentage');
+                    const newWordsPercentage = newWordsPercentageElement ? parseInt(newWordsPercentageElement.value) || 0 : 0;
+                    
+                    const numberOfQuestionsElement = document.getElementById('number-of-questions');
+                    const numberOfQuestions = numberOfQuestionsElement ? parseInt(numberOfQuestionsElement.value) || 3 : 3;
+                    
+                    const numberOfOptionsElement = document.getElementById('number-of-options');
+                    const numberOfOptions = numberOfOptionsElement ? parseInt(numberOfOptionsElement.value) || 3 : 3;
+                    
                     // 保存设置
                     const newSettings = {
                         readingDifficulty: selectedDifficulty,
-                        articleLength: selectedLength,
-                        customPrompt: customPrompt
+                        customPrompt: customPrompt,
+                        articleWordCount: articleWordCount,
+                        newWordsPercentage: newWordsPercentage,
+                        numberOfQuestions: numberOfQuestions,
+                        numberOfOptions: numberOfOptions
                     };
                     saveSettings(newSettings);
                     
@@ -4049,11 +4695,40 @@ C. Green"
                     // 获取设置
                     const settings = loadSettings();
                     
+                    // 替换提示词中的参数占位符
+                    const replacePromptParameters = function(prompt, wordCount, newWordsPercent, questionCount, optionCount) {
+                        // 计算BB参数：100 - 新单词百分比
+                        const BB = 100 - newWordsPercent;
+                        
+                        // 替换AA, BB, CC, DD参数
+                        let processedPrompt = prompt
+                            .replace(/AA/g, wordCount.toString())
+                            .replace(/BB/g, BB.toString())
+                            .replace(/CC/g, questionCount.toString())
+                            .replace(/DD/g, optionCount.toString());
+                        
+                        return processedPrompt;
+                    };
+                    
+                    // 处理自定义提示词
+                    const wordCount = settings.articleWordCount || 100;
+                    const newWordsPercent = settings.newWordsPercentage || 0;
+                    const questionCount = settings.numberOfQuestions || 3;
+                    const optionCount = settings.numberOfOptions || 3;
+                    
+                    // 替换提示词中的参数占位符
+                    const processedCustomPrompt = settings.customPrompt ? 
+                        replacePromptParameters(settings.customPrompt, wordCount, newWordsPercent, questionCount, optionCount) : 
+                        '';
+                    
                     // 准备请求体
                     const requestBody = JSON.stringify({
                         difficulty: settings.readingDifficulty,
-                        length: settings.articleLength,
-                        customPrompt: settings.customPrompt || ''
+                        customPrompt: processedCustomPrompt,
+                        articleWordCount: wordCount,
+                        newWordsPercentage: newWordsPercent,
+                        numberOfQuestions: questionCount,
+                        numberOfOptions: optionCount
                     });
                     
                     // 设置请求头
@@ -4073,7 +4748,1062 @@ C. Green"
             init();
             initReadingComprehension();
             setupAIGenerating();
+            
+            // 英文翻译测试相关功能
+            // 初始化导入句子按钮事件
+            const importSentencesBtn = document.getElementById('import-sentences-btn');
+            if (importSentencesBtn) {
+                importSentencesBtn.addEventListener('click', handleImportSentences);
+            }
+
+            // 初始化开始翻译测试按钮事件
+            const startTranslationTestBtn = document.getElementById('start-translation-test-btn');
+            if (startTranslationTestBtn) {
+                startTranslationTestBtn.addEventListener('click', startTranslationTest);
+            }
+
+            // 初始化翻译测试相关按钮事件
+            const translationClearBtn = document.getElementById('translation-clear-btn');
+            const translationSubmitBtn = document.getElementById('translation-submit-btn');
+            const translationNextBtn = document.getElementById('translation-next-btn');
+            
+            if (translationClearBtn) translationClearBtn.addEventListener('click', clearTranslationSelection);
+            if (translationSubmitBtn) translationSubmitBtn.addEventListener('click', submitTranslationAnswer);
+            if (translationNextBtn) translationNextBtn.addEventListener('click', nextTranslationQuestion);
+
+            // 存储当前翻译测试状态
+            window.translationTestState = {
+                currentQuestionIndex: 0,
+                totalQuestions: 0,
+                testSentences: [],
+                userAnswers: [],
+                correctAnswers: 0
+            };
         });
-    </script>
-</body>
+
+            // 处理导入句子的逻辑
+            function handleImportSentences() {
+                const textarea = document.getElementById('sentences-textarea');
+                const sentencesText = textarea.value.trim();
+                
+                if (!sentencesText) {
+                    showImportResults('请输入英文语句及对应的中文分词', 'error');
+                    return;
+                }
+
+                // 解析输入的句子
+                const sentences = parseSentences(sentencesText);
+                
+                if (sentences.length === 0) {
+                    showImportResults('未能解析出有效的句子，请检查输入格式', 'error');
+                    return;
+                }
+
+                // 发送到服务器保存
+                saveSentencesToServer(sentences);
+            }
+
+            // 解析用户输入的句子
+            function parseSentences(text) {
+                const sentences = [];
+                const lines = text.split('\n');
+                
+                let currentEnglishSentence = '';
+                
+                lines.forEach(line => {
+                    line = line.trim();
+                    if (!line) return;
+
+                    // 检查是否是英文句子（带或不带编号）
+                    if (isEnglishSentence(line)) {
+                        // 如果已经有未配对的英文句子，先处理它
+                        if (currentEnglishSentence) {
+                            // 如果之前的英文句子没有找到对应的中文分词，添加到列表但没有答案
+                            sentences.push({
+                                sentence: currentEnglishSentence,
+                                answers: ''
+                            });
+                        }
+                        // 提取英文句子（去除可能的编号）
+                        currentEnglishSentence = extractEnglishSentence(line);
+                    } else if (isChineseText(line) && currentEnglishSentence) {
+                        // 如果是中文文本且有未配对的英文句子，将它们配对
+                        const answers = normalizeChineseAnswers(line);
+                        sentences.push({
+                            sentence: currentEnglishSentence,
+                            answers: answers
+                        });
+                        currentEnglishSentence = '';
+                    }
+                });
+
+                // 处理最后一个未配对的英文句子
+                if (currentEnglishSentence) {
+                    sentences.push({
+                        sentence: currentEnglishSentence,
+                        answers: ''
+                    });
+                }
+
+                return sentences;
+            }
+
+            // 判断是否是英文句子
+            function isEnglishSentence(text) {
+                // 带编号的英文句子，如 '1. Hello world'
+                if (/^\d+\.\s*[a-zA-Z]/.test(text)) {
+                    return true;
+                }
+                // 不带编号的英文句子，以英文开头
+                if (/^[a-zA-Z]/.test(text)) {
+                    return true;
+                }
+                return false;
+            }
+
+            // 提取英文句子（去除编号）
+            function extractEnglishSentence(text) {
+                // 去除编号部分
+                const match = text.match(/^(\d+\.\s*)(.*)$/);
+                if (match) {
+                    return match[2].trim();
+                }
+                return text.trim();
+            }
+
+            // 判断是否是中文文本
+            function isChineseText(text) {
+                // 检查是否包含中文字符
+                return /[\u4e00-\u9fa5]/.test(text);
+            }
+
+            // 标准化中文答案（统一使用英文逗号分隔）
+            function normalizeChineseAnswers(text) {
+                // 将中文逗号、顿号等替换为英文逗号
+                text = text.replace(/[，、；；]/g, ',');
+                // 去除多余的空格
+                text = text.replace(/\s+/g, '');
+                // 去除可能的括号或其他符号
+                text = text.replace(/[()（）]/g, '');
+                return text.trim();
+            }
+
+            // 保存句子到服务器
+            function saveSentencesToServer(sentences) {
+                // 为每个句子单独发送请求
+                let successCount = 0;
+                let totalCount = sentences.length;
+                let promises = [];
+                
+                sentences.forEach(sentenceObj => {
+                    promises.push(
+                        fetch('/api/sentences', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(sentenceObj)
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                successCount++;
+                            }
+                            return response.json();
+                        })
+                        .catch(error => {
+                            console.error('保存句子失败:', error);
+                        })
+                    );
+                });
+                
+                Promise.all(promises).then(() => {
+                    if (successCount > 0) {
+                        showImportResults(`成功导入 ${successCount} 条英文句子`, 'success');
+                        document.getElementById('sentences-textarea').value = '';
+                    } else {
+                        showImportResults('导入失败：请检查输入格式或网络连接', 'error');
+                    }
+                });
+            }
+
+            // 显示导入结果
+            function showImportResults(message, type) {
+                const importResults = document.getElementById('import-results');
+                const resultContent = document.getElementById('import-results-content');
+                
+                if (importResults && resultContent) {
+                    const className = type === 'success' ? 'text-green-600 bg-green-50 border-green-200' : 'text-red-600 bg-red-50 border-red-200';
+                    const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+                    
+                    resultContent.innerHTML = `
+                        <div class="${className} p-4 rounded-lg border flex items-start">
+                            <i class="fa ${icon} text-xl mt-0.5 mr-3"></i>
+                            <p>${message}</p>
+                        </div>
+                    `;
+                    
+                    importResults.classList.remove('hidden');
+                    
+                    // 滚动到结果区域
+                    importResults.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+
+            // 开始翻译测试
+            function startTranslationTest() {
+                const testCountInput = document.getElementById('translation-test-count');
+                const testCount = parseInt(testCountInput.value) || 3;
+                
+                // 隐藏测试设置区域
+                document.getElementById('test-settings').classList.add('hidden');
+                document.getElementById('reading-comprehension-box').classList.add('hidden');
+                document.getElementById('english-translation-box').classList.add('hidden');
+                
+                // 显示测试视图
+                document.getElementById('translation-test-view').classList.remove('hidden');
+                
+                // 从服务器获取随机句子
+                fetchRandomSentences(testCount);
+            }
+
+            // 获取随机句子
+            function fetchRandomSentences(count) {
+                // 先显示加载状态
+                document.getElementById('translation-english-sentence').textContent = '正在加载句子...';
+                document.getElementById('translation-word-options').innerHTML = '';
+                document.getElementById('translation-answer-area').innerHTML = '';
+                
+                fetch('/api/sentences')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data && data.length > 0) {
+                            // 从返回的句子中随机选择count个
+                            const shuffled = [...data].sort(() => 0.5 - Math.random());
+                            const selectedSentences = shuffled.slice(0, count);
+                            
+                            // 初始化测试状态
+                            window.translationTestState = {
+                                currentQuestionIndex: 0,
+                                totalQuestions: selectedSentences.length,
+                                testSentences: selectedSentences,
+                                userAnswers: [],
+                                correctAnswers: 0
+                            };
+                            
+                            // 显示第一个问题
+                            displayTranslationQuestion(0);
+                        } else {
+                            // 没有足够的句子
+                            const resultContent = document.getElementById('translation-result-content');
+                            resultContent.innerHTML = `
+                                <i class="fa fa-exclamation-circle text-4xl text-warning mb-4"></i>
+                                <h3 class="text-xl font-bold text-gray-800 mb-2">没有可用的句子</h3>
+                                <p class="text-gray-600 mb-6">数据库中没有足够的句子用于翻译测试，请先导入句子。</p>
+                            `;
+                            document.getElementById('translation-result-feedback').classList.remove('hidden');
+                            document.getElementById('translation-next-btn').innerText = '返回测试';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('获取随机句子失败:', error);
+                        const resultContent = document.getElementById('translation-result-content');
+                        resultContent.innerHTML = `
+                            <i class="fa fa-exclamation-circle text-4xl text-error mb-4"></i>
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">获取句子失败</h3>
+                            <p class="text-gray-600 mb-6">无法连接到服务器，请稍后再试。</p>
+                        `;
+                        document.getElementById('translation-result-feedback').classList.remove('hidden');
+                        document.getElementById('translation-next-btn').innerText = '返回测试';
+                    });
+            }
+
+            // 显示翻译问题
+            function displayTranslationQuestion(index) {
+                const state = window.translationTestState;
+                const sentence = state.testSentences[index];
+                
+                // 更新问题计数
+                document.getElementById('translation-current-question').textContent = index + 1;
+                document.getElementById('translation-total-questions').textContent = state.totalQuestions;
+                
+                // 显示英文句子
+                document.getElementById('translation-english-sentence').textContent = sentence.sentence;
+                
+                // 清空答案区域
+                const answerArea = document.getElementById('translation-answer-area');
+                answerArea.innerHTML = '';
+                
+                // 构建词语选项（包括正确答案和干扰项）
+                buildTranslationWordOptions(sentence);
+                
+                // 隐藏结果反馈
+                document.getElementById('translation-result-feedback').classList.add('hidden');
+            }
+
+            // 构建词语选项
+            function buildTranslationWordOptions(sentence) {
+                const wordOptionsContainer = document.getElementById('translation-word-options');
+                wordOptionsContainer.innerHTML = '';
+                
+                // 解析正确答案的分词
+                const correctWords = sentence.answers.split(',').map(word => word.trim()).filter(word => word);
+                
+                // 如果没有正确答案，直接返回
+                if (correctWords.length === 0) {
+                    wordOptionsContainer.innerHTML = '<p class="text-gray-500">没有可用的翻译选项</p>';
+                    return;
+                }
+                
+                // 生成一些常见的中文干扰词（不再依赖API）
+                const commonDistractors = [
+                    '的', '是', '在', '有', '和', '我', '他', '你', '了', '就',
+                    '人', '一', '这', '那', '上', '下', '来', '去', '到', '说',
+                    '要', '看', '好', '不', '能', '会', '可', '对', '也', '但',
+                    '而', '之', '以', '于', '由', '为', '从', '与', '及', '比'
+                ];
+                
+                // 合并正确答案和干扰项，并打乱顺序
+                const allOptions = [...correctWords, ...commonDistractors].slice(0, 12); // 最多12个选项
+                
+                // 随机排序选项
+                for (let i = allOptions.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [allOptions[i], allOptions[j]] = [allOptions[j], allOptions[i]];
+                }
+                
+                // 创建选项按钮
+                allOptions.forEach(word => {
+                    const button = document.createElement('button');
+                    button.className = 'px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg transition-custom text-sm';
+                    button.textContent = word;
+                    button.addEventListener('click', () => {
+                        addToTranslationAnswer(word, button);
+                    });
+                    wordOptionsContainer.appendChild(button);
+                });
+            }
+
+            // 添加词语到答案区域
+            function addToTranslationAnswer(word, button) {
+                const answerArea = document.getElementById('translation-answer-area');
+                
+                // 创建答案词语元素
+                const answerWord = document.createElement('span');
+                answerWord.className = 'px-3 py-1 bg-primary/10 text-primary rounded-lg flex items-center';
+                answerWord.innerHTML = `
+                    ${word}
+                    <button class="ml-1 text-primary/70 hover:text-primary" type="button">
+                        <i class="fa fa-times"></i>
+                    </button>
+                `;
+                
+                // 添加移除事件
+                const removeBtn = answerWord.querySelector('button');
+                removeBtn.addEventListener('click', () => {
+                    answerArea.removeChild(answerWord);
+                    button.disabled = false;
+                    button.classList.remove('opacity-50');
+                });
+                
+                // 禁用选项按钮
+                button.disabled = true;
+                button.classList.add('opacity-50');
+                
+                // 添加到答案区域
+                answerArea.appendChild(answerWord);
+            }
+
+            // 清空翻译选择
+            function clearTranslationSelection() {
+                const answerArea = document.getElementById('translation-answer-area');
+                const wordOptions = document.querySelectorAll('#translation-word-options button');
+                
+                // 清空答案区域
+                answerArea.innerHTML = '';
+                
+                // 重新启用所有选项按钮
+                wordOptions.forEach(button => {
+                    button.disabled = false;
+                    button.classList.remove('opacity-50');
+                });
+            }
+
+            // 提交翻译答案
+            function submitTranslationAnswer() {
+                const state = window.translationTestState;
+                const currentSentence = state.testSentences[state.currentQuestionIndex];
+                
+                // 获取用户的答案
+                const userAnswerElements = document.querySelectorAll('#translation-answer-area span');
+                const userAnswer = Array.from(userAnswerElements).map(el => el.firstChild.textContent.trim());
+                
+                // 检查答案是否为空
+                if (userAnswer.length === 0) {
+                    alert('Please select at least one word for your answer.');
+                    return;
+                }
+                
+                // 记录用户答案
+                state.userAnswers.push({
+                    sentenceId: currentSentence.id,
+                    sentence: currentSentence.sentence,
+                    userAnswer: userAnswer,
+                    correctAnswer: currentSentence.answers.split(',').map(word => word.trim()).filter(word => word)
+                });
+                
+                // 检查答案是否正确
+                const isCorrect = isTranslationAnswerCorrect(userAnswer, state.userAnswers[state.userAnswers.length - 1].correctAnswer);
+                if (isCorrect) {
+                    state.correctAnswers++;
+                }
+                
+                // 显示结果反馈
+                showTranslationResult(isCorrect, state.userAnswers[state.userAnswers.length - 1]);
+            }
+
+            // 检查翻译答案是否正确
+            function isTranslationAnswerCorrect(userAnswer, correctAnswer) {
+                if (userAnswer.length !== correctAnswer.length) {
+                    return false;
+                }
+                
+                // 检查每个位置的词语是否相同
+                for (let i = 0; i < userAnswer.length; i++) {
+                    if (userAnswer[i] !== correctAnswer[i]) {
+                        return false;
+                    }
+                }
+                
+                return true;
+            }
+
+            // 显示翻译结果
+            function showTranslationResult(isCorrect, answerData) {
+                const resultContent = document.getElementById('translation-result-content');
+                
+                if (isCorrect) {
+                    // 正确答案
+                    resultContent.innerHTML = `
+                        <i class="fa fa-check-circle text-4xl text-green-500 mb-4"></i>
+                        <h3 class="text-xl font-bold text-green-600 mb-2">Correct!</h3>
+                        <p class="text-gray-600 mb-4">Your translation is correct.</p>
+                        <div class="bg-green-50 p-4 rounded-lg text-left inline-block">
+                            <p class="text-sm text-gray-500 mb-1">Your Answer:</p>
+                            <p class="text-gray-800">${answerData.userAnswer.join(' ')}</p>
+                        </div>
+                    `;
+                } else {
+                    // 错误答案
+                    resultContent.innerHTML = `
+                        <i class="fa fa-times-circle text-4xl text-red-500 mb-4"></i>
+                        <h3 class="text-xl font-bold text-red-600 mb-2">Incorrect</h3>
+                        <p class="text-gray-600 mb-4">Please try again next time.</p>
+                        <div class="space-y-3">
+                            <div class="bg-red-50 p-4 rounded-lg text-left inline-block">
+                                <p class="text-sm text-gray-500 mb-1">Your Answer:</p>
+                                <p class="text-gray-800">${answerData.userAnswer.join(' ')}</p>
+                            </div>
+                            <div class="bg-green-50 p-4 rounded-lg text-left inline-block">
+                                <p class="text-sm text-gray-500 mb-1">Correct Answer:</p>
+                                <p class="text-gray-800">${answerData.correctAnswer.join(' ')}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                document.getElementById('translation-result-feedback').classList.remove('hidden');
+            }
+
+            // 下一个翻译问题
+            function nextTranslationQuestion() {
+                const state = window.translationTestState;
+                state.currentQuestionIndex++;
+                
+                // 检查是否还有更多问题
+                if (state.currentQuestionIndex < state.totalQuestions) {
+                    // 显示下一个问题
+                    displayTranslationQuestion(state.currentQuestionIndex);
+                } else {
+                    // 显示测试结果
+                    showTranslationTestResults();
+                }
+            }
+
+            // 显示翻译测试结果
+            function showTranslationTestResults() {
+                const state = window.translationTestState;
+                
+                // 隐藏测试视图
+                document.getElementById('translation-test-view').classList.add('hidden');
+                
+                // 显示测试结果
+                const testResults = document.getElementById('test-results');
+                testResults.classList.remove('hidden');
+                
+                // 计算分数
+                const score = Math.round((state.correctAnswers / state.totalQuestions) * 100);
+                
+                // 更新结果信息
+                document.getElementById('test-score').textContent = `${score}%`;
+                document.getElementById('result-total').textContent = state.totalQuestions;
+                document.getElementById('result-correct').textContent = state.correctAnswers;
+                document.getElementById('result-incorrect').textContent = state.totalQuestions - state.correctAnswers;
+                
+                // 构建详细结果
+                const detailedResults = document.getElementById('detailed-results');
+                detailedResults.innerHTML = '';
+                
+                state.userAnswers.forEach((answer, index) => {
+                    const isCorrect = isTranslationAnswerCorrect(answer.userAnswer, answer.correctAnswer);
+                    const resultItem = document.createElement('div');
+                    resultItem.className = `p-4 rounded-lg border ${isCorrect ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`;
+                    
+                    resultItem.innerHTML = `
+                        <div class="flex items-start justify-between mb-2">
+                            <h4 class="font-medium text-gray-800">Question ${index + 1}</h4>
+                            <span class="px-2 py-1 rounded-full text-xs font-medium ${isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                ${isCorrect ? 'Correct' : 'Incorrect'}
+                            </span>
+                        </div>
+                        <p class="text-gray-600 mb-2 text-sm">${answer.sentence}</p>
+                        <div class="space-y-1 text-sm">
+                            <p class="text-gray-500">Your answer: <span class="text-gray-800">${answer.userAnswer.join(' ')}</span></p>
+                            <p class="text-gray-500">Correct answer: <span class="text-gray-800">${answer.correctAnswer.join(' ')}</span></p>
+                        </div>
+                    `;
+                    
+                    detailedResults.appendChild(resultItem);
+                });
+                
+                // 启用保存结果按钮
+                document.getElementById('save-results-btn').disabled = false;
+                
+                // 根据是否有错误启用查看错误按钮
+                const hasMistakes = state.correctAnswers < state.totalQuestions;
+                document.getElementById('review-mistakes-btn').disabled = !hasMistakes;
+            }
+
+            // 打乱数组顺序
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+            }
+
+            // 句子管理功能 - 全局初始化
+            window.selectedSentenceIds = new Set();
+            
+            // 确保在页面加载完成后初始化
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initSentenceManagement);
+            } else {
+                // 页面已经加载完成，直接初始化
+                setTimeout(initSentenceManagement, 100);
+            }
+            
+            // Toast提示功能
+            function showToast(message) {
+                // 创建toast元素
+                const toast = document.createElement('div');
+                toast.className = 'fixed bottom-4 right-4 bg-gray-800 text-white px-4 py-2 rounded-md shadow-lg z-50';
+                toast.textContent = message;
+                
+                // 添加到页面
+                document.body.appendChild(toast);
+                
+                // 设置淡入动画
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => {
+                    toast.style.opacity = '1';
+                }, 10);
+                
+                // 3秒后自动消失
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    setTimeout(() => {
+                        document.body.removeChild(toast);
+                    }, 300);
+                }, 3000);
+            }
+            
+            // 确认对话框功能
+            function confirmAction(message, callback) {
+                // 创建遮罩层
+                const overlay = document.createElement('div');
+                overlay.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+                
+                // 创建对话框
+                const dialog = document.createElement('div');
+                dialog.className = 'bg-white rounded-lg shadow-xl max-w-md w-full mx-4';
+                
+                // 设置对话框内容
+                dialog.innerHTML = `
+                    <div class="p-5">
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">确认操作</h3>
+                        <p class="text-gray-600 mb-4">${message}</p>
+                        <div class="flex justify-end space-x-3">
+                            <button id="cancel-confirm-btn" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                取消
+                            </button>
+                            <button id="confirm-btn" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                确认
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                // 将对话框添加到遮罩层
+                overlay.appendChild(dialog);
+                
+                // 添加到页面
+                document.body.appendChild(overlay);
+                
+                // 绑定取消按钮事件
+                dialog.querySelector('#cancel-confirm-btn').addEventListener('click', function() {
+                    document.body.removeChild(overlay);
+                });
+                
+                // 绑定确认按钮事件
+                dialog.querySelector('#confirm-btn').addEventListener('click', function() {
+                    document.body.removeChild(overlay);
+                    if (typeof callback === 'function') {
+                        callback();
+                    }
+                });
+            }
+
+            // 初始化句子管理模块
+            function initSentenceManagement() {
+                // 绑定搜索框回车事件
+                document.getElementById('search-sentences').addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        searchSentences();
+                    }
+                });
+                
+                // 初始化时直接加载句子列表
+                loadSentences();
+
+                // 绑定添加句子按钮事件
+                document.getElementById('add-sentence-btn').addEventListener('click', function() {
+                    showSentenceDialog();
+                });
+
+                // 绑定导出句子按钮事件
+                document.getElementById('export-sentences-btn').addEventListener('click', function() {
+                    exportSentences();
+                });
+
+                // 绑定清除所有句子按钮事件
+                document.getElementById('clear-sentences-btn').addEventListener('click', function() {
+                    confirmAction('确定要清除所有句子吗？此操作不可恢复。', function() {
+                        clearAllSentences();
+                    });
+                });
+
+                // 绑定删除选中句子按钮事件
+                document.getElementById('delete-selected-sentences-btn').addEventListener('click', function() {
+                    if (window.selectedSentenceIds.size === 0) {
+                        showToast('请先选择要删除的句子');
+                        return;
+                    }
+                    confirmAction(`确定要删除选中的 ${window.selectedSentenceIds.size} 个句子吗？此操作不可恢复。`, function() {
+                        deleteSelectedSentences();
+                    });
+                });
+
+                // 绑定关闭句子对话框按钮事件
+                document.getElementById('close-sentence-dialog').addEventListener('click', function() {
+                    hideSentenceDialog();
+                });
+
+                // 绑定保存句子按钮事件
+                document.getElementById('save-sentence-btn').addEventListener('click', function() {
+                    saveSentence();
+                });
+
+                // 加载句子列表
+                loadSentences();
+            }
+
+            // 加载句子列表
+            function loadSentences() {
+                const searchTerm = document.getElementById('search-sentences').value.trim();
+                const url = searchTerm ? `${API_BASE_URL}/sentences?search=${encodeURIComponent(searchTerm)}` : `${API_BASE_URL}/sentences`;
+
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('加载句子失败');
+                        }
+                        return response.json();
+                    })
+                    .then(sentences => {
+                        const sentenceList = document.getElementById('sentences-list');
+                        const noSentencesMessage = document.getElementById('no-sentences-message');
+
+                        // 清空当前列表
+                        sentenceList.innerHTML = '';
+
+                        // 重置选中的句子ID集合
+                        window.selectedSentenceIds.clear();
+
+                        if (sentences.length === 0) {
+                            noSentencesMessage.classList.remove('hidden');
+                            document.getElementById('delete-selected-sentences-btn').disabled = true;
+                            document.getElementById('export-sentences-btn').disabled = true;
+                            document.getElementById('clear-sentences-btn').disabled = true;
+                        } else {
+                            noSentencesMessage.classList.add('hidden');
+                            
+                            // 更新统计信息
+                            document.getElementById('total-sentences').textContent = sentences.length;
+                            document.getElementById('delete-selected-sentences-btn').disabled = window.selectedSentenceIds.size === 0;
+                            document.getElementById('export-sentences-btn').disabled = false;
+                            document.getElementById('clear-sentences-btn').disabled = false;
+
+                            // 渲染句子列表
+                            sentences.forEach(sentence => {
+                                const row = document.createElement('tr');
+                                row.className = 'border-b border-gray-200 hover:bg-gray-50';
+                                row.dataset.id = sentence.id;
+
+                                row.innerHTML = `
+                                    <td class="px-4 py-3">
+                                        <input type="checkbox" class="sentence-checkbox rounded text-blue-600 focus:ring-blue-500" value="${sentence.id}">
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-gray-800">${sentence.sentence}</td>
+                                    <td class="px-4 py-3 text-sm text-gray-800">${sentence.answers}</td>
+                                    <td class="px-4 py-3 text-sm text-gray-500">${formatDate(sentence.added_date)}</td>
+                                    <td class="px-4 py-3 text-sm">
+                                        <div class="flex space-x-2">
+                                            <button class="text-blue-600 hover:text-blue-800 edit-sentence-btn" title="编辑">
+                                                <i class="fa fa-pencil"></i>
+                                            </button>
+                                            <button class="text-red-600 hover:text-red-800 delete-sentence-btn" title="删除">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                `;
+
+                                // 绑定复选框事件
+                                const checkbox = row.querySelector('.sentence-checkbox');
+                                checkbox.addEventListener('change', function() {
+                                    updateSelectedSentenceIds();
+                                });
+
+                                // 绑定编辑按钮事件
+                                const editBtn = row.querySelector('.edit-sentence-btn');
+                                editBtn.addEventListener('click', function() {
+                                    editSentence(sentence.id);
+                                });
+
+                                // 绑定删除按钮事件
+                                const deleteBtn = row.querySelector('.delete-sentence-btn');
+                                deleteBtn.addEventListener('click', function() {
+                                    confirmAction('确定要删除这个句子吗？此操作不可恢复。', function() {
+                                        deleteSentence(sentence.id);
+                                    });
+                                });
+
+                                sentenceList.appendChild(row);
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('加载句子错误:', error);
+                        showToast('加载句子失败，请检查网络连接或稍后重试');
+                        const noSentencesMessage = document.getElementById('no-sentences-message');
+                        const sentenceList = document.getElementById('sentences-list');
+                        sentenceList.innerHTML = '';
+                        noSentencesMessage.classList.remove('hidden');
+                    });
+            }
+
+            // 搜索句子
+            function searchSentences() {
+                loadSentences();
+            }
+
+            // 更新选中的句子ID集合
+            function updateSelectedSentenceIds() {
+                const checkboxes = document.querySelectorAll('.sentence-checkbox:checked');
+                window.selectedSentenceIds.clear();
+                
+                checkboxes.forEach(checkbox => {
+                    window.selectedSentenceIds.add(parseInt(checkbox.value));
+                });
+            }
+
+            // 显示句子对话框
+            function showSentenceDialog(sentence = null) {
+                const dialog = document.getElementById('sentence-dialog');
+                const title = document.getElementById('sentence-dialog-title');
+                const sentenceIdInput = document.getElementById('sentence-id-input');
+                const sentenceInput = document.getElementById('sentence-input');
+                const answersInput = document.getElementById('answers-input');
+
+                // 清空表单
+                sentenceIdInput.value = '';
+                sentenceInput.value = '';
+                answersInput.value = '';
+
+                // 设置标题和隐藏ID
+                if (sentence) {
+                    title.textContent = '编辑句子';
+                    sentenceIdInput.value = sentence.id;
+                    sentenceInput.value = sentence.sentence;
+                    answersInput.value = sentence.answers;
+                } else {
+                    title.textContent = '添加句子';
+                }
+
+                // 显示对话框
+                dialog.classList.remove('hidden');
+                sentenceInput.focus();
+            }
+
+            // 隐藏句子对话框
+            function hideSentenceDialog() {
+                document.getElementById('sentence-dialog').classList.add('hidden');
+            }
+
+            // 保存句子
+            function saveSentence() {
+                const sentenceId = document.getElementById('sentence-id-input').value;
+                const sentence = document.getElementById('sentence-input').value.trim();
+                const answers = document.getElementById('answers-input').value.trim();
+
+                // 验证输入
+                if (!sentence) {
+                    showToast('请输入英文句子');
+                    return;
+                }
+
+                if (!answers) {
+                    showToast('请输入中文答案');
+                    return;
+                }
+
+                const data = {
+                    sentence,
+                    answers
+                };
+
+                const url = sentenceId ? `${API_BASE_URL}/sentences/${sentenceId}` : `${API_BASE_URL}/sentences`;
+                const method = sentenceId ? 'PUT' : 'POST';
+
+                fetch(url, {
+                    method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(sentenceId ? '更新句子失败' : '添加句子失败');
+                        }
+                        return response.json();
+                    })
+                    .then(() => {
+                        hideSentenceDialog();
+                        loadSentences();
+                        showToast(sentenceId ? '句子更新成功' : '句子添加成功');
+                    })
+                    .catch(error => {
+                        console.error('保存句子错误:', error);
+                        showToast(error.message);
+                    });
+            }
+
+            // 编辑句子
+            function editSentence(id) {
+                fetch(`${API_BASE_URL}/sentences/${id}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('获取句子详情失败');
+                        }
+                        return response.json();
+                    })
+                    .then(sentence => {
+                        showSentenceDialog(sentence);
+                    })
+                    .catch(error => {
+                        console.error('编辑句子错误:', error);
+                        showToast('加载句子详情失败，请稍后重试');
+                    });
+            }
+
+            // 删除句子
+            function deleteSentence(id) {
+                fetch(`${API_BASE_URL}/sentences/${id}`, {
+                    method: 'DELETE'
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('删除句子失败');
+                        }
+                        return response.json();
+                    })
+                    .then(() => {
+                        loadSentences();
+                        showToast('句子删除成功');
+                    })
+                    .catch(error => {
+                        console.error('删除句子错误:', error);
+                        showToast('删除句子失败，请稍后重试');
+                    });
+            }
+
+            // 删除选中的句子
+            function deleteSelectedSentences() {
+                if (window.selectedSentenceIds.size === 0) {
+                    showToast('请先选择要删除的句子');
+                    return;
+                }
+
+                fetch(`${API_BASE_URL}/sentences/batch-delete`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ ids: Array.from(window.selectedSentenceIds) })
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('批量删除句子失败');
+                        }
+                        return response.json();
+                    })
+                    .then(() => {
+                        loadSentences();
+                        showToast(`已成功删除 ${window.selectedSentenceIds.size} 个句子`);
+                    })
+                    .catch(error => {
+                        console.error('批量删除句子错误:', error);
+                        showToast('批量删除句子失败，请稍后重试');
+                    });
+            }
+
+            // 清空所有句子
+            function clearAllSentences() {
+                fetch(`${API_BASE_URL}/sentences`, {
+                    method: 'DELETE'
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('清空句子失败');
+                        }
+                        return response.json();
+                    })
+                    .then(() => {
+                        loadSentences();
+                        showToast('所有句子已清空');
+                    })
+                    .catch(error => {
+                        console.error('清空句子错误:', error);
+                        showToast('清空句子失败，请稍后重试');
+                    });
+            }
+
+            // 导出句子
+            function exportSentences() {
+                fetch(`${API_BASE_URL}/api/sentences`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('获取句子数据失败');
+                        }
+                        return response.json();
+                    })
+                    .then(sentences => {
+                        if (sentences.length === 0) {
+                            showToast('没有可导出的句子');
+                            return;
+                        }
+
+                        // 构建CSV内容
+                        let csvContent = '英文句子,中文答案,添加日期\n';
+                        sentences.forEach(sentence => {
+                            // 转义CSV中的特殊字符
+                            const escapedSentence = `"${sentence.sentence.replace(/"/g, '""')}"`;
+                            const escapedAnswers = `"${sentence.answers.replace(/"/g, '""')}"`;
+                            csvContent += `${escapedSentence},${escapedAnswers},${formatDate(sentence.added_date)}\n`;
+                        });
+
+                        // 创建Blob对象
+                        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                        const url = URL.createObjectURL(blob);
+
+                        // 创建下载链接
+                        const link = document.createElement('a');
+                        link.setAttribute('href', url);
+                        link.setAttribute('download', `sentences_${new Date().toISOString().slice(0, 10)}.csv`);
+                        link.style.display = 'none';
+                        document.body.appendChild(link);
+
+                        // 触发下载
+                        link.click();
+
+                        // 清理
+                        document.body.removeChild(link);
+                        URL.revokeObjectURL(url);
+
+                        showToast('句子导出成功');
+                    })
+                    .catch(error => {
+                        console.error('导出句子错误:', error);
+                        showToast('导出句子失败，请稍后重试');
+                    });
+            }
+
+            // 格式化日期
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+        </script>
+        
+        <!-- 添加/编辑句子对话框 -->
+        <div id="sentence-dialog" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+                <div class="flex justify-between items-center p-5 border-b border-gray-200">
+                    <h3 id="sentence-dialog-title" class="text-xl font-semibold text-gray-800">添加句子</h3>
+                    <button id="close-sentence-dialog" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+                        <i class="fa fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div class="p-5">
+                    <input type="hidden" id="sentence-id-input" value="">
+                    <div class="mb-4">
+                        <label for="sentence-input" class="block text-sm font-medium text-gray-700 mb-1">英文句子</label>
+                        <textarea id="sentence-input" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="输入英文句子" rows="3"></textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label for="answers-input" class="block text-sm font-medium text-gray-700 mb-1">中文答案</label>
+                        <textarea id="answers-input" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="输入中文答案" rows="2"></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-3 mt-6">
+                        <button id="cancel-sentence-btn" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            取消
+                        </button>
+                        <button id="save-sentence-btn" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            保存
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
 </html>
